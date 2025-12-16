@@ -5,8 +5,9 @@
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
 #include <sys/_intsup.h>
-motor_info_t C620_1,C620_2,C620_3,C620_4;
-motor_info_t C6xx_1,C6xx_2,C6xx_3,C6xx_4;
+#define MotorCount 4
+motor_info_t C620[MotorCount];
+motor_info_t C6xx[MotorCount];
 #define CanRxGetU16(canRxMsg, num) (((uint16_t)canRxMsg.Data[num * 2] << 8) | (uint16_t)canRxMsg.Data[num * 2 + 1])
 HAL_CAN_RxMsgTypedef can1RxMsg,can2RxMsg; //接受消息结构体
 uint8_t can1RxData[8],can2RxData[8];     //接受数据缓存
@@ -68,26 +69,10 @@ void can2_fliter_init(void)
     isRcan2Started=1;
 }
 /*设置电机电压*/
-void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage1,int16_t voltage2,int16_t voltage3,int16_t voltage4)
+void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
-  int16_t voltage[]={voltage1,voltage2,voltage3,voltage4};
-  can1TxMsg.StdId = 0x1ff;
-  can1TxMsg.IDE   = CAN_ID_STD;//标准ID
-  can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  can1TxMsg.DLC   = 8;//数据长度
-  for(int8_t i=0;i<4;i++)
-  {
-   can1TxData[2*i]=(voltage[i]>>8)&0xff;
-   can1TxData[2*i+1]=(voltage[i])&0xff;
-  }
-  HAL_CAN_AddTxMessage(&hcan1, &can1TxMsg, can1TxData,(uint32_t*)CAN_TX_MAILBOX0);//发送报文
-}
-{
-  CAN_TxHeaderTypeDef can1TxMsg;
-  uint8_t             can1TxData[8] = {0};
-  int16_t voltage[]={voltage1,voltage2,voltage3,voltage4};
   can1TxMsg.StdId = 0x1ff;
   can1TxMsg.IDE   = CAN_ID_STD;//标准ID
   can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
@@ -100,11 +85,10 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage1,int16_t voltage2,int
   HAL_CAN_AddTxMessage(&hcan1, &can1TxMsg, can1TxData,(uint32_t*)CAN_TX_MAILBOX0);//发送报文
 }
 
-void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t voltage1,int16_t voltage2,int16_t voltage3,int16_t voltage4)
+void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
-  int16_t voltage[]={voltage1,voltage2,voltage3,voltage4};
   can2TxMsg.StdId = 0x1ff;
   can2TxMsg.IDE   = CAN_ID_STD;//标准ID
   can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
@@ -114,8 +98,10 @@ void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t voltage1,int16_t voltage2,int
    can2TxData[2*i]=(voltage[i]>>8)&0xff;
    can2TxData[2*i+1]=(voltage[i])&0xff;
   }
-//  HAL_CAN_AddTxMessage(&hcan2, &can2TxMsg, can2TxData,(uint32_t*)CAN_TX_MAILBOX0);//发送报文
+  //HAL_CAN_AddTxMessage(&hcan2, &can2TxMsg, can2TxData,(uint32_t*)CAN_TX_MAILBOX0);//发送报文
 }
+
+/********************CAN接收*****************************/
 //接收中断回调函数
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -125,69 +111,32 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   if(hcan==&hcan1)
   {
 	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-	if(can1RxMsg.StdId==0x201){
-		C620_1.Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-		C620_1.Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-		C620_1.Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-		C620_1.Rxmsg.Temp=can1RxData[6];
-		flag=1;
+	for(int i=0;i<MotorCount;i++)
+	{
+		if(can1RxMsg.StdId==0x201+i){
+			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
+			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
+			C620[i].Rxmsg.Temp=can1RxData[6];
+			flag=1;
+		}
 	}
-	if(can1RxMsg.StdId==0x202){
-		C620_2.Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-		C620_2.Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-		C620_2.Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-		C620_2.Rxmsg.Temp=can1RxData[6];
-		flag=1;
-	}
-	if(can1RxMsg.StdId==0x203){
-		C620_3.Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-		C620_3.Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-		C620_3.Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-		C620_3.Rxmsg.Temp=can1RxData[6];
-		flag=1;
-	}
-	if(can1RxMsg.StdId==0x204){
-		C620_4.Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-		C620_4.Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-		C620_4.Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-		C620_4.Rxmsg.Temp=can1RxData[6];
-		flag=1;
-	} 
-
+  }
   //  if(hcan==&hcan2)
 		{
 	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-		 if(can2RxMsg.StdId==0x201){
-		C620_1.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-		C620_1.Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-		C620_1.Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-		C620_1.Rxmsg.Temp=can2RxData[6];
-		flag=1;
-	}
-	if(can2RxMsg.StdId==0x202){
-		C620_2.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-		C620_2.Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-		C620_2.Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-		C620_2.Rxmsg.Temp=can2RxData[6];
-		flag=1;
-	}
-	if(can2RxMsg.StdId==0x203){
-		C620_3.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-		C620_3.Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-		C620_3.Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-		C620_3.Rxmsg.Temp=can2RxData[6];
-		flag=1;
-	}
-	if(can2RxMsg.StdId==0x204){
-		C620_4.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-		C620_4.Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-		C620_4.Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-		C620_4.Rxmsg.Temp=can2RxData[6];
-		flag=1;
-	} 
+		 for(int i=0;i<MotorCount;i++)
+		 {
+			 if(can2RxMsg.StdId==0x201+i){
+				 C6xx[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+				 C6xx[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+				 C6xx[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
+				 C6xx[i].Rxmsg.Temp=can2RxData[6];
+				 flag=1;
+			 }
+		 }	
 		}
 
 
-	
 	
 }

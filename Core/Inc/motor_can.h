@@ -37,7 +37,7 @@ typedef struct{
 
 
 void can_filter_init(void);
-void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage1,int16_t vlotage2,int16_t vlotage3,int16_t vlotage4);
+void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 
 #endif
 
