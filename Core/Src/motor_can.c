@@ -5,15 +5,10 @@
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
 #include <sys/_intsup.h>
-#define MotorCount 4
-motor_info_t C620[MotorCount];
-motor_info_t C6xx[MotorCount];
-#define CanRxGetU16(canRxMsg, num) (((uint16_t)canRxMsg.Data[num * 2] << 8) | (uint16_t)canRxMsg.Data[num * 2 + 1])
 HAL_CAN_RxMsgTypedef can1RxMsg,can2RxMsg; //接受消息结构体
 uint8_t can1RxData[8],can2RxData[8];     //接受数据缓存
 uint8_t isRcan1Started=0,isRcan2Started=0; //标志位，表示 CAN1 和 CAN2 是否已启动接收
 CAN_DATA_t sendData[4], receiveData[4];
-uint8_t maxSendSize = 4;  //定义了发送和接收数据的数组,并设置最大发送大小
 uint8_t can1_update = 1;
 uint8_t can2_update = 1; //标志位，表示 CAN1 和 CAN2 是否有新的数据需要发送
 extern uint16_t PID_Calc_Flag;
@@ -27,7 +22,7 @@ void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 //	else if(hcan == &hcan2){
 		can2_update = 1;
 	}
-}
+
 
 /*滤波器配置及can初始化*/
 void can1_filter_init(void)
@@ -69,7 +64,7 @@ void can2_fliter_init(void)
     isRcan2Started=1;
 }
 /*设置电机电压*/
-void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
+void Set_voltage1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
@@ -85,7 +80,7 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
   HAL_CAN_AddTxMessage(&hcan1, &can1TxMsg, can1TxData,(uint32_t*)CAN_TX_MAILBOX0);//发送报文
 }
 
-void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t voltage[])
+void Set_voltage2(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};

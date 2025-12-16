@@ -1,8 +1,6 @@
+#include "can.h"
 #include "includes.h"
-
-extern uint16_t PID_Calc_Flag;
-extern motor_info_t C620_1,C620_2,C620_3,C620_4;
-
+#include "motor_can.h"
 
 /************************ 需根据实际硬件修改的宏定义 ************************/
 // 定时器选择（示例：TIM3，根据实际使用的定时器修改）
@@ -81,12 +79,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == PID_TIMx)  // 确认是PID定时器的更新中断
     {
-		pid_calc(&C620_1.Speed_pid,C620_1.Speed_pid.get,C620_1.Speed_pid.set);
-		pid_calc(&C620_2.Speed_pid,C620_2.Speed_pid.get,C620_2.Speed_pid.set);
-		pid_calc(&C620_3.Speed_pid,C620_3.Speed_pid.get,C620_3.Speed_pid.set);
-		pid_calc(&C620_4.Speed_pid,C620_4.Speed_pid.get,C620_4.Speed_pid.set);
-        
-    };
+        for(int i=0;i<MotorCount;i++)
+        {
+            pid_calc(&C620[i].Speed_pid,&C620[i].Speed_pid.get,&C620[i].Speed_pid.set);
+            Set_voltagec1(&hcan1,(int16_t*)C620[i].Speed_pid.out);
+        }
+    }
 }
 
 /************************ 错误处理函数（可选） ************************/

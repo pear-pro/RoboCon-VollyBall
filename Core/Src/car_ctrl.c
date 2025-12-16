@@ -1,5 +1,5 @@
 #include "includes.h"
-extern motor_info_t C620_1,C620_2,C620_3,C620_4;
+ motor_info_t C620[MotorCount];
 /************************ 麦轮机器人参数配置 ************************/
 // 物理参数（根据实际机器人修改）
 #define WHEEL_RADIUS    0.05f    // 轮子半径（米），示例：5cm
@@ -50,10 +50,10 @@ WheelSpeed_t MecanumWheel_Move(float vx, float vy, float wz)
     wheel_speed.rr = (int16_t)(omega_rr * scale);
     wheel_speed.rl = (int16_t)(omega_rl * scale);
 	
-	C620_1.Speed_pid.set = wheel_speed.fl;
-	C620_2.Speed_pid.set = wheel_speed.fr;
-	C620_3.Speed_pid.set = wheel_speed.rr;
-	C620_4.Speed_pid.set = wheel_speed.rl;
+	C620[0].Speed_pid.set = wheel_speed.fl;
+	C620[1].Speed_pid.set = wheel_speed.fr;
+	C620[2].Speed_pid.set = wheel_speed.rr;
+	C620[3].Speed_pid.set = wheel_speed.rl;
 	
 
     return wheel_speed;
