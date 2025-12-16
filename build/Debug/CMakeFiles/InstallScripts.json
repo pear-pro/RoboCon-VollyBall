@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/pear/Desktop/DJ_A_wheel/build/Debug/cmake_install.cmake",
+		"C:/Users/pear/Desktop/DJ_A_wheel/build/Debug/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
