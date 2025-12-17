@@ -1,18 +1,19 @@
 #include "includes.h"
  motor_info_t C620[MotorCount];
- typedef struct {
-    int16_t fl;  // 左前轮
-    int16_t fr;  // 右前轮
-    int16_t rr;  // 右后轮
-    int16_t rl;  // 左后轮
-} WheelSpeed_t;
 /************************ 麦轮机器人参数配置 ************************/
 // 物理参数（根据实际机器人修改）
-#define WHEEL_RADIUS    0.077f    // 轮子半径（米），示例：5cm
-#define WHEEL_BASE_HALF 0.430f    // 轮距半长（米），示例：15cm
+#define WHEEL_RADIUS    0.077f     // 轮子半径（米），示例：5cm
+#define WHEEL_BASE_HALF  0.430f     // 轮距半长（米），示例：15cm
 #define WHEEL_TRACK_HALF 0.385f   // 轴距半宽（米），示例：15cm
 #define MAX_WHEEL_SPEED 1000     // 轮子最大转速（如PWM占空比最大值、编码器脉冲/秒）
 
+// 轮子转速结构体（存储四个轮子的目标转速）
+typedef struct {
+    int16_t fl;  // 左前轮转速
+    int16_t fr;  // 右前轮转速
+    int16_t rr;  // 右后轮转速
+    int16_t rl;  // 左后轮转速
+} WheelSpeed_t;
 
 /************************ 麦轮移动核心函数 ************************/
 /**
@@ -54,5 +55,6 @@ void MecanumWheel_Move(float vx, float vy, float wz)
 	C620[2].Speed_pid.set = wheel_speed.rr;
 	C620[3].Speed_pid.set = wheel_speed.rl;
 	
+
 
 }

@@ -1,7 +1,10 @@
-#include "can.h"
-#include "includes.h"
-#include "motor_can.h"
 
+#include "includes.h"
+#include "can.h"
+#include "motor_can.h"
+#include <stdint.h>
+uint16_t PID_Calc_Flag = 0;
+void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 /************************ 需根据实际硬件修改的宏定义 ************************/
 // 定时器选择（示例：TIM3，根据实际使用的定时器修改）
 #define PID_TIMx               TIM3
@@ -55,19 +58,7 @@ void PID_TIM_Init(uint16_t arr, uint16_t psc)
 }
 
 
-void PID_TIM_IRQHandler(void)
-{
-    // 1. 手动校验更新中断标志（防止虚假中断）
-    if (__HAL_TIM_GET_FLAG(&htim_pid, TIM_FLAG_UPDATE) != RESET)
-    {
-        // 2. 手动清除更新中断标志（HAL库也会清，但双重保障）
-        __HAL_TIM_CLEAR_FLAG(&htim_pid, TIM_FLAG_UPDATE);
-		//计算完成标志位
-        PID_Calc_Flag = 1;
-        // 3. HAL库中断公共处理（触发回调函数HAL_TIM_PeriodElapsedCallback）
-        HAL_TIM_IRQHandler(&htim_pid);
-    }
-}
+
 /************************ 定时器更新中断回调函数 ************************/
 /**
  * @brief  定时器更新中断回调函数（HAL库弱函数重写）
@@ -81,8 +72,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
         for(int i=0;i<MotorCount;i++)
         {
-            pid_calc(&C620[i].Speed_pid,&C620[i].Speed_pid.get,&C620[i].Speed_pid.set);
-            Set_voltagec1(&hcan1,(int16_t*)C620[i].Speed_pid.out);
+            pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+            int16_t vel=(int16_t)C620[i].Speed_pid.out;
+            Set_voltagec1(&hcan1,&vel);
         }
     }
 }

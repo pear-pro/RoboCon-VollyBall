@@ -92,14 +92,12 @@ int main(void)
   MX_GPIO_Init();
   MX_CAN1_Init();
   MX_I2C1_Init();
-  MX_TIM2_Init();
   MX_TIM3_Init();
-  MX_TIM4_Init();
-  MX_TIM5_Init();
   MX_USART1_UART_Init();
+  MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
 	
-	PID_TIM_Init(8399,9); // 1msÖÐ¶Ï
+	PID_TIM_Init(8399,9); // 1msï¿½Ð¶ï¿½
 
   /* USER CODE END 2 */
 

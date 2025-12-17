@@ -6,12 +6,13 @@
 #include <math.h>
 #include "pid.h"
 
-#include "stm32f4xx_hal.h"
-#include "motor_can.h"
 
-#include "car_ctrl.h"
 #include "main.h" 
 #include "motor_can.h"
 #include "pid_tim.h"
+#include "car_ctrl.h"
 
+extern motor_info_t C620[MotorCount];
+extern motor_info_t C6xx[MotorCount];
+extern uint16_t PID_Calc_Flag;
 #endif
