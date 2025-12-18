@@ -34,4 +34,5 @@ dj_a_wheel/pid_tim.o: ..\Core\Src\pid_tim.c ..\Core\Inc\includes.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim_ex.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_uart.h \
   ..\Core\Inc\motor_can.h ..\Core\Inc\can.h ..\Core\Inc\pid_tim.h \
-  ..\Core\Inc\car_ctrl.h ..\Core\Inc\can.h ..\Core\Inc\motor_can.h
+  ..\Core\Inc\car_ctrl.h ..\Core\Inc\bsp_rc.h ..\Core\Inc\Initialize.h \
+  ..\Core\Inc\can.h ..\Core\Inc\motor_can.h

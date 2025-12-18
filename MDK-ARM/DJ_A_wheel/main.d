@@ -37,4 +37,4 @@ dj_a_wheel/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Core\Inc\PID_TIM.h ..\Core\Inc\includes.h \
   E:\Keil5\ C51\ARM\ARMCLANG\Bin\..\include\math.h ..\Core\Inc\pid.h \
   ..\Core\Inc\motor_can.h ..\Core\Inc\can.h ..\Core\Inc\pid_tim.h \
-  ..\Core\Inc\car_ctrl.h
+  ..\Core\Inc\car_ctrl.h ..\Core\Inc\bsp_rc.h ..\Core\Inc\Initialize.h

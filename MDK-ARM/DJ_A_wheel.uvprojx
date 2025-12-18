@@ -458,6 +458,11 @@
               <FileType>5</FileType>
               <FilePath>..\Core\Inc\car_ctrl.h</FilePath>
             </File>
+            <File>
+              <FileName>Initialize.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\Initialize.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -524,14 +529,9 @@
               <FilePath>../Core/Src/usart.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_it.c</FileName>
+              <FileName>Initialize.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../Core/Src/stm32f4xx_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_hal_msp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Core/Src/stm32f4xx_hal_msp.c</FilePath>
+              <FilePath>..\Core\Src\Initialize.c</FilePath>
             </File>
           </Files>
         </Group>

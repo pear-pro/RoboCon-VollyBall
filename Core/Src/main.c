@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "PID_TIM.h"
 #include "includes.h"
+void All_Init();
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

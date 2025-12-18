@@ -77,7 +77,7 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
-  can1TxMsg.StdId = 0x1ff;
+  can1TxMsg.StdId = 0x200;
   can1TxMsg.IDE   = CAN_ID_STD;//标准ID
   can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can1TxMsg.DLC   = 8;//数据长度
@@ -93,7 +93,7 @@ void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
-  can2TxMsg.StdId = 0x1ff;
+  can2TxMsg.StdId = 0x200;
   can2TxMsg.IDE   = CAN_ID_STD;//标准ID
   can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can2TxMsg.DLC   = 8;//数据长度

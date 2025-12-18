@@ -11,8 +11,7 @@
 "dj_a_wheel\i2c.o"
 "dj_a_wheel\tim.o"
 "dj_a_wheel\usart.o"
-"dj_a_wheel\stm32f4xx_it.o"
-"dj_a_wheel\stm32f4xx_hal_msp.o"
+"dj_a_wheel\initialize.o"
 "dj_a_wheel\startup_stm32f427xx.o"
 "dj_a_wheel\stm32f4xx_hal_can.o"
 "dj_a_wheel\stm32f4xx_hal_rcc.o"
@@ -33,7 +32,7 @@
 "dj_a_wheel\stm32f4xx_hal_tim.o"
 "dj_a_wheel\stm32f4xx_hal_tim_ex.o"
 "dj_a_wheel\stm32f4xx_hal_uart.o"
-"dj_a_wheel\system_stm32f4xx.o"
+"dj_a_wheel\system_stm32f4xx_1.o"
 --strict --scatter "DJ_A_wheel\DJ_A_wheel.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
