@@ -151,3 +151,14 @@ void PID_Struct_Init(pid_t *pid, float p, float i, float d, int32_t max_out, int
 		pid->f_pid_init(pid, p, i, d, max_out, integral_limit);
 	}
 }
+int16_t PID_PROCESS_Double(pid_t *pid_Angle,pid_t *pid_speed,float target, float Angle_get, float speed_get)
+{
+	//position		
+
+	pid_Angle->pid_calc(pid_Angle, Angle_get, target);
+	//speed
+
+	pid_speed->pid_calc(pid_speed, speed_get, pid_Angle->out);
+	return pid_speed->out;
+}
+
