@@ -18,8 +18,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "Initialize.h"
 #include "can.h"
 #include "i2c.h"
+#include "stm32f4xx_hal_can.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -28,7 +30,6 @@
 /* USER CODE BEGIN Includes */
 #include "PID_TIM.h"
 #include "includes.h"
-void All_Init();
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,16 +98,24 @@ int main(void)
   MX_USART1_UART_Init();
   MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
-	All_Init();
-
+ 
+  All_Init();
+ HAL_CAN_Start(&hcan1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  MecanumWheel_Move(2,2,0);
+  MecanumWheel_Move(2,2,9);
   while (1)
   {
-      
+	  static int16_t voltages[4];
+      for(int i=0;i<MotorCount;i++)
+        {
+            pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+            voltages[i]=(int16_t)C620[i].Speed_pid.out;
+            
+        }
+        Set_voltagec1(&hcan1,voltages);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

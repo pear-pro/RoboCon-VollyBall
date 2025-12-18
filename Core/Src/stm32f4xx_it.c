@@ -238,15 +238,15 @@ void TIM3_IRQHandler(void)
   /* USER CODE BEGIN TIM3_IRQn 0 */
 	if (__HAL_TIM_GET_FLAG(&htim3, TIM_FLAG_UPDATE) != RESET)
 		{
-        // 2. ÊÖ¶¯Çå³ý¸üÐÂÖÐ¶Ï±êÖ¾£¨HAL¿âÒ²»áÇå£¬µ«Ë«ÖØ±£ÕÏ£©
+        // 2. ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾ï¿½ï¿½HALï¿½ï¿½Ò²ï¿½ï¿½ï¿½å£¬ï¿½ï¿½Ë«ï¿½Ø±ï¿½ï¿½Ï£ï¿½
         __HAL_TIM_CLEAR_FLAG(&htim3, TIM_FLAG_UPDATE);
-		//¼ÆËãÍê³É±êÖ¾Î»
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É±ï¿½Ö¾Î»
         PID_Calc_Flag = 1;
-        // 3. HAL¿âÖÐ¶Ï¹«¹²´¦Àí£¨´¥·¢»Øµ÷º¯ÊýHAL_TIM_PeriodElapsedCallback£©
+        // 3. HALï¿½ï¿½ï¿½Ð¶Ï¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½HAL_TIM_PeriodElapsedCallbackï¿½ï¿½
         HAL_TIM_IRQHandler(&htim3);
     }
   /* USER CODE END TIM3_IRQn 0 */
-  
+  HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
 
   /* USER CODE END TIM3_IRQn 1 */
