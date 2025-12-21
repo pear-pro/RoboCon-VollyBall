@@ -45,6 +45,7 @@ typedef struct pid
 						float p,
 						float i,
 						float d);
+	void (*pid_calc)(struct pid *pid_t, float get, float set);
 
 } pid_t;
 

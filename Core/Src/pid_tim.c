@@ -1,9 +1,9 @@
+
 #include "includes.h"
-
-extern uint16_t PID_Calc_Flag;
-extern motor_info_t C620_1,C620_2,C620_3,C620_4;
-
-
+#include "can.h"
+#include "motor_can.h"
+#include <stdint.h>
+uint16_t PID_Calc_Flag = 0;
 /************************ 需根据实际硬件修改的宏定义 ************************/
 // 定时器选择（示例：TIM3，根据实际使用的定时器修改）
 #define PID_TIMx               TIM3
@@ -57,19 +57,7 @@ void PID_TIM_Init(uint16_t arr, uint16_t psc)
 }
 
 
-void PID_TIM_IRQHandler(void)
-{
-    // 1. 手动校验更新中断标志（防止虚假中断）
-    if (__HAL_TIM_GET_FLAG(&htim_pid, TIM_FLAG_UPDATE) != RESET)
-    {
-        // 2. 手动清除更新中断标志（HAL库也会清，但双重保障）
-        __HAL_TIM_CLEAR_FLAG(&htim_pid, TIM_FLAG_UPDATE);
-		//计算完成标志位
-        PID_Calc_Flag = 1;
-        // 3. HAL库中断公共处理（触发回调函数HAL_TIM_PeriodElapsedCallback）
-        HAL_TIM_IRQHandler(&htim_pid);
-    }
-}
+
 /************************ 定时器更新中断回调函数 ************************/
 /**
  * @brief  定时器更新中断回调函数（HAL库弱函数重写）
@@ -79,14 +67,17 @@ void PID_TIM_IRQHandler(void)
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim->Instance == PID_TIMx)  // 确认是PID定时器的更新中断
+    static int16_t voltages[4];
+    if (htim->Instance == TIM3)  // 确认是PID定时器的更新中断
     {
-		pid_calc(&C620_1.Speed_pid,C620_1.Speed_pid.get,C620_1.Speed_pid.set);
-		pid_calc(&C620_2.Speed_pid,C620_2.Speed_pid.get,C620_2.Speed_pid.set);
-		pid_calc(&C620_3.Speed_pid,C620_3.Speed_pid.get,C620_3.Speed_pid.set);
-		pid_calc(&C620_4.Speed_pid,C620_4.Speed_pid.get,C620_4.Speed_pid.set);
-        
-    };
+        for(int i=0;i<MotorCount;i++)
+        {
+            pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+            voltages[i]=(int16_t)C620[i].Speed_pid.out;
+            
+        }
+        Set_voltagec1(&hcan1,voltages);
+    }
 }
 
 /************************ 错误处理函数（可选） ************************/

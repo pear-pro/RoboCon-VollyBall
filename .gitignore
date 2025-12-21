@@ -1,3 +1,26 @@
-build
-mx.scratch
-!.settings
+# 编译产物
+build/
+cmake-build-*/
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.d
+*.tmp
+*.bak
+
+# STM32CubeIDE 配置
+STM32CubeIDE/
+.apt_generated/
+.cproject
+.project
+.settings/
+.launch
+.metadata/
+
+# 其他工具生成文件
+.DS_Store  # Mac 系统垃圾文件
+Thumbs.db  # Windows 系统垃圾文件
+*.log

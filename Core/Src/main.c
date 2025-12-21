@@ -18,8 +18,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "Initialize.h"
 #include "can.h"
 #include "i2c.h"
+#include "stm32f4xx_hal_can.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -27,10 +29,12 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "PID_TIM.h"
+#include "includes.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+
 
 /* USER CODE END PTD */
 
@@ -68,7 +72,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-PID_TIM_Init(41,3);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -91,19 +95,42 @@ PID_TIM_Init(41,3);
   MX_GPIO_Init();
   MX_CAN1_Init();
   MX_I2C1_Init();
-  MX_TIM2_Init();
   MX_TIM3_Init();
-  MX_TIM4_Init();
-  MX_TIM5_Init();
   MX_USART1_UART_Init();
+  MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
+  
+  HAL_TIM_Base_Start_IT(&htim3);
+  HAL_Delay(10);
 	
+  All_Init();
+  
+
+
+
+if (HAL_CAN_Start(&hcan1) != HAL_OK)
+{
+  
+  HAL_CAN_Stop(&hcan1);  
+  HAL_Delay(10);        
+  HAL_CAN_Start(&hcan1); 
+}
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  MecanumWheel_Move(2,2,9);
   while (1)
   {
+	  static int16_t voltages[4]={0};
+      for(int i=0;i<MotorCount;i++)
+        {
+            pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+            voltages[i]=(int16_t)C620[i].Speed_pid.out;
+            
+        }
+        Set_voltagec1(&hcan1,voltages);
+		HAL_Delay(10);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

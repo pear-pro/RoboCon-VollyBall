@@ -11,6 +11,8 @@
 
 */
 #define NORMALIZE_ANGLE180(angle) angle = ((angle) > 180) ? ((angle) - 360) : (((angle) < -180) ? (angle) + 360 : angle)
+#define MotorCount 4
+
 //角度归一化
 typedef struct{
 	int16_t Voltage;//电压值
@@ -37,7 +39,9 @@ typedef struct{
 
 
 void can_filter_init(void);
-void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage1,int16_t vlotage2,int16_t vlotage3,int16_t vlotage4);
-
+void can1_filter_init(void);
+void can2_fliter_init(void);
+void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
+void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 #endif
 

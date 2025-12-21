@@ -1,9 +1,0 @@
-# 取消所有暂存
-git reset HEAD .
-
-# 创建/编辑.gitignore，添加MDK产物规则
-echo "MDK-ARM/" >> .gitignore
-echo "*.d" >> .gitignore
-echo "*.o" >> .gitignore
-echo "*.hex" >> .gitignore
-echo "*.map" >> .gitignore
