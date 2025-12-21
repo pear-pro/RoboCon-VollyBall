@@ -32,9 +32,9 @@ dj_a_wheel/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_tim_ex.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_uart.h \
-  ..\Core\Inc\can.h ..\Core\Inc\main.h ..\Core\Inc\i2c.h \
-  ..\Core\Inc\tim.h ..\Core\Inc\usart.h ..\Core\Inc\gpio.h \
-  ..\Core\Inc\PID_TIM.h ..\Core\Inc\includes.h \
+  ..\Core\Inc\Initialize.h ..\Core\Inc\can.h ..\Core\Inc\main.h \
+  ..\Core\Inc\i2c.h ..\Core\Inc\tim.h ..\Core\Inc\usart.h \
+  ..\Core\Inc\gpio.h ..\Core\Inc\PID_TIM.h ..\Core\Inc\includes.h \
   E:\Keil5\ C51\ARM\ARMCLANG\Bin\..\include\math.h ..\Core\Inc\pid.h \
   ..\Core\Inc\motor_can.h ..\Core\Inc\can.h ..\Core\Inc\pid_tim.h \
   ..\Core\Inc\car_ctrl.h ..\Core\Inc\bsp_rc.h ..\Core\Inc\Initialize.h

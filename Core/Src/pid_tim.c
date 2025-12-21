@@ -68,7 +68,7 @@ void PID_TIM_Init(uint16_t arr, uint16_t psc)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
-    if (htim->Instance == PID_TIMx)  // 确认是PID定时器的更新中断
+    if (htim->Instance == TIM3)  // 确认是PID定时器的更新中断
     {
         for(int i=0;i<MotorCount;i++)
         {

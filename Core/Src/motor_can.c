@@ -27,11 +27,10 @@ uint8_t can2_update = 1; //标志位，表示 CAN1 和 CAN2 是否有新的数据需要发送
 void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 	if(hcan == &hcan1){
 		can1_update = 1;
-	}
-//	else if(hcan == &hcan2){
+	} else if(hcan == &hcan2){
 		can2_update = 1;
 	}
-
+}
 
 /*滤波器配置及can初始化*/
 void can1_filter_init(void)
@@ -75,6 +74,7 @@ void can2_fliter_init(void)
 /*设置电机电压*/
 void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
+	uint32_t tx_mailbox;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
   can1TxMsg.StdId = 0x200;
@@ -86,7 +86,11 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
    can1TxData[2*i]=(voltage[i]>>8)&0xff;
    can1TxData[2*i+1]=(voltage[i])&0xff;
   }
-  HAL_CAN_AddTxMessage(&hcan1, &can1TxMsg, can1TxData,(uint32_t*)CAN_TX_MAILBOX0);//发送报文
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//发送报文
+	}
 }
 
 void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t voltage[])
@@ -102,7 +106,11 @@ void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t voltage[])
    can2TxData[2*i]=(voltage[i]>>8)&0xff;
    can2TxData[2*i+1]=(voltage[i])&0xff;
   }
-  //HAL_CAN_AddTxMessage(&hcan2, &can2TxMsg, can2TxData,(uint32_t*)CAN_TX_MAILBOX0);//发送报文
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+	}
 }
 
 /********************CAN接收*****************************/

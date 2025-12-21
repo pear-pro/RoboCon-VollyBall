@@ -35,6 +35,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -98,9 +99,22 @@ int main(void)
   MX_USART1_UART_Init();
   MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
- 
+  
+  HAL_TIM_Base_Start_IT(&htim3);
+  HAL_Delay(10);
+	
   All_Init();
- HAL_CAN_Start(&hcan1);
+  
+
+
+
+if (HAL_CAN_Start(&hcan1) != HAL_OK)
+{
+  
+  HAL_CAN_Stop(&hcan1);  
+  HAL_Delay(10);        
+  HAL_CAN_Start(&hcan1); 
+}
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,14 +122,15 @@ int main(void)
   MecanumWheel_Move(2,2,9);
   while (1)
   {
-	  static int16_t voltages[4];
-      for(int i=0;i<MotorCount;i++)
-        {
-            pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
-            voltages[i]=(int16_t)C620[i].Speed_pid.out;
-            
-        }
-        Set_voltagec1(&hcan1,voltages);
+//	  static int16_t voltages[4]={0};
+//      for(int i=0;i<MotorCount;i++)
+//        {
+//            pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+//            voltages[i]=(int16_t)C620[i].Speed_pid.out;
+//            
+//        }
+//        Set_voltagec1(&hcan1,voltages);
+//		HAL_Delay(10);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
