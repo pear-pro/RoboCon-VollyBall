@@ -1,6 +1,7 @@
-# 编译产物
-build/
-cmake-build-*/
+*.obj
+*.list
+*.axf
+*.iex
 *.o
 *.elf
 *.bin
@@ -10,17 +11,66 @@ cmake-build-*/
 *.d
 *.tmp
 *.bak
+*.dep
+*.dbg
+*.crf
+*.htm
+*.lnp
+*.sct
 
-# STM32CubeIDE 配置
-STM32CubeIDE/
-.apt_generated/
-.cproject
-.project
-.settings/
-.launch
-.metadata/
+*.uvgui.*
+*.uvguix.*
 
-# 其他工具生成文件
-.DS_Store  # Mac 系统垃圾文件
-Thumbs.db  # Windows 系统垃圾文件
+# CMake / Ninja
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+build.ninja
+
+# Build directories
+/build/
+/Debug/
+/Release/
+
+# Object, binary and map files
+*.o
+*.obj
+*.elf
+*.axf
+*.bin
+*.hex
+*.map
+*.lst
+
+# Dependency, temporary and logs
+*.d
+*.dep
+*.tmp
+*.bak
 *.log
+*.swo
+*.swp
+*~
+
+# Keil/MDK project generated files
+*.uvprojx
+*.uvoptx
+*.lnp
+*.htm
+*.dep
+*.sct
+
+# VSCode and editor settings
+.vscode/
+.vscode/*
+.idea/
+.vscode/settings.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other user/runtime artifacts
+*.user
+*.lnk
