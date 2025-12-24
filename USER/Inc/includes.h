@@ -6,7 +6,7 @@
 #include <math.h>
 #include "pid.h"
 
-
+#include "tim.h"
 #include "main.h" 
 #include "motor_can.h"
 #include "pid_tim.h"

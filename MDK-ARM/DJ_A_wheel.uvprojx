@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F427xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;..\USER;..\USER\Src;..\USER\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -381,32 +381,97 @@
       </TargetOption>
       <Groups>
         <Group>
+          <GroupName>USER/Src</GroupName>
+          <Files>
+            <File>
+              <FileName>bsp_rc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\bsp_rc.c</FilePath>
+            </File>
+            <File>
+              <FileName>car_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\car_ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Initialize.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\Initialize.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\motor_can.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\pid_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>remote_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\remote_control.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>USER/Inc</GroupName>
+          <Files>
+            <File>
+              <FileName>bsp_rc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\bsp_rc.h</FilePath>
+            </File>
+            <File>
+              <FileName>car_ctrl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\car_ctrl.h</FilePath>
+            </File>
+            <File>
+              <FileName>includes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\includes.h</FilePath>
+            </File>
+            <File>
+              <FileName>Initialize.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\Initialize.h</FilePath>
+            </File>
+            <File>
+              <FileName>motor_can.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\motor_can.h</FilePath>
+            </File>
+            <File>
+              <FileName>pid_tim.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\pid_tim.h</FilePath>
+            </File>
+            <File>
+              <FileName>remote_control.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\remote_control.h</FilePath>
+            </File>
+            <File>
+              <FileName>pid.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\pid.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>New Group</GroupName>
           <Files>
             <File>
               <FileName>main.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Core\Inc\main.h</FilePath>
-            </File>
-            <File>
-              <FileName>motor_can.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\motor_can.h</FilePath>
-            </File>
-            <File>
-              <FileName>pid.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\pid.h</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_rc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\bsp_rc.h</FilePath>
-            </File>
-            <File>
-              <FileName>remote_control.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\remote_control.h</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_conf.h</FileName>
@@ -443,21 +508,6 @@
               <FileType>5</FileType>
               <FilePath>..\Core\Inc\gpio.h</FilePath>
             </File>
-            <File>
-              <FileName>pid_tim.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\pid_tim.h</FilePath>
-            </File>
-            <File>
-              <FileName>includes.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\includes.h</FilePath>
-            </File>
-            <File>
-              <FileName>car_ctrl.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\car_ctrl.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -467,31 +517,6 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>
-            </File>
-            <File>
-              <FileName>motor_can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\motor_can.c</FilePath>
-            </File>
-            <File>
-              <FileName>pid.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\pid.c</FilePath>
-            </File>
-            <File>
-              <FileName>pid_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\pid_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_rc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\bsp_rc.c</FilePath>
-            </File>
-            <File>
-              <FileName>remote_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\remote_control.c</FilePath>
             </File>
             <File>
               <FileName>gpio.c</FileName>
