@@ -7,8 +7,8 @@ void All_Init(){
 
     for(int i=0;i<MotorCount;i++){
         PID_Struct_Init(&C620[i].Speed_pid, 
-            60.0f, 
-            2.0f,
+            2.0f, 
+            1.0f,
             0.0f, 
             16000, 
             16000,

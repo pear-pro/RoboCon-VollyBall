@@ -38,6 +38,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
         Set_voltagec1(&hcan1,voltages);
     }
+	if(hcan1.ErrorCode!=0)
+	{
+		HAL_CAN_DeInit(&hcan1);
+		HAL_CAN_Init(&hcan1);
+		HAL_CAN_Start(&hcan1);
+	
+	
+	}
 }
 
 /************************ 错误处理函数（可选） ************************/

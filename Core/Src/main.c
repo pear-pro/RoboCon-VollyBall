@@ -91,33 +91,37 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  HAL_Delay(200);
   MX_CAN1_Init();
+  HAL_Delay(100);
   MX_I2C1_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
   
-  HAL_TIM_Base_Start_IT(&htim3);
+  
   HAL_Delay(10);
 	
   All_Init();
   
 
 
-
-if (HAL_CAN_Start(&hcan1) != HAL_OK)
-{
-  
-  HAL_CAN_Stop(&hcan1);  
-  HAL_Delay(10);        
-  HAL_CAN_Start(&hcan1); 
+	uint8_t can_retry = 0;
+	while (can_retry < 5) { // 重试5次
+    if (HAL_CAN_Start(&hcan1) == HAL_OK) {
+        break;
+    }
+    HAL_Delay(20); // 每次重试间隔20ms
+    can_retry++;
 }
+	
+	HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  MecanumWheel_Move(1,1,1);//整车控制函数
+  MecanumWheel_Move(0.1,100,100);//整车控制函数
   while (1)
   {
 //	  static int16_t voltages[4]={0};
