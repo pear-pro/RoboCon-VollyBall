@@ -59,7 +59,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	
 	
 	}
->>>>>>> fd73ba2e5142705e533f5b293f7a8de7953a8b3d
 }
 
 /************************ 错误处理函数（可选） ************************/

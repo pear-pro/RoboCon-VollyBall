@@ -1,4 +1,3 @@
-
 #ifndef __MOTOR_CAN_H
 #define __MOTOR_CAN_H
 
@@ -49,7 +48,6 @@ void can1_filter_init(void);
 void can2_fliter_init(void);
 
 
->>>>>>> fd73ba2e5142705e533f5b293f7a8de7953a8b3d
 void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 #endif

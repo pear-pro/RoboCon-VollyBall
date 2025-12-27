@@ -50,9 +50,9 @@ WheelSpeed_t MecanumWheel_Move(float vx, float vy, float wz)
     wheel_speed.rr = (int16_t)(omega_rr * scale);
     wheel_speed.rl = (int16_t)(omega_rl * scale);
 	
-	C620[0].Speed_pid.set = wheel_speed.fl;
-	C620[1].Speed_pid.set = wheel_speed.fr;
-	C620[2].Speed_pid.set = wheel_speed.rr;
+	C620[0].Speed_pid.set = -wheel_speed.rr;
+	C620[1].Speed_pid.set = -wheel_speed.fr;
+	C620[2].Speed_pid.set = wheel_speed.fl;
 	C620[3].Speed_pid.set = wheel_speed.rl;
 	
 
