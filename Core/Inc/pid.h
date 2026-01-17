@@ -2,6 +2,7 @@
 #define _pid_H
 #include "main.h"
 
+extern pid_t *pid_Angle;
 
 typedef enum
 {

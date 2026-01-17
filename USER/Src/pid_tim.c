@@ -3,6 +3,7 @@
 #include "can.h"
 #include "motor_can.h"
 #include <stdint.h>
+#include "pid.h"
 uint16_t PID_Calc_Flag = 0;
 /************************ 需根据实际硬件修改的宏定义 ************************/
 // 定时器选择（示例：TIM3，根据实际使用的定时器修改）
@@ -63,7 +64,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-        
+        HAL_CAN_RxFifo0MsgPendingCallback(&hcan2);
+		
+		
+		PID_PROCESS_Double(pid_Angle,pid_t *pid_speed,float target, damiao[i].Rxmsg.Angle, damiao[i].Rxmsg.Speed)
+		
+		
+		
     }
 }
 

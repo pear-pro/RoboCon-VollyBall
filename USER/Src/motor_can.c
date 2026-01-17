@@ -138,7 +138,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		}
 	}
   }
-  //  if(hcan==&hcan2)
+    if(hcan==&hcan2)
 		{
 	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
 		 for(int i=0;i<MotorCount;i++)
