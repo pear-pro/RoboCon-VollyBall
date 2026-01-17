@@ -223,7 +223,6 @@ int16_t PID_PROCESS_Double(pid_t *pid_Angle, pid_t *pid_speed,
     float target_encoder = degree_to_encoder(target_degree);
 
     // 步骤3：角度环PID计算（输入多圈累计角度）
-    // 修改：原代码pid_Angle->pid_calc调用错误，改为直接调用pid_calc函数
     pid_calc(pid_Angle, total_angle_encoder, target_encoder);
 
     // 步骤4：速度环PID计算（角度环输出作为速度环目标）
