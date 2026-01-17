@@ -33,7 +33,7 @@ typedef struct pid
 
 	int32_t maxout;
 	int32_t integral_limit;
-	float output_deadband; // ����
+	float output_deadband; // ����
 
 	void (*f_pid_init)(struct pid *pid_t,
 					   float p,
@@ -63,6 +63,11 @@ void PID_Struct_Init(pid_t *pid,
 					 int32_t max_out,
 					 int32_t integral_limit,
 					 INIT_STATUS init_status);
-int16_t PID_PROCESS_Double(pid_t *pid_Angle,pid_t *pid_speed,float target, float Angle_get, float speed_get);
+
+int16_t PID_PROCESS_Double(pid_t *pid_Angle, pid_t *pid_speed, 
+                           EncoderCircleTypeDef *encoder_data, // 新增：编码器多圈数据
+                           float target_degree,               // 修改：目标角度（度，多圈）
+                           int16_t current_encoder,           // 修改：输入原始编码器值
+                           float speed_get);
 
 #endif

@@ -3,7 +3,9 @@
 #include "can.h"
 #include "motor_can.h"
 #include <stdint.h>
+#include "pid.h"
 uint16_t PID_Calc_Flag = 0;
+EncoderCircleTypeDef dm2_encoder = {0}; 
 /************************ 需根据实际硬件修改的宏定义 ************************/
 // 定时器选择（示例：TIM3，根据实际使用的定时器修改）
 #define PID_TIMx               TIM3
@@ -25,6 +27,27 @@ TIM_HandleTypeDef htim_pid;  // PID定时器句柄
  * @param  htim: 定时器句柄
  * @retval 无
  */
+
+  pid_t pid_Angle=
+ {
+	 
+	 .kp=6,
+	 .ki=6,
+	 .kd=6
+	 
+	 
+ };
+ 
+ pid_t  pid_speed=
+ {
+	 
+	 .kp=6,
+	 .ki=6,
+	 .kd=6
+	 
+	 
+ };
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
@@ -63,7 +86,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-        
+	    int16_t current_encoder = (int16_t)(damiao[2].Rxmsg.Angle * 8192.0f / 360.0f);
+        int16_t dm2_control_current= PID_PROCESS_Double(&pid_Angle, &pid_speed,&dm2_encoder ,90, current_encoder, damiao[2].Rxmsg.Speed);
+        int16_t dm_voltage[4] = {0, dm2_control_current, 0, 0}; // ??1??2???
+        Set_dm(&hcan2, dm_voltage);
+		
     }
 }
 

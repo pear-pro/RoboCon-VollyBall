@@ -8,12 +8,6 @@
 #define LAST_ERR    1
 #define LLAST_ERR   2
 
-typedef struct {
-    int16_t last_encoder;   // 上一次的原始编码器值（0-8191）
-    float total_angle;      // 多圈累计角度（编码器值，核心：圈数*8192 + 实时值）
-    int32_t circle_cnt;     // 圈数计数（正向+，反向-，方便调试）
-} EncoderCircleTypeDef;
-
 /**
  * @brief 将浮点数限制在指定的绝对值范围内
  *
