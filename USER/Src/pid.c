@@ -3,6 +3,17 @@
 #define DELTA_PID 2	   // 增量式
 #define PID_MODE 1
 
+#define ENCODER_PER_CIRCLE 8192    // RM3508编码器每圈脉冲数（核心，适配电机）
+#define NOW_ERR     0               // 补充原代码缺失的误差索引宏
+#define LAST_ERR    1
+#define LLAST_ERR   2
+
+typedef struct {
+    int16_t last_encoder;   // 上一次的原始编码器值（0-8191）
+    float total_angle;      // 多圈累计角度（编码器值，核心：圈数*8192 + 实时值）
+    int32_t circle_cnt;     // 圈数计数（正向+，反向-，方便调试）
+} EncoderCircleTypeDef;
+
 /**
  * @brief 将浮点数限制在指定的绝对值范围内
  *
@@ -65,6 +76,52 @@ void pid_reset(pid_t *pid, float p, float i, float d)
 	pid->iout = 0;
 	pid->dout = 0;
 	pid->out = 0;
+}
+
+/**
+ * @brief 处理编码器过零（溢出），计算多圈累计角度
+ * @param encoder_data 编码器多圈数据结构体指针
+ * @param current_encoder 当前原始编码器值（0-8191）
+ * @return 多圈累计角度（编码器值）
+ */
+float encoder_circle_calc(EncoderCircleTypeDef *encoder_data, int16_t current_encoder)
+{
+    // 1. 获取上一次编码器值
+    int16_t last_encoder = encoder_data->last_encoder;
+    // 2. 计算原始角度差（可能溢出）
+    int32_t delta = (int32_t)current_encoder - (int32_t)last_encoder;
+
+    // 3. 过零（溢出）修正：以半圈（4096）为阈值
+    if (delta > ENCODER_PER_CIRCLE / 2) {
+        delta -= ENCODER_PER_CIRCLE;
+        encoder_data->circle_cnt--; // 反向转1圈
+    } else if (delta < -ENCODER_PER_CIRCLE / 2) {
+        delta += ENCODER_PER_CIRCLE;
+        encoder_data->circle_cnt++; // 正向转1圈
+    }
+
+    // 4. 更新累计总角度（编码器值）
+    encoder_data->total_angle += delta;
+    // 5. 保存本次编码器值给下次用
+    encoder_data->last_encoder = current_encoder;
+
+    return encoder_data->total_angle;
+}
+
+/**
+ * @brief 角度值（度）转编码器值（适配RM3508：1圈=8192编码器值=360度）
+ */
+float degree_to_encoder(float degree)
+{
+    return (degree / 360.0f) * ENCODER_PER_CIRCLE;
+}
+
+/**
+ * @brief 编码器值转角度值（方便调试查看多圈角度）
+ */
+float encoder_to_degree(float encoder)
+{
+    return (encoder / ENCODER_PER_CIRCLE) * 360.0f;
 }
 
 /**
@@ -153,14 +210,25 @@ void PID_Struct_Init(pid_t *pid, float p, float i, float d, int32_t max_out, int
 		pid->f_pid_init(pid, p, i, d, max_out, integral_limit);
 	}
 }
-int16_t PID_PROCESS_Double(pid_t *pid_Angle,pid_t *pid_speed,float target, float Angle_get, float speed_get)
+int16_t PID_PROCESS_Double(pid_t *pid_Angle, pid_t *pid_speed, 
+                           EncoderCircleTypeDef *encoder_data, // 新增：编码器多圈数据
+                           float target_degree,               // 修改：目标角度（度，多圈）
+                           int16_t current_encoder,           // 修改：输入原始编码器值
+                           float speed_get)
 {
-	//position		
+    // 步骤1：处理编码器过零，计算多圈累计角度（编码器值）
+    float total_angle_encoder = encoder_circle_calc(encoder_data, current_encoder);
 
-	pid_Angle->pid_calc(pid_Angle, Angle_get, target);
-	//speed
+    // 步骤2：将目标角度（度）转为编码器值（适配多圈）
+    float target_encoder = degree_to_encoder(target_degree);
 
-	pid_speed->pid_calc(pid_speed, speed_get, pid_Angle->out);
-	return pid_speed->out;
+    // 步骤3：角度环PID计算（输入多圈累计角度）
+    // 修改：原代码pid_Angle->pid_calc调用错误，改为直接调用pid_calc函数
+    pid_calc(pid_Angle, total_angle_encoder, target_encoder);
+
+    // 步骤4：速度环PID计算（角度环输出作为速度环目标）
+    pid_calc(pid_speed, speed_get, pid_Angle->out);
+
+    return (int16_t)pid_speed->out;
 }
 
