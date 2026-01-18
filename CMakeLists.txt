@@ -47,6 +47,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # USER sources
     ${CMAKE_SOURCE_DIR}/USER/Src/bsp_rc.c
     ${CMAKE_SOURCE_DIR}/USER/Src/car_ctrl.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/debug_uart.c
     ${CMAKE_SOURCE_DIR}/USER/Src/Initialize.c
     ${CMAKE_SOURCE_DIR}/USER/Src/motor_can.c
     ${CMAKE_SOURCE_DIR}/USER/Src/pid.c
