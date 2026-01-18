@@ -159,7 +159,7 @@
           <Type>0</Type>
           <LineNumber>3899</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134232626</Address>
+          <Address>134232630</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -175,7 +175,7 @@
           <Type>0</Type>
           <LineNumber>3896</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134232610</Address>
+          <Address>134232614</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -189,37 +189,21 @@
         <Bp>
           <Number>2</Number>
           <Type>0</Type>
-          <LineNumber>97</LineNumber>
+          <LineNumber>31</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134239774</Address>
+          <Address>134232966</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>../Core/Src/main.c</Filename>
+          <Filename>..\USER\Src\pid_tim.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\DJ_A_wheel\../Core/Src/main.c\97</Expression>
+          <Expression>\\DJ_A_wheel\../USER/Src/pid_tim.c\31</Expression>
         </Bp>
         <Bp>
           <Number>3</Number>
-          <Type>0</Type>
-          <LineNumber>150</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134223094</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\USER\Src\motor_can.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\DJ_A_wheel\../USER/Src/motor_can.c\150</Expression>
-        </Bp>
-        <Bp>
-          <Number>4</Number>
           <Type>0</Type>
           <LineNumber>29</LineNumber>
           <EnabledFlag>1</EnabledFlag>
@@ -235,9 +219,25 @@
           <Expression></Expression>
         </Bp>
         <Bp>
+          <Number>4</Number>
+          <Type>0</Type>
+          <LineNumber>79</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32f427xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
           <Number>5</Number>
           <Type>0</Type>
-          <LineNumber>31</LineNumber>
+          <LineNumber>148</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -317,7 +317,7 @@
         <Bp>
           <Number>10</Number>
           <Type>0</Type>
-          <LineNumber>79</LineNumber>
+          <LineNumber>97</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -333,7 +333,7 @@
         <Bp>
           <Number>11</Number>
           <Type>0</Type>
-          <LineNumber>148</LineNumber>
+          <LineNumber>150</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>

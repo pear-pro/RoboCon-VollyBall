@@ -67,10 +67,10 @@ void can2_fliter_init(void)
 	can2_filter_structure.FilterMaskIdLow = 0x0000;
 	can2_filter_structure.FilterBank = 0;
 	can2_filter_structure.FilterFIFOAssignment = CAN_RX_FIFO0;//使用FIFO0
-	//HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
+	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
 	
-	//HAL_CAN_Start(&hcan2);
-	//HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
+	HAL_CAN_Start(&hcan2);
+	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
     isRcan2Started=1;
 }
 /*设置电机电压*/
@@ -122,22 +122,22 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-//  if(hcan==&hcan1)
-//  {
-//	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-//	for(int i=0;i<MotorCount;i++)
-//	{
-//		if(can1RxMsg.StdId==0x201+i){
-//			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-//			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-//			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-//			C620[i].Rxmsg.Temp=can1RxData[6];
-//			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
-//			flag=1;
-//		}
-//	}
-//  }
-  		if(hcan==&hcan1)
+  if(hcan==&hcan1)
+  {
+	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+	for(int i=0;i<MotorCount;i++)
+	{
+		if(can1RxMsg.StdId==0x201+i){
+			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
+			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
+			C620[i].Rxmsg.Temp=can1RxData[6];
+			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+			flag=1;
+		}
+	}
+  }
+  		if(hcan==&hcan2)
 		{
 	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
 		 for(int i=0;i<MotorCount;i++)

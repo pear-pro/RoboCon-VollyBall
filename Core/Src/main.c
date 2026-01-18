@@ -115,13 +115,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  damiao[0].Speed_pid.set = 20000;
-  damiao[1].Speed_pid.set = 20000;
-  damiao[2].Speed_pid.set = 20000;
-  damiao[3].Speed_pid.set = 20000;
+  damiao[0].Speed_pid.set = 0.2;
+  damiao[1].Speed_pid.set = 0.2;
+  damiao[2].Speed_pid.set = 0.5;
+  damiao[3].Speed_pid.set = 0.5;
   while (1)
   {
-
+	//Set_dm(&hcan1,20000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -172,10 +172,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
-  /** Enables the Clock Security System
-  */
-  HAL_RCC_EnableCSS();
 }
 
 /* USER CODE BEGIN 4 */
