@@ -65,10 +65,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
         HAL_CAN_RxFifo0MsgPendingCallback(&hcan2);
-		
-		
-		PID_PROCESS_Double(pid_Angle,pid_t *pid_speed,float target, damiao[i].Rxmsg.Angle, damiao[i].Rxmsg.Speed)
-		
+		for(int i=0;i<MotorCount;i++)
+        {
+            pid_calc(&damiao[i].Angel_pid,damiao[i].Angel_pid.get,damiao[i].Angel_pid.set);
+            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Angel_pid.out);
+			
+            voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
+            
+        }
+        Set_dm(&hcan2,voltages);
 		
 		
     }

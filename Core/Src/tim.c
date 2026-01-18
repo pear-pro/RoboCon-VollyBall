@@ -176,7 +176,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
     /* TIM14 interrupt Deinit */
     HAL_NVIC_DisableIRQ(TIM8_TRG_COM_TIM14_IRQn);
   /* USER CODE BEGIN TIM14_MspDeInit 1 */
-
+  
   /* USER CODE END TIM14_MspDeInit 1 */
   }
 }
