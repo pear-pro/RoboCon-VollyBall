@@ -1,0 +1,64 @@
+*.obj
+*.list
+*.axf
+*.iex
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.d
+*.tmp
+*.bak
+*.dep
+*.dbg
+*.crf
+*.htm
+*.lnp
+*.sct
+
+*.uvgui.*
+*.uvguix.*
+
+
+# Object, binary and map files
+*.o
+*.obj
+*.elf
+*.axf
+*.bin
+*.hex
+*.map
+*.lst
+
+# Dependency, temporary and logs
+*.d
+*.dep
+*.tmp
+*.bak
+*.log
+*.swo
+*.swp
+*~
+
+# Keil/MDK project generated files
+*.lnp
+*.htm
+*.dep
+*.sct
+
+# VSCode and editor settings
+.vscode/
+.vscode/*
+.idea/
+.vscode/settings.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other user/runtime artifacts
+*.user
+*.lnk
+
