@@ -7,13 +7,13 @@
 uint16_t PID_Calc_Flag = 0;
 /************************ 需根据实际硬件修改的宏定义 ************************/
 // 定时器选择（示例：TIM3，根据实际使用的定时器修改）
-#define PID_TIMx               TIM3
+#define PID_TIMx               TIM14
 // 定时器时钟使能宏（示例：TIM3属于APB1总线）
-#define PID_TIM_RCC_CLK_ENABLE()  __HAL_RCC_TIM3_CLK_ENABLE()
+#define PID_TIM_RCC_CLK_ENABLE()  __HAL_RCC_TIM14_CLK_ENABLE()
 // 定时器中断号（示例：TIM3全局中断）
-#define PID_TIM_IRQn           TIM3_IRQn
+#define PID_TIM_IRQn           TIM14_IRQn
 // 定时器中断服务函数名（需和启动文件中的中断向量表一致）
-#define PID_TIM_IRQHandler     TIM3_IRQHandler
+#define PID_TIM_IRQHandler     TIM14_IRQHandler
 
 /************************ 全局变量（HAL库定时器句柄） ************************/
 TIM_HandleTypeDef htim_pid;  // PID定时器句柄
@@ -42,8 +42,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
             
         }
-        Set_dm(&hcan1,voltages);
-//        Set_voltagec1(&hcan1,voltages);
+        Set_dm(&hcan2,voltages);
+        Set_voltagec1(&hcan1,voltages);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 	{
@@ -68,10 +68,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		for(int i=0;i<MotorCount;i++)
         {
 			
-            pid_calc_angle(&damiao[i].Angel_pid,damiao[i].Rxmsg.Angle,90);
-            pid_calc(&damiao[i].Speed_pid,damiao[i].Rxmsg.Speed,damiao[i].Angel_pid.out);
+            float in_out = pid_calc_angle(&damiao[i].Angel_pid,damiao[i].Rxmsg.Angle,90);
+//            pid_calc(&damiao[i].Speed_pid,damiao[i].Rxmsg.Speed,in_out);
 			
-            voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
+            voltages[i+2]=(int16_t) pid_calc(&damiao[i].Speed_pid,damiao[i].Rxmsg.Speed,in_out);
             
         }
         Set_dm(&hcan2,voltages);

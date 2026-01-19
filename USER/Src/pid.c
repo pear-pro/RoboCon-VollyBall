@@ -83,25 +83,31 @@ float pid_calc(pid_t *pid, float get, float set)
 	pid->set = set;
 	// 计算当前误差值
 	pid->error[NOW_ERR] = set - get;
-
-#if (PID_MODE == POSITION_PID)
-	// 位置式PID计算
-	pid->pout = pid->kp * pid->error[NOW_ERR];							// 比例项计算
-	pid->iout += pid->ki * pid->error[NOW_ERR];							// 积分项累加计算
-	pid->dout = pid->kd * (pid->error[NOW_ERR] - pid->error[LAST_ERR]); // 微分项计算
-
-	abs_limit(&(pid->iout), pid->integral_limit); // 积分项限幅
-	pid->out = pid->pout + pid->iout + pid->dout; // PID输出合成
-	abs_limit(&(pid->out), pid->maxout);		  // 输出值限幅
-#elif (PID_MODE == DELTA_PID)
-	// 增量式PID计算
 	pid->pout = pid->kp * (pid->error[NOW_ERR] - pid->error[LAST_ERR]);							// 比例项计算
 	pid->iout = pid->ki * pid->error[NOW_ERR];													// 积分项计算
 	pid->dout = pid->kd * (pid->error[NOW_ERR] * pid->error[LAST_ERR] + pid->error[LLAST_ERR]); // 微分项计算
 
 	pid->out += pid->pout + pid->iout + pid->dout; // 增量式输出累加
 	abs_limit(&(pid->out), pid->maxout);		   // 输出值限幅
-#endif
+
+//#if (PID_MODE == POSITION_PID)
+//	// 位置式PID计算
+//	pid->pout = pid->kp * pid->error[NOW_ERR];							// 比例项计算
+//	pid->iout += pid->ki * pid->error[NOW_ERR];							// 积分项累加计算
+//	pid->dout = pid->kd * (pid->error[NOW_ERR] - pid->error[LAST_ERR]); // 微分项计算
+
+//	abs_limit(&(pid->iout), pid->integral_limit); // 积分项限幅
+//	pid->out = pid->pout + pid->iout + pid->dout; // PID输出合成
+//	abs_limit(&(pid->out), pid->maxout);		  // 输出值限幅
+//#elif (PID_MODE == DELTA_PID)
+//	// 增量式PID计算
+//	pid->pout = pid->kp * (pid->error[NOW_ERR] - pid->error[LAST_ERR]);							// 比例项计算
+//	pid->iout = pid->ki * pid->error[NOW_ERR];													// 积分项计算
+//	pid->dout = pid->kd * (pid->error[NOW_ERR] * pid->error[LAST_ERR] + pid->error[LLAST_ERR]); // 微分项计算
+
+//	pid->out += pid->pout + pid->iout + pid->dout; // 增量式输出累加
+//	abs_limit(&(pid->out), pid->maxout);		   // 输出值限幅
+//#endif
 
 	// 更新历史误差值，用于下次计算
 	pid->error[LLAST_ERR] = pid->error[LAST_ERR];
@@ -130,9 +136,6 @@ float pid_calc_angle(pid_t *pid, float get, float set)
 	}  
     pid->get=pid->set-diff;
 	pid->error[NOW_ERR] = pid->set - pid->get;
-
-#if (PID_MODE == POSITION_PID)
-	// 位置式PID计算
 	pid->pout = pid->kp * pid->error[NOW_ERR];							// 比例项计算
 	pid->iout += pid->ki * pid->error[NOW_ERR];							// 积分项累加计算
 	pid->dout = pid->kd * (pid->error[NOW_ERR] - pid->error[LAST_ERR]); // 微分项计算
@@ -140,15 +143,32 @@ float pid_calc_angle(pid_t *pid, float get, float set)
 	abs_limit(&(pid->iout), pid->integral_limit); // 积分项限幅
 	pid->out = pid->pout + pid->iout + pid->dout; // PID输出合成
 	abs_limit(&(pid->out), pid->maxout);		  // 输出值限幅
-#elif (PID_MODE == DELTA_PID)
-	// 增量式PID计算
-	pid->pout = pid->kp * (pid->error[NOW_ERR] - pid->error[LAST_ERR]);							// 比例项计算
-	pid->iout = pid->ki * pid->error[NOW_ERR];													// 积分项计算
-	pid->dout = pid->kd * (pid->error[NOW_ERR] * pid->error[LAST_ERR] + pid->error[LLAST_ERR]); // 微分项计算
+	
+	
+	
+	
+	
+	
+	
 
-	pid->out += pid->pout + pid->iout + pid->dout; // 增量式输出累加
-	abs_limit(&(pid->out), pid->maxout);		   // 输出值限幅
-#endif
+//#if (PID_MODE == POSITION_PID)
+//	// 位置式PID计算
+//	pid->pout = pid->kp * pid->error[NOW_ERR];							// 比例项计算
+//	pid->iout += pid->ki * pid->error[NOW_ERR];							// 积分项累加计算
+//	pid->dout = pid->kd * (pid->error[NOW_ERR] - pid->error[LAST_ERR]); // 微分项计算
+
+//	abs_limit(&(pid->iout), pid->integral_limit); // 积分项限幅
+//	pid->out = pid->pout + pid->iout + pid->dout; // PID输出合成
+//	abs_limit(&(pid->out), pid->maxout);		  // 输出值限幅
+//#elif (PID_MODE == DELTA_PID)
+//	// 增量式PID计算
+//	pid->pout = pid->kp * (pid->error[NOW_ERR] - pid->error[LAST_ERR]);							// 比例项计算
+//	pid->iout = pid->ki * pid->error[NOW_ERR];													// 积分项计算
+//	pid->dout = pid->kd * (pid->error[NOW_ERR] * pid->error[LAST_ERR] + pid->error[LLAST_ERR]); // 微分项计算
+
+//	pid->out += pid->pout + pid->iout + pid->dout; // 增量式输出累加
+//	abs_limit(&(pid->out), pid->maxout);		   // 输出值限幅
+//#endif
 
 	// 更新历史误差值，用于下次计算
 	pid->error[LLAST_ERR] = pid->error[LAST_ERR];
