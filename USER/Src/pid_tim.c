@@ -38,12 +38,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
         for(int i=0;i<MotorCount;i++)
         {
-            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Speed_pid.set);
+            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,900);
             voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
             
         }
-        Set_dm(&hcan2,voltages);
-        Set_voltagec1(&hcan1,voltages);
+        Set_dm(&hcan1,voltages);
+//        Set_voltagec1(&hcan1,voltages);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 	{
@@ -67,8 +67,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         HAL_CAN_RxFifo0MsgPendingCallback(&hcan2);
 		for(int i=0;i<MotorCount;i++)
         {
-            pid_calc(&damiao[i].Angel_pid,damiao[i].Angel_pid.get,damiao[i].Angel_pid.set);
-            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Angel_pid.out);
+			
+            pid_calc_angle(&damiao[i].Angel_pid,damiao[i].Rxmsg.Angle,90);
+            pid_calc(&damiao[i].Speed_pid,damiao[i].Rxmsg.Speed,damiao[i].Angel_pid.out);
 			
             voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
             

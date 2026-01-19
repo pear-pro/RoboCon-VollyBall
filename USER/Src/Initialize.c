@@ -30,8 +30,8 @@ void All_Init(){
             16000,
             INIT);
 		PID_Struct_Init(&damiao[i].Angel_pid,
-            2.0f,
-            1.0f,
+            6.0f,
+            0.3,
             0.0f,
             300,
             300,
