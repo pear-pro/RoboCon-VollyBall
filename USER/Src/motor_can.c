@@ -95,6 +95,8 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
+/**************达妙电机******** */
+
 void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
   CAN_TxHeaderTypeDef can2TxMsg;
@@ -108,6 +110,25 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
    can2TxData[2*i]=(voltage[i]>>8)&0xff;
    can2TxData[2*i+1]=(voltage[i])&0xff;
   }
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+	}
+}
+
+void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
+{
+  CAN_TxHeaderTypeDef can2TxMsg;
+  uint8_t             can2TxData[8] = {0};
+  can2TxMsg.StdId = 0x7FF;
+  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can2TxMsg.DLC   = 4;//数据长度
+  can2TxData[0]=(CAN_ID>>8)&0xff;
+  can2TxData[1]=(CAN_ID)&0xff;
+  can2TxData[2]=0x55;
+  can2TxData[3]=0x50;
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
@@ -156,23 +177,23 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	
 }
 
-void Angle_Ctrl(motor_info_t *ID,uint16_t Target)
-{
-	if(ID->FirstEntre==1)
-	{
-		ID->relative=0;
-		ID->lastRead=ID->Rxmsg.Angle;
-		ID->FirstEntre=0;
-	}
-	else
-	{
-		ID->Target=Target;
-		int16_t tmp=(int16_t)ID->Rxmsg.Angle- (int16_t)ID->lastRead;
-		ID->relative+=(tmp<180?(tmp>-180?tmp:tmp+360):tmp-360);
-		//if(ID->Rxmsg.Angle*Target<0&&fabs(ID->Rxmsg.Angle-Target)>180);
-		ID->Current=PID_PROCESS_Double(&ID->Angel_pid,&ID->Speed_pid,Target,ID->Rxmsg.Angle,ID->Rxmsg.Speed);
-		ID->lastRead=ID->Rxmsg.Angle;
-	}
+//void Angle_Ctrl(motor_info_t *ID,uint16_t Target)
+//{
+//	if(ID->FirstEntre==1)
+//	{
+//		ID->relative=0;
+//		ID->lastRead=ID->Rxmsg.Angle;
+//		ID->FirstEntre=0;
+//	}
+//	else
+//	{
+//		ID->Target=Target;
+//		int16_t tmp=(int16_t)ID->Rxmsg.Angle- (int16_t)ID->lastRead;
+//		ID->relative+=(tmp<180?(tmp>-180?tmp:tmp+360):tmp-360);
+//		//if(ID->Rxmsg.Angle*Target<0&&fabs(ID->Rxmsg.Angle-Target)>180);
+//		ID->Current=PID_PROCESS_Double(&ID->Angel_pid,&ID->Speed_pid,Target,ID->Rxmsg.Angle,ID->Rxmsg.Speed);
+//		ID->lastRead=ID->Rxmsg.Angle;
+//	}
 
-}
+//}
 
