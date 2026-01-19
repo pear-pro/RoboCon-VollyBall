@@ -43,3 +43,11 @@ int abs_int(int num) {
 float abs_float(float value) {
     return (value < 0.0f) ? -value : value;
 }
+
+// 应用死区（过滤小范围值）
+float apply_deadzone(float value, float deadzone) {
+    if (abs_float(value) < deadzone) {
+        return 0.0f;
+    }
+    return value;
+}

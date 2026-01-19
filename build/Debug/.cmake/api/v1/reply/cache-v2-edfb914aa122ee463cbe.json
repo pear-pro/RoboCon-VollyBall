@@ -15,7 +15,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-addr2line.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-addr2line.exe"
 		},
 		{
 			"name" : "CMAKE_AR",
@@ -31,7 +31,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-ar.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-ar.exe"
 		},
 		{
 			"name" : "CMAKE_ASM_COMPILER_AR",
@@ -47,7 +47,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc-ar.exe"
 		},
 		{
 			"name" : "CMAKE_ASM_COMPILER_RANLIB",
@@ -63,7 +63,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_ASM_COMPILER_WORKS",
@@ -179,7 +179,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "e:/co_robocon/RoboCon-VollyBall/build/Debug"
+			"value" : "c:/Users/LarkS/Desktop/volleyball2/RoboCon-VollyBall/build/Debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -191,7 +191,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "4"
+			"value" : "3"
 		},
 		{
 			"name" : "CMAKE_CACHE_MINOR_VERSION",
@@ -203,7 +203,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "0"
+			"value" : "28"
 		},
 		{
 			"name" : "CMAKE_CACHE_PATCH_VERSION",
@@ -223,11 +223,11 @@
 			[
 				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "Path to CMake executable."
 				}
 			],
-			"type" : "UNINITIALIZED",
-			"value" : "cube-cmake"
+			"type" : "INTERNAL",
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/CMake/bin/cmake.exe"
 		},
 		{
 			"name" : "CMAKE_CPACK_COMMAND",
@@ -239,7 +239,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/cpack.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/CMake/bin/cpack.exe"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -251,7 +251,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/ctest.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/CMake/bin/ctest.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_AR",
@@ -267,7 +267,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc-ar.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_RANLIB",
@@ -283,7 +283,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS",
@@ -379,7 +379,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc-ar.exe"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_RANLIB",
@@ -395,7 +395,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -503,7 +503,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/cmake-gui.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/CMake/bin/cmake-gui.exe"
 		},
 		{
 			"name" : "CMAKE_EXECUTABLE_FORMAT",
@@ -598,22 +598,6 @@
 			"value" : ""
 		},
 		{
-			"name" : "CMAKE_EXPORT_BUILD_DATABASE",
-			"properties" : 
-			[
-				{
-					"name" : "ADVANCED",
-					"value" : "1"
-				},
-				{
-					"name" : "HELPSTRING",
-					"value" : "Enable/Disable output of build database during the build."
-				}
-			],
-			"type" : "BOOL",
-			"value" : ""
-		},
-		{
 			"name" : "CMAKE_EXTRA_GENERATOR",
 			"properties" : 
 			[
@@ -635,7 +619,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "E:/co_robocon/RoboCon-VollyBall/build/Debug/CMakeFiles/pkgRedirects"
+			"value" : "C:/Users/LarkS/Desktop/volleyball2/RoboCon-VollyBall/build/Debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -695,7 +679,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "E:/co_robocon/RoboCon-VollyBall"
+			"value" : "C:/Users/LarkS/Desktop/volleyball2/RoboCon-VollyBall"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -708,18 +692,6 @@
 			],
 			"type" : "PATH",
 			"value" : "C:/Program Files (x86)/DJ_A_wheel"
-		},
-		{
-			"name" : "CMAKE_LIST_FILE_NAME",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Name of CMakeLists files to read"
-				}
-			],
-			"type" : "INTERNAL",
-			"value" : "CMakeLists.txt"
 		},
 		{
 			"name" : "CMAKE_MAKE_PROGRAM",
@@ -735,7 +707,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/ninja/1.13.1+st.1/bin/ninja.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/Ninja/bin/ninja.exe"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -831,7 +803,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-nm.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-nm.exe"
 		},
 		{
 			"name" : "CMAKE_NUMBER_OF_MAKEFILES",
@@ -859,7 +831,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-objdump.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-objdump.exe"
 		},
 		{
 			"name" : "CMAKE_PLATFORM_INFO_INITIALIZED",
@@ -923,7 +895,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-ranlib.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_READELF",
@@ -939,7 +911,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-readelf.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-readelf.exe"
 		},
 		{
 			"name" : "CMAKE_ROOT",
@@ -951,7 +923,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/share/cmake-4.0"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/CMake/share/cmake-3.28"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1159,7 +1131,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-strip.exe"
+			"value" : "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-strip.exe"
 		},
 		{
 			"name" : "CMAKE_TAPI",
@@ -1187,7 +1159,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "E:/co_robocon/RoboCon-VollyBall/cmake/gcc-arm-none-eabi.cmake"
+			"value" : "C:/Users/LarkS/Desktop/volleyball2/RoboCon-VollyBall/cmake/gcc-arm-none-eabi.cmake"
 		},
 		{
 			"name" : "CMAKE_VERBOSE_MAKEFILE",
@@ -1215,7 +1187,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "E:/co_robocon/RoboCon-VollyBall/build/Debug"
+			"value" : "C:/Users/LarkS/Desktop/volleyball2/RoboCon-VollyBall/build/Debug"
 		},
 		{
 			"name" : "DJ_A_wheel_IS_TOP_LEVEL",
@@ -1239,7 +1211,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "E:/co_robocon/RoboCon-VollyBall"
+			"value" : "C:/Users/LarkS/Desktop/volleyball2/RoboCon-VollyBall"
 		}
 	],
 	"kind" : "cache",

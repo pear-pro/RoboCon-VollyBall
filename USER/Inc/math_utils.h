@@ -54,4 +54,12 @@ int abs_int(int num);
  */
 float abs_float(float value);
 
+/**
+ * @brief  应用死区（过滤小范围值）
+ * @param  value: 输入需要处理的数值
+ * @param  deadzone: 死区阈值（绝对值范围）
+ * @retval 若value在[-deadzone, deadzone]范围内，返回0.0f；否则返回原value
+ */
+float apply_deadzone(float value, float deadzone);
+
 #endif /* MATH_UTILS_H */
