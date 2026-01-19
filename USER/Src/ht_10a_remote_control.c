@@ -16,6 +16,13 @@ SBUS_ctrl_t sbus_ctrl;
 void sbus_remote_control_init(void)//初始化SBUS协议接收
 {
     RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
+
+    // 初始化按键状态
+    sbus_ctrl.last_swa_state = POS_MID;  // SWA初始在MID
+    sbus_ctrl.last_swb_state = POS_DOWN;        // SWB初始在DOWN
+    sbus_ctrl.last_swc_state = POS_DOWN;        // SWC初始在DOWN
+    sbus_ctrl.last_swd_state = POS_MID;  // SWD初始在MID
+    sbus_ctrl.key_flag = KEY_NONE;       // 初始无按键
 }
 
 const SBUS_ctrl_t *get_sbus_remote_control_point(void)//获取SBUS协议遥控器数据指针
@@ -110,6 +117,9 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         sbus_ctrl -> ch[6] = ((sbus_buffer[9] >> 2 )| (sbus_buffer[10] << 6 )) & 0x07ff;//SWC
         sbus_ctrl -> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
 
+        // 更新虚拟按键状态
+        virtual_key_update(sbus_ctrl);
+
         //归一化
         car_x=normalize_to_range(sbus_ctrl -> ch[1], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         car_y=-normalize_to_range(sbus_ctrl -> ch[0], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
@@ -123,6 +133,87 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         MecanumWheel_Move(car_x,car_y,car_w);
     }
 
-
-
 }
+
+static uint8_t detect_switch_position(uint16_t value)
+{
+    if (value <= CH_VALUE_MIN + DEADZONE) 
+    {
+        return POS_UP;  // 上
+    } 
+    else if (value >= CH_VALUE_MAX - DEADZONE) 
+    {
+        return POS_DOWN;  // 下
+    } 
+    else 
+    {
+        return POS_MID;  // 中
+    }
+}
+
+static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
+{
+    // 检测当前开关位置
+    uint8_t SWA_pos = detect_switch_position(sbus_ctrl -> ch[4]);
+    uint8_t SWB_pos = detect_switch_position(sbus_ctrl -> ch[5]);
+    uint8_t SWC_pos = detect_switch_position(sbus_ctrl -> ch[6]);
+    uint8_t SWD_pos = detect_switch_position(sbus_ctrl -> ch[7]);
+
+    // 初始化按键标志
+    sbus_ctrl->key_flag = KEY_NONE;
+
+    //SWA处理
+    if(sbus_ctrl -> last_swa_state == POS_MID && SWA_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SWA_UP;
+    }
+    else if(sbus_ctrl -> last_swa_state == POS_MID && SWA_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SWA_DOWN;
+    }
+    else if(SWA_pos == POS_MID)
+    {
+        sbus_ctrl->key_flag |= KEY_SWA_MID;
+    }
+
+    //SWB处理
+    if(sbus_ctrl -> last_swb_state == POS_DOWN && SWB_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SWB_UP;
+    }
+    else if(sbus_ctrl -> last_swb_state == POS_UP && SWB_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SWB_DOWN;
+    }
+
+    //SWC处理
+    if(sbus_ctrl -> last_swc_state == POS_DOWN && SWC_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SWC_UP;
+    }
+    else if(sbus_ctrl -> last_swc_state == POS_UP && SWC_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SWC_DOWN;
+    }
+
+    //SWD处理
+    if(sbus_ctrl -> last_swd_state == POS_MID && SWD_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SWD_UP;
+    }
+    else if(sbus_ctrl -> last_swd_state == POS_MID && SWD_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SWD_DOWN;
+    }
+    else if(SWD_pos == POS_MID)
+    {
+        sbus_ctrl->key_flag |= KEY_SWD_MID;
+    }
+
+    // 更新上次状态
+    sbus_ctrl->last_swa_state = SWA_pos;
+    sbus_ctrl->last_swb_state = SWB_pos;
+    sbus_ctrl->last_swc_state = SWC_pos;
+    sbus_ctrl->last_swd_state = SWD_pos;
+}
+
