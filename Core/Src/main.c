@@ -107,21 +107,18 @@ int main(void)
   
 
 
-	HAL_CAN_Start(&hcan1);
-	
-	HAL_TIM_Base_Start_IT(&htim3);
-  HAL_TIM_Base_Start_IT(&htim14);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  damiao[0].Speed_pid.set = 0.2;
-  damiao[1].Speed_pid.set = 0.2;
-  damiao[2].Speed_pid.set = 0.5;
-  damiao[3].Speed_pid.set = 0.5;
+  damiao[0].Speed_pid.set = 1.0;
+  damiao[1].Speed_pid.set = 1.0;
+  damiao[2].Speed_pid.set = 1.0;
+  damiao[3].Speed_pid.set = 1.0;
   while (1)
   {
-	//Set_dm(&hcan1,20000);
+//int16_t	  volatage[4]={2000,2000,2000,2000};
+//	Set_dm(&hcan1,volatage);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
