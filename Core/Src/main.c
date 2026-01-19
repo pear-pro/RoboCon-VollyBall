@@ -111,8 +111,8 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  damiao[0].Speed_pid.set = 1.0;
-  damiao[1].Speed_pid.set = 1.0;
+  damiao[0].Speed_pid.set = 800.0;
+  damiao[1].Speed_pid.set = 800.0;
   damiao[2].Speed_pid.set = 1.0;
   damiao[3].Speed_pid.set = 1.0;
   while (1)
