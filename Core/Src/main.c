@@ -100,14 +100,14 @@ int main(void)
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
   
-  
  
 	
   All_Init();
-  
+    HAL_CAN_Start(&hcan2);
+
 	
-	HAL_TIM_Base_Start_IT(&htim3);
-//  HAL_TIM_Base_Start_IT(&htim14);
+  HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_Base_Start_IT(&htim14);
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -4,16 +4,18 @@
 #include "motor_can.h"
 #include <stdint.h>
 #include "pid.h"
+float pid_calc_angle(pid_t *pid, float get, float set);
+
 uint16_t PID_Calc_Flag = 0;
 /************************ 需根据实际硬件修改的宏定义 ************************/
 // 定时器选择（示例：TIM3，根据实际使用的定时器修改）
-#define PID_TIMx               TIM14
+#define PID_TIMx               TIM3
 // 定时器时钟使能宏（示例：TIM3属于APB1总线）
-#define PID_TIM_RCC_CLK_ENABLE()  __HAL_RCC_TIM14_CLK_ENABLE()
+#define PID_TIM_RCC_CLK_ENABLE()  __HAL_RCC_TIM3_CLK_ENABLE()
 // 定时器中断号（示例：TIM3全局中断）
-#define PID_TIM_IRQn           TIM14_IRQn
+#define PID_TIM_IRQn           TIM3_IRQn
 // 定时器中断服务函数名（需和启动文件中的中断向量表一致）
-#define PID_TIM_IRQHandler     TIM14_IRQHandler
+#define PID_TIM_IRQHandler     TIM3_IRQHandler
 
 /************************ 全局变量（HAL库定时器句柄） ************************/
 TIM_HandleTypeDef htim_pid;  // PID定时器句柄
