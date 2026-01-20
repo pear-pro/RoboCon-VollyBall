@@ -4,6 +4,7 @@
 #include "main.h"
 #include "can.h"
 #include "pid.h"
+#include "stm32f4xx.h"
 /*
 
 
@@ -47,5 +48,6 @@ void can2_fliter_init(void);
 
 void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_dm(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
+void SET_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
 #endif
 

@@ -23,6 +23,12 @@ extern motor_info_t damiao[MotorCount];
 extern uint16_t PID_Calc_Flag;
 extern int16_t car_x,car_y,car_w;
 
+enum State{
+    faqiuzhunbei=0,
+    faqiu=1,
+    jiqiu=2,
+};
+
 #define MAX_CAR_SPEED 1000.0f
 
 #endif

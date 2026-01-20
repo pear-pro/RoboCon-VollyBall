@@ -115,6 +115,14 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
+void SET_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4)
+{
+  damiao[0].Angel_pid.set=angle1;
+  damiao[1].Angel_pid.set=angle2;
+  damiao[2].Angel_pid.set=angle3;
+  damiao[3].Angel_pid.set=angle4;
+}
+
 /********************CAN接收*****************************/
 //接收中断回调函数
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
@@ -155,23 +163,5 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	
 }
 
-void Angle_Ctrl(motor_info_t *ID,uint16_t Target)
-{
-	if(ID->FirstEntre==1)
-	{
-		ID->relative=0;
-		ID->lastRead=ID->Rxmsg.Angle;
-		ID->FirstEntre=0;
-	}
-	else
-	{
-		ID->Target=Target;
-		int16_t tmp=(int16_t)ID->Rxmsg.Angle- (int16_t)ID->lastRead;
-		ID->relative+=(tmp<180?(tmp>-180?tmp:tmp+360):tmp-360);
-		//if(ID->Rxmsg.Angle*Target<0&&fabs(ID->Rxmsg.Angle-Target)>180);
-		ID->Current=PID_PROCESS_Double(&ID->Angel_pid,&ID->Speed_pid,Target,ID->Rxmsg.Angle,ID->Rxmsg.Speed);
-		ID->lastRead=ID->Rxmsg.Angle;
-	}
 
-}
 
