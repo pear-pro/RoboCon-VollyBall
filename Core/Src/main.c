@@ -113,13 +113,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   
   HAL_TIM_Base_Start_IT(&htim14);
-  damiao[0].Angel_pid.set = 50;
-  damiao[1].Angel_pid.set = 50;
-  damiao[2].Angel_pid.set = 50;
-  damiao[3].Angel_pid.set = 50;
+  damiao[0].Speed_pid.set = 100;
+  damiao[1].Speed_pid.set = 100;
+  damiao[2].Speed_pid.set = 100;
+  damiao[3].Speed_pid.set = 100;
   while (1)
   {
-	int16_t	  volatage[4]={2000,2000,2000,2000};
+	int16_t	  volatage[4]={1000,1000,1000,1000};
 	Set_dm(&hcan2,volatage);
     /* USER CODE END WHILE */
 

@@ -20,7 +20,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
         for(int i=0;i<MotorCount;i++)
         {
-            pid_calc_Speed(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+            pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
             voltages[i]=(int16_t)C620[i].Speed_pid.out;
         }
         Set_voltagec1(&hcan1,voltages);
@@ -31,8 +31,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
         for(int i=0;i<MotorCount;i++)
         {
-            pid_calc_Angle(&damiao[i].Angel_pid,damiao[i].Angel_pid.get,damiao[i].Angel_pid.set);
-            pid_calc_Speed(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Angel_pid.out);
+//            pid_calc_Angle(&damiao[i].Angel_pid,damiao[i].Angel_pid.get,damiao[i].Angel_pid.set);
+            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Speed_pid.set);
             voltages[i]=(int16_t)damiao[i].Speed_pid.out;
         }
         Set_dm(&hcan2,voltages);

@@ -105,7 +105,7 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
   can2TxMsg.DLC   = 8;//数据长度
   for(int8_t i=0;i<4;i++)
   {
-   can2TxData[2*i]=(voltage[i]>>8)&0xff;
+   can2TxData[2*i]=(voltage[i]>>8);
    can2TxData[2*i+1]=(voltage[i])&0xff;
   }
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
@@ -127,13 +127,13 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	   HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
 	   for(int i=0;i<MotorCount;i++)
 	   {
-		  if(can1RxMsg.StdId==0x201+i) 
+		  if(can1RxMsg.StdId==0x301+i) 
 		  {
-			  C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-			  C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-			  C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-			  C620[i].Rxmsg.Temp=can1RxData[6];
-			  C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+			  damiao[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+			  damiao[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
+			  damiao[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
+			  damiao[i].Rxmsg.Temp=can1RxData[6];
+			  damiao[i].Speed_pid.get=C620[i].Rxmsg.Speed;
 			  flag=1;
 		  }
 	   }

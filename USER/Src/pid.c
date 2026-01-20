@@ -76,7 +76,7 @@ void pid_reset(pid_t *pid, float p, float i, float d)
  * @param set 目标设定值
  * @return PID控制器输出值，如果在死区范围内则返回0
  */
-float pid_calc_Speed(pid_t *pid, float get, float set)
+float pid_calc	(pid_t *pid, float get, float set)
 {
 	// 更新当前值和设定值
 	pid->get = get;
@@ -113,52 +113,52 @@ float pid_calc_Speed(pid_t *pid, float get, float set)
 	else
 		return pid->out;
 }
-float pid_calc_Angle(pid_t *pid, float get, float set)
-{
-	// 更新当前值和设定值
-	pid->get = get;
-	pid->set = set;
-	// 计算当前误差值
-	pid->error[NOW_ERR] = set - get;
+//float pid_calc_Angle(pid_t *pid, float get, float set)
+//{
+//	// 更新当前值和设定值
+//	pid->get = get;
+//	pid->set = set;
+//	// 计算当前误差值
+//	pid->error[NOW_ERR] = set - get;
 
-	if(pid->error[NOW_ERR]>180)
-	{
-		pid->error[NOW_ERR]-=360;
-	}
-	if(pid->error[NOW_ERR]<-180)
-	{
-		pid->error[NOW_ERR]+=360;
-	}
-	
-#if (PID_MODE == POSITION_PID)
-	// 位置式PID计算
-	pid->pout = pid->kp * pid->error[NOW_ERR];							// 比例项计算
-	pid->iout += pid->ki * pid->error[NOW_ERR];							// 积分项累加计算
-	pid->dout = pid->kd * (pid->error[NOW_ERR] - pid->error[LAST_ERR]); // 微分项计算
+//	if(pid->error[NOW_ERR]>180)
+//	{
+//		pid->error[NOW_ERR]-=360;
+//	}
+//	if(pid->error[NOW_ERR]<-180)
+//	{
+//		pid->error[NOW_ERR]+=360;
+//	}
+//	
+//#if (PID_MODE == POSITION_PID)
+//	// 位置式PID计算
+//	pid->pout = pid->kp * pid->error[NOW_ERR];							// 比例项计算
+//	pid->iout += pid->ki * pid->error[NOW_ERR];							// 积分项累加计算
+//	pid->dout = pid->kd * (pid->error[NOW_ERR] - pid->error[LAST_ERR]); // 微分项计算
 
-	abs_limit(&(pid->iout), pid->integral_limit); // 积分项限幅
-	pid->out = pid->pout + pid->iout + pid->dout; // PID输出合成
-	abs_limit(&(pid->out), pid->maxout);		  // 输出值限幅
-#elif (PID_MODE == DELTA_PID)
-	// 增量式PID计算
-	pid->pout = pid->kp * (pid->error[NOW_ERR] - pid->error[LAST_ERR]);							// 比例项计算
-	pid->iout = pid->ki * pid->error[NOW_ERR];													// 积分项计算
-	pid->dout = pid->kd * (pid->error[NOW_ERR] * pid->error[LAST_ERR] + pid->error[LLAST_ERR]); // 微分项计算
+//	abs_limit(&(pid->iout), pid->integral_limit); // 积分项限幅
+//	pid->out = pid->pout + pid->iout + pid->dout; // PID输出合成
+//	abs_limit(&(pid->out), pid->maxout);		  // 输出值限幅
+//#elif (PID_MODE == DELTA_PID)
+//	// 增量式PID计算
+//	pid->pout = pid->kp * (pid->error[NOW_ERR] - pid->error[LAST_ERR]);							// 比例项计算
+//	pid->iout = pid->ki * pid->error[NOW_ERR];													// 积分项计算
+//	pid->dout = pid->kd * (pid->error[NOW_ERR] * pid->error[LAST_ERR] + pid->error[LLAST_ERR]); // 微分项计算
 
-	pid->out += pid->pout + pid->iout + pid->dout; // 增量式输出累加
-	abs_limit(&(pid->out), pid->maxout);		   // 输出值限幅
-#endif
+//	pid->out += pid->pout + pid->iout + pid->dout; // 增量式输出累加
+//	abs_limit(&(pid->out), pid->maxout);		   // 输出值限幅
+//#endif
 
-	// 更新历史误差值，用于下次计算
-	pid->error[LLAST_ERR] = pid->error[LAST_ERR];
-	pid->error[LAST_ERR] = pid->error[NOW_ERR];
+//	// 更新历史误差值，用于下次计算
+//	pid->error[LLAST_ERR] = pid->error[LAST_ERR];
+//	pid->error[LAST_ERR] = pid->error[NOW_ERR];
 
-	// 死区处理：如果输出值在死区范围内则返回0
-	if ((pid->output_deadband != 0) && (fabs(pid->out) < pid->output_deadband))
-		return 0;
-	else
-		return pid->out;
-}
+//	// 死区处理：如果输出值在死区范围内则返回0
+//	if ((pid->output_deadband != 0) && (fabs(pid->out) < pid->output_deadband))
+//		return 0;
+//	else
+//		return pid->out;
+//}
 
 
 

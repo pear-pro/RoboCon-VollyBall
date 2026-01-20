@@ -49,8 +49,8 @@ typedef struct pid
 
 } pid_t;
 
-float pid_calc_Speed(pid_t *pid, float get, float set);
-float pid_calc_Angle(pid_t *pid, float get, float set);
+float pid_calc(pid_t *pid, float get, float set);
+//float pid_calc_Angle(pid_t *pid, float get, float set);
 float fuzzy_pid_calc(pid_t *pid, float get, float set);
 
 void pid_reset(pid_t *pid, float p, float i, float d);
