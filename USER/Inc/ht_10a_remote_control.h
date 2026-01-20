@@ -10,9 +10,14 @@
 #define SBUS_RX_BUF_NUM 50u//DMA双缓冲区
 #define RC_FRAME_LENGTH 25u//SBUS协议数据缓存25bit（定义遥控器一帧数据的有效长度，用于解析）
 
-#define CH_VALUE_MIN 1000
-#define CH_VALUE_MID 1500
-#define CH_VALUE_MAX 2000
+#define SBUS_CH_VALUE_MIN 192
+#define SBUS_CH_VALUE_MID 992
+#define SBUS_CH_VALUE_MAX 1792
+#define SBUS_CH_VALUE_OFFSET 992
+
+#define SWITCH_SBUS_CH_VALUE_MIN -800
+#define SWITCH_SBUS_CH_VALUE_MID 0
+#define SWITCH_SBUS_CH_VALUE_MAX 800
 
 #define POS_UP 1//定义开关位置UP
 #define POS_MID 3//定义开关位置MID
@@ -34,7 +39,7 @@
 
 typedef struct 
 {
-    uint16_t ch[8];//通道数据
+    int16_t ch[8];//通道数据
 
     // 按键状态记录
     uint16_t last_swa_state;        // SWA上次状态
@@ -53,7 +58,7 @@ extern const SBUS_ctrl_t *get_sbus_remote_control_point(void);
 extern uint8_t   sbus_buffer[SBUS_BUFLEN];
 void USART1_IRQHandlerCallBack(void);
 
-static uint8_t detect_switch_position(uint16_t value);
+static uint8_t detect_switch_position(int16_t value);
 static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl);
 
 #endif

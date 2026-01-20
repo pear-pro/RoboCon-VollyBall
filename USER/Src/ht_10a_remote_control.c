@@ -115,15 +115,21 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         sbus_ctrl -> ch[4] = ((sbus_buffer[6] >> 4 )| (sbus_buffer[7] << 4 )) & 0x07ff;//SWA
         sbus_ctrl -> ch[5] = ((sbus_buffer[7] >> 7 )| (sbus_buffer[8] << 1 )| (sbus_buffer[9] << 9 )) & 0x07ff;//SWB
         sbus_ctrl -> ch[6] = ((sbus_buffer[9] >> 2 )| (sbus_buffer[10] << 6 )) & 0x07ff;//SWC
-        sbus_ctrl -> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
+        sbus_ctrl-> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
 
+       //数据偏移
+        for(int i = 0;i<8;i++)
+        {
+            sbus_ctrl->ch[i] = (int16_t)(sbus_ctrl->ch[i] - SBUS_CH_VALUE_OFFSET);
+        }
+       
         // 更新虚拟按键状态
         virtual_key_update(sbus_ctrl);
 
         //归一化
-        car_x=normalize_to_range(sbus_ctrl -> ch[1], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-        car_y=-normalize_to_range(sbus_ctrl -> ch[0], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-        car_w=-normalize_to_range(sbus_ctrl -> ch[3], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         
         //应用死区处理
         car_x=apply_deadzone(car_x, DEADZONE);
@@ -135,13 +141,13 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 
 }
 
-static uint8_t detect_switch_position(uint16_t value)
+static uint8_t detect_switch_position(int16_t value)
 {
-    if (value <= CH_VALUE_MIN + DEADZONE) 
+    if (value <= SWITCH_SBUS_CH_VALUE_MIN + DEADZONE) 
     {
         return POS_UP;  // 上
     } 
-    else if (value >= CH_VALUE_MAX - DEADZONE) 
+    else if (value >= SWITCH_SBUS_CH_VALUE_MAX - DEADZONE) 
     {
         return POS_DOWN;  // 下
     } 
