@@ -104,7 +104,7 @@ int main(void)
  
 	
   All_Init();
-  
+  int pos;
 	
 	HAL_TIM_Base_Start_IT(&htim3);
 //  HAL_TIM_Base_Start_IT(&htim14);
@@ -113,13 +113,30 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_Delay(2000);
-
-
+  int number;
+  int x,y;
   while (1)
   {
+     SET_dm_Angle(&hcan2,x,x,x,x);
+	 SET_dm_Angle(&hcan2,y,y,y,y);
 
+	  enum State num=faqiuzhunbei;
     /* USER CODE END WHILE */
+switch (num)
+{
+	case 0:
+		SET_dm_Angle(&hcan2,0,0,0,0);
+		break;
+	case 1:
+				SET_dm_Angle(&hcan2,0,0,0,0);
 
+		break;
+	case 2:
+				SET_dm_Angle(&hcan2,0,0,0,0);
+
+		break;
+	
+}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
