@@ -17,7 +17,7 @@
 *.htm
 *.lnp
 *.sct
-
+*.idx
 *.uvgui.*
 *.uvguix.*
 
