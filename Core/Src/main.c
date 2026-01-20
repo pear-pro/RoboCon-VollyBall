@@ -111,14 +111,16 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  damiao[0].Speed_pid.set = 1.0;
-  damiao[1].Speed_pid.set = 1.0;
-  damiao[2].Speed_pid.set = 1.0;
-  damiao[3].Speed_pid.set = 1.0;
+  
+  HAL_TIM_Base_Start_IT(&htim14);
+  damiao[0].Angel_pid.set = 50;
+  damiao[1].Angel_pid.set = 50;
+  damiao[2].Angel_pid.set = 50;
+  damiao[3].Angel_pid.set = 50;
   while (1)
   {
-//int16_t	  volatage[4]={2000,2000,2000,2000};
-//	Set_dm(&hcan1,volatage);
+	int16_t	  volatage[4]={2000,2000,2000,2000};
+	Set_dm(&hcan2,volatage);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
