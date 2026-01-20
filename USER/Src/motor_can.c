@@ -13,6 +13,7 @@
 #include "includes.h"
 #include "can.h"
 #include "main.h"
+#include "pid.h"
 #include "pid_tim.h"
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
@@ -164,6 +165,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			  C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
 			  C620[i].Rxmsg.Temp=can1RxData[6];
 			  C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+			  pid_calc(&C620[i].Speed_pid, C620[i].Speed_pid.get, C620[i].Speed_pid.set);
 			  flag=1;
 		  }
 	   }
@@ -179,6 +181,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				 damiao[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 				 damiao[i].Rxmsg.Temp=can2RxData[6];
 				 damiao[i].Speed_pid.get=damiao[i].Rxmsg.Speed;
+				 pid_calc(&damiao[i].Speed_pid, damiao[i].Speed_pid.get, damiao[i].Speed_pid.set);
 				 flag=1;
 			 }
 		 }	
