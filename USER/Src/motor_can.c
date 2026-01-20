@@ -105,8 +105,8 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
   can2TxMsg.DLC   = 8;//数据长度
   for(int8_t i=0;i<4;i++)
   {
-   can2TxData[2*i]=(voltage[i]>>8)&0xff;
-   can2TxData[2*i+1]=(voltage[i])&0xff;
+   can2TxData[2*i]=voltage[i]>>8;
+   can2TxData[2*i+1]=voltage[i];
   }
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
