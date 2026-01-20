@@ -16,6 +16,13 @@ SBUS_ctrl_t sbus_ctrl;
 void sbus_remote_control_init(void)//��ʼ��SBUSЭ�����
 {
     RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
+
+    // ��ʼ������״̬
+    sbus_ctrl.last_swa_state = POS_MID;  // SWA��ʼ��MID
+    sbus_ctrl.last_swb_state = POS_DOWN;        // SWB��ʼ��DOWN
+    sbus_ctrl.last_swc_state = POS_DOWN;        // SWC��ʼ��DOWN
+    sbus_ctrl.last_swd_state = POS_MID;  // SWD��ʼ��MID
+    sbus_ctrl.key_flag = KEY_NONE;       // ��ʼ�ް���
 }
 
 const SBUS_ctrl_t *get_sbus_remote_control_point(void)//��ȡSBUSЭ��ң��������ָ��
@@ -108,12 +115,21 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         sbus_ctrl -> ch[4] = ((sbus_buffer[6] >> 4 )| (sbus_buffer[7] << 4 )) & 0x07ff;//SWA
         sbus_ctrl -> ch[5] = ((sbus_buffer[7] >> 7 )| (sbus_buffer[8] << 1 )| (sbus_buffer[9] << 9 )) & 0x07ff;//SWB
         sbus_ctrl -> ch[6] = ((sbus_buffer[9] >> 2 )| (sbus_buffer[10] << 6 )) & 0x07ff;//SWC
-        sbus_ctrl -> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
+        sbus_ctrl-> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
+
+       //����ƫ��
+        for(int i = 0;i<8;i++)
+        {
+            sbus_ctrl->ch[i] = (int16_t)(sbus_ctrl->ch[i] - SBUS_CH_VALUE_OFFSET);
+        }
+       
+        // �������ⰴ��״̬
+        virtual_key_update(sbus_ctrl);
 
         //��һ��
-        car_x=normalize_to_range(sbus_ctrl -> ch[1], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-        car_y=-normalize_to_range(sbus_ctrl -> ch[0], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-        car_w=-normalize_to_range(sbus_ctrl -> ch[3], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         
         //Ӧ����������
         car_x=apply_deadzone(car_x, DEADZONE);
@@ -133,6 +149,87 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
              car_x, car_y, car_w);
     }
 
-
-
 }
+
+static uint8_t detect_switch_position(int16_t value)
+{
+    if (value <= SWITCH_SBUS_CH_VALUE_MIN + DEADZONE) 
+    {
+        return POS_UP;  // ��
+    } 
+    else if (value >= SWITCH_SBUS_CH_VALUE_MAX - DEADZONE) 
+    {
+        return POS_DOWN;  // ��
+    } 
+    else 
+    {
+        return POS_MID;  // ��
+    }
+}
+
+static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
+{
+    // ��⵱ǰ����λ��
+    uint8_t SWA_pos = detect_switch_position(sbus_ctrl -> ch[4]);
+    uint8_t SWB_pos = detect_switch_position(sbus_ctrl -> ch[5]);
+    uint8_t SWC_pos = detect_switch_position(sbus_ctrl -> ch[6]);
+    uint8_t SWD_pos = detect_switch_position(sbus_ctrl -> ch[7]);
+
+    // ��ʼ��������־
+    sbus_ctrl->key_flag = KEY_NONE;
+
+    //SWA����
+    if(sbus_ctrl -> last_swa_state == POS_MID && SWA_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SWA_UP;
+    }
+    else if(sbus_ctrl -> last_swa_state == POS_MID && SWA_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SWA_DOWN;
+    }
+    else if(SWA_pos == POS_MID)
+    {
+        sbus_ctrl->key_flag |= KEY_SWA_MID;
+    }
+
+    //SWB����
+    if(sbus_ctrl -> last_swb_state == POS_DOWN && SWB_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SWB_UP;
+    }
+    else if(sbus_ctrl -> last_swb_state == POS_UP && SWB_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SWB_DOWN;
+    }
+
+    //SWC����
+    if(sbus_ctrl -> last_swc_state == POS_DOWN && SWC_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SWC_UP;
+    }
+    else if(sbus_ctrl -> last_swc_state == POS_UP && SWC_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SWC_DOWN;
+    }
+
+    //SWD����
+    if(sbus_ctrl -> last_swd_state == POS_MID && SWD_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SWD_UP;
+    }
+    else if(sbus_ctrl -> last_swd_state == POS_MID && SWD_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SWD_DOWN;
+    }
+    else if(SWD_pos == POS_MID)
+    {
+        sbus_ctrl->key_flag |= KEY_SWD_MID;
+    }
+
+    // �����ϴ�״̬
+    sbus_ctrl->last_swa_state = SWA_pos;
+    sbus_ctrl->last_swb_state = SWB_pos;
+    sbus_ctrl->last_swc_state = SWC_pos;
+    sbus_ctrl->last_swd_state = SWD_pos;
+}
+
