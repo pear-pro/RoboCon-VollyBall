@@ -5,32 +5,32 @@
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
-uint8_t   sbus_buffer[SBUS_BUFLEN];//SBUSĞ­ÒéÊı¾İ»º´æ25bit
+uint8_t   sbus_buffer[SBUS_BUFLEN];//SBUSĞ­ï¿½ï¿½ï¿½ï¿½ï¿½İ»ï¿½ï¿½ï¿½25bit
 
 static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctrl_t *sbus_ctrl);
 
-static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMAË«»º³å½ÓÊÕÊı×é
+static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMAË«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 SBUS_ctrl_t sbus_ctrl;
 
-void sbus_remote_control_init(void)//³õÊ¼»¯SBUSĞ­Òé½ÓÊÕ
+void sbus_remote_control_init(void)//ï¿½ï¿½Ê¼ï¿½ï¿½SBUSĞ­ï¿½ï¿½ï¿½ï¿½ï¿½
 {
     RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
 }
 
-const SBUS_ctrl_t *get_sbus_remote_control_point(void)//»ñÈ¡SBUSĞ­ÒéÒ£¿ØÆ÷Êı¾İÖ¸Õë
+const SBUS_ctrl_t *get_sbus_remote_control_point(void)//ï¿½ï¿½È¡SBUSĞ­ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
 {
     return &sbus_ctrl;
 }
 
-//´®¿ÚÖĞ¶Ï
+//ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½
 void USART1_IRQHandlerCallBack(void)
 {
-    if(huart1.Instance->SR & UART_FLAG_RXNE)//½ÓÊÕµ½Êı¾İ
+    if(huart1.Instance->SR & UART_FLAG_RXNE)//ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½
     {
         __HAL_UART_CLEAR_PEFLAG(&huart1);
     }
-    else if(USART1->SR & UART_FLAG_IDLE)//½ÓÊÕÍê³É
+    else if(USART1->SR & UART_FLAG_IDLE)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
         static uint16_t this_time_rx_len = 0;
 
@@ -45,19 +45,19 @@ void USART1_IRQHandlerCallBack(void)
             __HAL_DMA_DISABLE(&hdma_usart1_rx);
 
             //get receive data length, length = set_data_length - remain_length
-            //»ñÈ¡½ÓÊÕÊı¾İ³¤¶È,³¤¶È = Éè¶¨³¤¶È - Ê£Óà³¤¶È
+            //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ = ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ - Ê£ï¿½à³¤ï¿½ï¿½
             this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart1_rx.Instance->NDTR;
 
             //reset set_data_lenght
-            //ÖØĞÂÉè¶¨Êı¾İ³¤¶È
+            //ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½
             hdma_usart1_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
 
             //set memory buffer 1
-            //Éè¶¨»º³åÇø1
+            //ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
             hdma_usart1_rx.Instance->CR |= DMA_SxCR_CT;
             
             //enable DMA
-            //Ê¹ÄÜDMA
+            //Ê¹ï¿½ï¿½DMA
             __HAL_DMA_ENABLE(&hdma_usart1_rx);
 
             if(this_time_rx_len == RC_FRAME_LENGTH)
@@ -73,24 +73,24 @@ void USART1_IRQHandlerCallBack(void)
             __HAL_DMA_DISABLE(&hdma_usart1_rx);
 
             //get receive data length, length = set_data_length - remain_length
-            //»ñÈ¡½ÓÊÕÊı¾İ³¤¶È,³¤¶È = Éè¶¨³¤¶È - Ê£Óà³¤¶È
+            //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ = ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ - Ê£ï¿½à³¤ï¿½ï¿½
             this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart1_rx.Instance->NDTR;
 
             //reset set_data_lenght
-            //ÖØĞÂÉè¶¨Êı¾İ³¤¶È
+            //ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½
             hdma_usart1_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
 
             //set memory buffer 0
-            //Éè¶¨»º³åÇø0
+            //ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0
             DMA1_Stream1->CR &= ~(DMA_SxCR_CT);
             
             //enable DMA
-            //Ê¹ÄÜDMA
+            //Ê¹ï¿½ï¿½DMA
             __HAL_DMA_ENABLE(&hdma_usart1_rx);
 
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
-                //´¦ÀíÒ£¿ØÆ÷Êı¾İ
+                //ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 sbus_to_remote_control(sbus_rx_buffer[1], &sbus_ctrl);
             }
         }
@@ -99,28 +99,38 @@ void USART1_IRQHandlerCallBack(void)
 
 static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctrl_t *sbus_ctrl)
 {
-    if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//ÅĞ¶ÏÍ·Ö¡ºÍÎ²Ö¡
+    if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//ï¿½Ğ¶ï¿½Í·Ö¡ï¿½ï¿½Î²Ö¡
     {
-        sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//ÓÒÒ¡¸Ë×óÓÒ
-        sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//ÓÒÒ¡¸ËÉÏÏÂ
-        sbus_ctrl -> ch[2] = ((sbus_buffer[3] >> 6 )| (sbus_buffer[4] << 2 ) | (sbus_buffer[5] << 10)) & 0x07ff;//×óÒ¡¸ËÉÏÏÂ
-        sbus_ctrl -> ch[3] = ((sbus_buffer[5] >> 1 )| (sbus_buffer[6] << 7 )) & 0x07ff;//×óÒ¡¸Ë×óÓÒ
+        sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        sbus_ctrl -> ch[2] = ((sbus_buffer[3] >> 6 )| (sbus_buffer[4] << 2 ) | (sbus_buffer[5] << 10)) & 0x07ff;//ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        sbus_ctrl -> ch[3] = ((sbus_buffer[5] >> 1 )| (sbus_buffer[6] << 7 )) & 0x07ff;//ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         sbus_ctrl -> ch[4] = ((sbus_buffer[6] >> 4 )| (sbus_buffer[7] << 4 )) & 0x07ff;//SWA
         sbus_ctrl -> ch[5] = ((sbus_buffer[7] >> 7 )| (sbus_buffer[8] << 1 )| (sbus_buffer[9] << 9 )) & 0x07ff;//SWB
         sbus_ctrl -> ch[6] = ((sbus_buffer[9] >> 2 )| (sbus_buffer[10] << 6 )) & 0x07ff;//SWC
         sbus_ctrl -> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
 
-        //¹éÒ»»¯
+        //ï¿½ï¿½Ò»ï¿½ï¿½
         car_x=normalize_to_range(sbus_ctrl -> ch[1], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         car_y=-normalize_to_range(sbus_ctrl -> ch[0], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         car_w=-normalize_to_range(sbus_ctrl -> ch[3], 1000.0f, 2000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         
-        //Ó¦ÓÃËÀÇø´¦Àí
+        //Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         car_x=apply_deadzone(car_x, DEADZONE);
         car_y=apply_deadzone(car_y, DEADZONE);
         car_w=apply_deadzone(car_w, DEADZONE);
 
         MecanumWheel_Move(car_x,car_y,car_w);
+        // ä½¿ç”¨USART2æ‰“å°é€šé“æ•°æ®
+
+        USART2_Print("Channel Data: Ch0=%d\r\n, Ch1=%d\r\n, Ch2=%d\r\n, Ch3=%d\r\n, Ch4=%d\r\n, Ch5=%d\r\n, Ch6=%d\r\n, Ch7=%d\r\n",
+             sbus_ctrl->ch[0],sbus_ctrl->ch[1],sbus_ctrl->ch[2],sbus_ctrl->ch[3],
+             sbus_ctrl->ch[4],sbus_ctrl->ch[5],sbus_ctrl->ch[6],sbus_ctrl->ch[7]);
+
+        // æ‰“å°å½’ä¸€åŒ–åçš„é€Ÿåº¦æ•°æ®
+
+        USART2_Print("Speed Data: car_x=%.2f, car_y=%.2f, car_w=%.2f\r\n", 
+             car_x, car_y, car_w);
     }
 
 
