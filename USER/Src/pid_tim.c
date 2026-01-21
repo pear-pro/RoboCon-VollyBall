@@ -15,6 +15,7 @@ uint16_t PID_Calc_Flag = 0;
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+	g=1;
     static int16_t voltages[4];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
