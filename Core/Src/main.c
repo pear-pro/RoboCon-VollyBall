@@ -115,10 +115,13 @@ int main(void)
 //  damiao[1].Speed_pid.set = 0.0;
 //  damiao[2].Speed_pid.set = 0.0;
 //  damiao[3].Speed_pid.set = 1.0;
+
   while (1)
   {
+	  
+   
 //int16_t	  volatage[4]={0,2000,2000,2000};
-//	Set_dm(&hcan2,volatage);
+	Set_dm(&hcan2,2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

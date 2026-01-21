@@ -98,21 +98,41 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 
 /**************达妙电机******** */
 
-void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[],int16_t g)
+void Set_dm(CAN_HandleTypeDef* hcan,int16_t g)
 {
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
   if (g==1){
   can2TxMsg.StdId =  damiao[0].ID ;
   }
+  else if(g==2)
+  {
+  can2TxMsg.StdId =  damiao[1].ID ;
+	  
+  }
+   else if(g==3)
+  {
+  can2TxMsg.StdId =  damiao[2].ID ;
+	  
+  }
+  else if(g==4)
+  {
+  can2TxMsg.StdId =  damiao[3].ID ;
+	  
+  }
+
   can2TxMsg.IDE   = CAN_ID_STD;//标准ID
   can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can2TxMsg.DLC   = 8;//数据长度
-  for(int8_t i=0;i<4;i++)
-  {
-   can2TxData[2*i]=(voltage[i]>>8)&0xff;
-   can2TxData[2*i+1]=(voltage[i])&0xff;
-  }
+  
+   can2TxData[0]=(damiao[g-1].angle    >>8)&0xff; //目标角度高八位
+   can2TxData[1]=(damiao[g-1].angle )&0xff;       //目标角度低八位
+   can2TxData[2]=(damiao[g-1].speed )&0xff;       //目标速度高八位
+   can2TxData[3]=(damiao[g-1].speed >>8)&0xff;    //目标速度低八位
+   can2TxData[4]=0; 
+   can2TxData[5]=0;
+   can2TxData[6]=0;
+   can2TxData[7]=0;
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
@@ -160,7 +180,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	   HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
 	   for(int i=0;i<MotorCount;i++)
 	   {
-		  if(can1RxMsg.StdId==0x201+i) 
+		  if(can1RxMsg.StdId==0x201+i)  
 		  {
 			  C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
 			  C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
@@ -177,15 +197,16 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
 		 for(int i=0;i<MotorCount;i++)
 		 {
-			 if(can2RxMsg.StdId==0x301+i){
-				 damiao[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-				 damiao[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+			 if(can2RxMsg.StdId==0)//不确定是否必要判断
+		     { 
+				 damiao[i].Rxmsg.Angle= ((can2RxData[1] << 8) | can2RxData[2])*360/8192.0f;
+				 damiao[i].Rxmsg.Speed= ((can2RxData[3] << 8) | can2RxData[4]);
 				 damiao[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 				 damiao[i].Rxmsg.Temp=can2RxData[6];
 				 damiao[i].Speed_pid.get=damiao[i].Rxmsg.Speed;
 		     	 damiao[i].Angel_pid.get=damiao[i].Rxmsg.Angle;
 
-				 pid_calc(&damiao[i].Speed_pid, damiao[i].Speed_pid.get, damiao[i].Speed_pid.set);
+//				 pid_calc(&damiao[i].Speed_pid, damiao[i].Speed_pid.get, damiao[i].Speed_pid.set);
 				 flag=1;
 			 }
 		 }	

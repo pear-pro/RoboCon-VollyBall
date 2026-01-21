@@ -15,7 +15,6 @@ uint16_t PID_Calc_Flag = 0;
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	g=1;
     static int16_t voltages[4];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
@@ -34,7 +33,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         {
             voltages[i]=(int16_t)damiao[i].Speed_pid.out;
         }
-        Set_dm(&hcan2,voltages);
+        Set_dm(&hcan2,1);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 	{
