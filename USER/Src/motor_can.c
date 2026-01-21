@@ -122,22 +122,22 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-  if(hcan==&hcan1)
-  {
-	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-	for(int i=0;i<MotorCount;i++)
-	{
-		if(can1RxMsg.StdId==0x201+i){
-			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-			C620[i].Rxmsg.Temp=can1RxData[6];
-			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
-			flag=1;
-		}
-	}
-  }
-  //  if(hcan==&hcan2)
+//  if(hcan==&hcan1)
+//  {
+//	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+//	for(int i=0;i<MotorCount;i++)
+//	{
+//		if(can1RxMsg.StdId==0x201+i){
+//			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+//			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
+//			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
+//			C620[i].Rxmsg.Temp=can1RxData[6];
+//			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+//			flag=1;
+//		}
+//	}
+//  }
+  		if(hcan==&hcan1)
 		{
 	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
 		 for(int i=0;i<MotorCount;i++)
@@ -147,6 +147,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				 damiao[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
 				 damiao[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 				 damiao[i].Rxmsg.Temp=can2RxData[6];
+				 damiao[i].Speed_pid.get=damiao[i].Rxmsg.Speed;
 				 flag=1;
 			 }
 		 }	
