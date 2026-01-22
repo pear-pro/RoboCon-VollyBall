@@ -95,14 +95,14 @@ int main(void)
   MX_CAN1_Init();
   MX_I2C1_Init();
   MX_TIM3_Init();
-  MX_USART1_UART_Init();
-  MX_CAN2_Init();
+//  MX_USART1_UART_Init();
+//  MX_CAN2_Init();
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
   
   
- 
-	
+ HAL_TIM_Base_Start_IT(&htim14);
+	 HAL_TIM_Base_Start_IT(&htim3);
   All_Init();
   
 
@@ -111,17 +111,25 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  damiao[0].Speed_pid.set = 2000.0;
+//  damiao[0].Speed_pid.set = 2000.0;
 //  damiao[1].Speed_pid.set = 0.0;
 //  damiao[2].Speed_pid.set = 0.0;
 //  damiao[3].Speed_pid.set = 1.0;
+    damiao[0].angle=8.0f;
+    damiao[0].speed=10.0f;
+	Set_dm_enable(&hcan1);
+	//HAL_Delay(100);
+    Set_dm(&hcan1,1);
+
+
+
+//    damiao[0].KP=0;
+//    damiao[0].KD=5;
 
   while (1)
   {
-	  
    
 //int16_t	  volatage[4]={0,2000,2000,2000};
-	Set_dm(&hcan2,2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

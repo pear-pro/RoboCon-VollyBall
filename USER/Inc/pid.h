@@ -55,6 +55,8 @@ float fuzzy_pid_calc(pid_t *pid, float get, float set);
 void pid_reset(pid_t *pid, float p, float i, float d);
 
 void pid_init(pid_t *pid, float p, float i, float d, int32_t max_out, int32_t integral_limit);
+int float_to_uint(float x_float, float x_min, float x_max, int bits);
+float uint_to_float(int x_int, float x_min, float x_max, int bits);
 
 void PID_Struct_Init(pid_t *pid,
 					 float p,
