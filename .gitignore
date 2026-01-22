@@ -63,3 +63,6 @@ Thumbs.db
 *.user
 *.lnk
 
+# Allow firmware binaries
+!达妙电机固件/*.bin
+
