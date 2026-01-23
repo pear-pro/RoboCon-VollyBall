@@ -16,6 +16,7 @@
 #include "Initialize.h"
 #include "remote_control.h"
 #include "math_utils.h"
+#include "debug_uart.h"
 
 extern motor_info_t C620[MotorCount];
 extern motor_info_t C6xx[MotorCount];

@@ -13,6 +13,7 @@
 #include "includes.h"
 #include "can.h"
 #include "main.h"
+#include "pid.h"
 #include "pid_tim.h"
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
@@ -115,13 +116,7 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
-void SET_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4)
-{
-  damiao[0].Angel_pid.set=angle1;
-  damiao[1].Angel_pid.set=angle2;
-  damiao[2].Angel_pid.set=angle3;
-  damiao[3].Angel_pid.set=angle4;
-}
+
 
 /********************CAN接收*****************************/
 //接收中断回调函数
@@ -148,17 +143,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   }
     if(hcan==&hcan2)
 		{
-	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-		 for(int i=0;i<MotorCount;i++)
-		 {
-			 if(can2RxMsg.StdId==0x301+i){
-				 damiao[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-				 damiao[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-				 damiao[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-				 damiao[i].Rxmsg.Temp=can2RxData[6];
-				 flag=1;
-			 }
-		 }	
+	     
 		}
 	
 }

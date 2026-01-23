@@ -423,6 +423,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Src\math_utils.c</FilePath>
             </File>
+            <File>
+              <FileName>debug_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\debug_uart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -472,6 +477,11 @@
               <FileName>math_utils.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\math_utils.h</FilePath>
+            </File>
+            <File>
+              <FileName>debug_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\debug_uart.h</FilePath>
             </File>
           </Files>
         </Group>

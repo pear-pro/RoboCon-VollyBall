@@ -18,6 +18,8 @@
 *.lnp
 *.sct
 *.idx
+*.json
+
 *.uvgui.*
 *.uvguix.*
 

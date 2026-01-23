@@ -98,6 +98,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_CAN2_Init();
   MX_TIM14_Init();
+  MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
   
   
@@ -107,13 +108,12 @@ int main(void)
   
 	
 	HAL_TIM_Base_Start_IT(&htim3);
-//  HAL_TIM_Base_Start_IT(&htim14);
+  HAL_TIM_Base_Start_IT(&htim14);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_Delay(2000);
-
 
   while (1)
   {
