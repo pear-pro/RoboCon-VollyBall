@@ -1,21 +1,34 @@
-#ifndef DEBUG_UART_H
-#define DEBUG_UART_H
+/**
+  ******************************************************************************
+  * @file           : debug_uart.h
+  * @brief          : 调试串口功能接口头文件
+  * @author         : 自定义（可补充）
+  * @date           : 2026-01-23
+  * @version        : V1.0
+  ******************************************************************************
+  * @attention
+  *
+  * 本文件提供调试串口的核心接口，支持 ASCII 格式数据打印（用于串口助手）、
+  * VOFA+ 上位机二进制格式数据发送（用于波形绘图），适配 STM32 HAL 库。
+  * 
+  * 1. 使用前需确保已初始化对应的 UART 外设（如 huart6），并配置正确的波特率；
+  * 2. VOFA+ 格式需配合上位机「FireWater」协议使用；
+  * 3. 最大通道数可通过宏定义调整，避免缓冲区溢出。
+  *
+  ******************************************************************************
+  */
 
-#include <stdint.h>
+#ifndef __DEBUG_UART_H
+#define __DEBUG_UART_H
+
+//....在此替换串口函数路径........只要有一个路径就行
 #include "usart.h"
+//...................................
+#include <stdio.h>
+#include "stdint.h"
+#include <string.h>
+#include <stdarg.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void Vofa_JustFloat(float *_data, uint8_t _num);
 
-#define DEBUG_UART_MAX_CHANNELS 8
-
-void DebugUart_SetHandle(UART_HandleTypeDef *huart);
-void DebugUart_SendPlotAscii(const float *values, uint8_t count);
-void DebugUart_SendPlotVofa(const float *values, uint8_t count);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+#endif /* __DEBUG_UART_H */
