@@ -67,9 +67,14 @@ void SystemClock_Config(void);
   * @brief  The application entry point.
   * @retval int
   */
+  
+  float  x,y;
+  uint8_t flag;
+  
 int main(void)
 {
-
+	enum State Set = 0;
+	
   /* USER CODE BEGIN 1 */
   /* USER CODE END 1 */
 
@@ -102,7 +107,7 @@ int main(void)
   
   
  HAL_TIM_Base_Start_IT(&htim14);
-	 HAL_TIM_Base_Start_IT(&htim3);
+ HAL_TIM_Base_Start_IT(&htim3);
   All_Init();
   
 
@@ -119,7 +124,7 @@ int main(void)
     damiao[0].speed=10.0f;
 	Set_dm_enable(&hcan1);
 	//HAL_Delay(100);
-    Set_dm(&hcan1,1);
+//    Set_dm(&hcan1,1);
 
 
 
@@ -128,6 +133,73 @@ int main(void)
 
   while (1)
   {
+	  switch (Set)
+	  {
+		  case 0:
+			  damiao[0].angle=0.0f;
+			  damiao[0].speed=0.0f;
+			  damiao[1].angle=0.0f;
+			  damiao[1].speed=0.0f;
+			  damiao[2].angle=0.0f;
+		    damiao[2].speed=0.0f;
+			  damiao[3].angle=0.0f;
+		    damiao[3].speed=0.0f;
+		  
+		  break;
+		   
+		  case 1:
+			  damiao[0].angle=8.0f;
+			  damiao[0].speed=10.0f;
+			  damiao[1].angle=8.0f;
+			  damiao[1].speed=10.0f;
+			  damiao[2].angle=8.0f;
+		    damiao[2].speed=10.0f;
+			  damiao[3].angle=8.0f;
+		    damiao[3].speed=10.0f;
+		  
+		      flag = 0;
+		  
+		      if(flag == 0 /* && 发球按钮按下 */)
+			  {
+				  /*发球杆旋转*/
+			  }
+			  else 
+			 {
+				  break;
+			  }
+		          
+		  break;
+		  
+		  case 2:
+			  damiao[0].angle=atan2(y, x);
+			  damiao[0].speed=10.0f;
+			  damiao[1].angle=atan2(y, x);
+			  damiao[1].speed=10.0f;
+			  damiao[2].angle=-atan2(y, x);
+		    damiao[2].speed=10.0f;
+			  damiao[3].angle=-atan2(y, x);
+		    damiao[3].speed=10.0f;
+		  
+		      flag = 1;
+		  
+		      if(flag == 1 /* &击球按钮按下&  */)
+			  {
+			  damiao[0].angle+=5.0f;
+			  damiao[0].speed=10.0f;
+			  damiao[1].angle+=5.0f;
+			  damiao[1].speed=10.0f;
+			  damiao[2].angle+=5.0f;
+		    damiao[2].speed=10.0f;
+			  damiao[3].angle+=5.0f;
+		    damiao[3].speed=10.0f;
+			  }
+			  else 
+			 {
+				  break;
+			  }
+			  
+		  break;
+	  }
    
 //int16_t	  volatage[4]={0,2000,2000,2000};
     /* USER CODE END WHILE */
