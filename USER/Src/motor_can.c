@@ -147,19 +147,14 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t g)
 }
 void Set_dm_enable(CAN_HandleTypeDef* hcan)
 {
-	uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
-	
-//	pos_tmp = float_to_uint(1.0f,12.5f,12.5f, 16);
-//  vel_tmp = float_to_uint(1, 30.0f, 30.0f, 12);
-//  tor_tmp = float_to_uint(1, 10.0f,10.0f, 12);
 
-	
+
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
   can2TxMsg.StdId = 0x1;
-  can2TxMsg.IDE   = CAN_ID_STD;//±ê×?ID
-  can2TxMsg.RTR   = CAN_RTR_DATA;//êy?Y??
-  can2TxMsg.DLC   = 8;//êy?Y3¤?è
+  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can2TxMsg.DLC   = 8;//数据长度
   
     can2TxData[0] = 0xFF;
     can2TxData[1] = 0xFF;
@@ -196,13 +191,7 @@ void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 	}
 }
 
-void SET_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4)
-{
-  damiao[0].Angel_pid.set=angle1;
-  damiao[1].Angel_pid.set=angle2;
-  damiao[2].Angel_pid.set=angle3;
-  damiao[3].Angel_pid.set=angle4;
-}
+
 
 
 /********************CAN接收*****************************/
@@ -251,25 +240,4 @@ void SET_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3
 //	
 //}
 
-
-
-//void Angle_Ctrl(motor_info_t *ID,uint16_t Target)
-//{
-//	if(ID->FirstEntre==1)
-//	{
-//		ID->relative=0;
-//		ID->lastRead=ID->Rxmsg.Angle;
-//		ID->FirstEntre=0;
-//	}
-//	else
-//	{
-//		ID->Target=Target;
-//		int16_t tmp=(int16_t)ID->Rxmsg.Angle- (int16_t)ID->lastRead;
-//		ID->relative+=(tmp<180?(tmp>-180?tmp:tmp+360):tmp-360);
-//		//if(ID->Rxmsg.Angle*Target<0&&fabs(ID->Rxmsg.Angle-Target)>180);
-//		ID->Current=PID_PROCESS_Double(&ID->Angel_pid,&ID->Speed_pid,Target,ID->Rxmsg.Angle,ID->Rxmsg.Speed);
-//		ID->lastRead=ID->Rxmsg.Angle;
-//	}
-
-//}
-
+/************************** (C) COPYRIGHT TPP-FoShan University *****END OF FILE****/
