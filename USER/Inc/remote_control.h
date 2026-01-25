@@ -34,6 +34,16 @@
 #define RC_CH_VALUE_OFFSET      ((uint16_t)1024)
 #define RC_CH_VALUE_MAX         ((uint16_t)1684)
 
+#define DEADZONE 150.0f//定义死区阈值（绝对值范围），用于过滤小范围值
+
+#define KEY_NONE 0X00//定义虚拟按键初始状态
+#define KEY_S1_DOWN 0X01//定义虚拟按键S1_DOWN
+#define KEY_S1_MID 0X02//定义虚拟按键S1_MID
+#define KEY_S1_UP 0X04//定义虚拟按键S1_UP
+#define KEY_S2_DOWN 0X08//定义虚拟按键S2_DOWN
+#define KEY_S2_MID 0X10//定义虚拟按键S2_MID
+#define KEY_S2_UP 0X20//定义虚拟按键S2_UP
+
 /* ----------------------- RC Switch Definition----------------------------- */
 #define RC_SW_UP                ((uint16_t)1)
 #define RC_SW_MID               ((uint16_t)3)
@@ -65,6 +75,11 @@ typedef __packed struct
         {
                 int16_t ch[5];
                 char s[2];
+
+                // 按键状态记录
+                uint16_t last_s1_state;        // S1上次状态
+                uint16_t last_s2_state;        // S2上次状态
+                uint16_t key_flag;              // 当前按键标志
         } rc;
         __packed struct
         {
@@ -113,5 +128,7 @@ extern const RC_ctrl_t *get_remote_control_point(void);
 extern uint8_t   dbus_buf[DBUS_BUFLEN];
 void USART1_IRQHandlerCallBack(void);
 
+static uint8_t detect_switch_position(int16_t value);
+static void virtual_key_update(RC_ctrl_t *rc_ctrl);
 
 #endif

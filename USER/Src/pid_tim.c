@@ -35,13 +35,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             voltages[i]=(int16_t)C620[i].Speed_pid.out;
             
         }
-        for(int i=0;i<MotorCount;i++)
-        {
-            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Speed_pid.set);
-            voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
-            
-        }
-        Set_dm(&hcan2,voltages);
+//        for(int i=0;i<MotorCount;i++)
+//        {
+//            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Speed_pid.set);
+//            voltages[i]=(int16_t)damiao[i].Speed_pid.out;
+//            
+//        }
+//        Set_dm(&hcan2,voltages);
         Set_voltagec1(&hcan1,voltages);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机

@@ -1,43 +1,44 @@
 #include "ht_10a_remote_control.h"
 #include "includes.h"
 #include "main.h"
+#include "usart.h"
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
-uint8_t   sbus_buffer[SBUS_BUFLEN];//SBUSĞ­ï¿½ï¿½ï¿½ï¿½ï¿½İ»ï¿½ï¿½ï¿½25bit
+uint8_t   sbus_buffer[SBUS_BUFLEN];//SBUS½ÓÊÕ»º³åÇø
 
 static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctrl_t *sbus_ctrl);
 
-static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMAË«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMAË«»º³å
 
 SBUS_ctrl_t sbus_ctrl;
 
-void sbus_remote_control_init(void)//ï¿½ï¿½Ê¼ï¿½ï¿½SBUSĞ­ï¿½ï¿½ï¿½ï¿½ï¿½
+void sbus_remote_control_init(void)//SBUSÒ£¿ØÆ÷³õÊ¼»¯
 {
     RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
 
-    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
-    sbus_ctrl.last_swa_state = POS_MID;  // SWAï¿½ï¿½Ê¼ï¿½ï¿½MID
-    sbus_ctrl.last_swb_state = POS_DOWN;        // SWBï¿½ï¿½Ê¼ï¿½ï¿½DOWN
-    sbus_ctrl.last_swc_state = POS_DOWN;        // SWCï¿½ï¿½Ê¼ï¿½ï¿½DOWN
-    sbus_ctrl.last_swd_state = POS_MID;  // SWDï¿½ï¿½Ê¼ï¿½ï¿½MID
-    sbus_ctrl.key_flag = KEY_NONE;       // ï¿½ï¿½Ê¼ï¿½Ş°ï¿½ï¿½ï¿½
+    
+    sbus_ctrl.last_swa_state = POS_MID;  // SWA³õÊ¼»¯×´Ì¬MID
+    sbus_ctrl.last_swb_state = POS_DOWN;        // SWB³õÊ¼»¯×´Ì¬DOWN
+    sbus_ctrl.last_swc_state = POS_DOWN;        // SWC³õÊ¼»¯×´Ì¬DOWN
+    sbus_ctrl.last_swd_state = POS_MID;  // SWD³õÊ¼»¯×´Ì¬MID
+    sbus_ctrl.key_flag = KEY_NONE;       // ³õÊ¼»¯±êÖ¾Î»NONE
 }
 
-const SBUS_ctrl_t *get_sbus_remote_control_point(void)//ï¿½ï¿½È¡SBUSĞ­ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
+const SBUS_ctrl_t *get_sbus_remote_control_point(void)//»ñÈ¡SBUSÒ£¿ØÆ÷Ö¸Õë
 {
     return &sbus_ctrl;
 }
 
-//ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½
+//´®¿ÚÖĞ¶Ï
 void USART1_IRQHandlerCallBack(void)
 {
-    if(huart1.Instance->SR & UART_FLAG_RXNE)//ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½
+    if(huart1.Instance->SR & UART_FLAG_RXNE)//½ÓÊÕµ½Êı¾İ
     {
         __HAL_UART_CLEAR_PEFLAG(&huart1);
     }
-    else if(USART1->SR & UART_FLAG_IDLE)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    else if(USART1->SR & UART_FLAG_IDLE)//¿ÕÏĞÖĞ¶Ï
     {
         static uint16_t this_time_rx_len = 0;
 
@@ -52,19 +53,19 @@ void USART1_IRQHandlerCallBack(void)
             __HAL_DMA_DISABLE(&hdma_usart1_rx);
 
             //get receive data length, length = set_data_length - remain_length
-            //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ = ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ - Ê£ï¿½à³¤ï¿½ï¿½
+            //»ñÈ¡½ÓÊÕÊı¾İ³¤¶È,³¤¶È = Éè¶¨³¤¶È - Ê£Óà³¤¶È
             this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart1_rx.Instance->NDTR;
 
             //reset set_data_lenght
-            //ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½
+            //ÖØĞÂÉè¶¨Êı¾İ³¤¶È
             hdma_usart1_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
 
             //set memory buffer 1
-            //ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
+            //Éè¶¨»º³åÇø1
             hdma_usart1_rx.Instance->CR |= DMA_SxCR_CT;
             
             //enable DMA
-            //Ê¹ï¿½ï¿½DMA
+            //Ê¹ÄÜDMA
             __HAL_DMA_ENABLE(&hdma_usart1_rx);
 
             if(this_time_rx_len == RC_FRAME_LENGTH)
@@ -80,24 +81,24 @@ void USART1_IRQHandlerCallBack(void)
             __HAL_DMA_DISABLE(&hdma_usart1_rx);
 
             //get receive data length, length = set_data_length - remain_length
-            //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ = ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ - Ê£ï¿½à³¤ï¿½ï¿½
+            //»ñÈ¡½ÓÊÕÊı¾İ³¤¶È,³¤¶È = Éè¶¨³¤¶È - Ê£Óà³¤¶È
             this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart1_rx.Instance->NDTR;
 
             //reset set_data_lenght
-            //ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½
+            //ÖØĞÂÉè¶¨Êı¾İ³¤¶È
             hdma_usart1_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
 
             //set memory buffer 0
-            //ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0
+            //Éè¶¨»º³åÇø0
             DMA1_Stream1->CR &= ~(DMA_SxCR_CT);
             
             //enable DMA
-            //Ê¹ï¿½ï¿½DMA
+            //Ê¹ÄÜDMA
             __HAL_DMA_ENABLE(&hdma_usart1_rx);
 
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
-                //ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                //´¦ÀíÒ£¿ØÆ÷Êı¾İ
                 sbus_to_remote_control(sbus_rx_buffer[1], &sbus_ctrl);
             }
         }
@@ -106,79 +107,82 @@ void USART1_IRQHandlerCallBack(void)
 
 static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctrl_t *sbus_ctrl)
 {
-    if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//ï¿½Ğ¶ï¿½Í·Ö¡ï¿½ï¿½Î²Ö¡
+    if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//ÅĞ¶ÏÍ·Ö¡ºÍÎ²Ö¡
     {
-        sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        sbus_ctrl -> ch[2] = ((sbus_buffer[3] >> 6 )| (sbus_buffer[4] << 2 ) | (sbus_buffer[5] << 10)) & 0x07ff;//ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        sbus_ctrl -> ch[3] = ((sbus_buffer[5] >> 1 )| (sbus_buffer[6] << 7 )) & 0x07ff;//ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//ÓÒ×óÓÒ
+        sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//ÓÒÉÏÏÂ
+        sbus_ctrl -> ch[2] = ((sbus_buffer[3] >> 6 )| (sbus_buffer[4] << 2 ) | (sbus_buffer[5] << 10)) & 0x07ff;//×óÉÏÏÂ
+        sbus_ctrl -> ch[3] = ((sbus_buffer[5] >> 1 )| (sbus_buffer[6] << 7 )) & 0x07ff;//×ó×óÓÒ
         sbus_ctrl -> ch[4] = ((sbus_buffer[6] >> 4 )| (sbus_buffer[7] << 4 )) & 0x07ff;//SWA
         sbus_ctrl -> ch[5] = ((sbus_buffer[7] >> 7 )| (sbus_buffer[8] << 1 )| (sbus_buffer[9] << 9 )) & 0x07ff;//SWB
         sbus_ctrl -> ch[6] = ((sbus_buffer[9] >> 2 )| (sbus_buffer[10] << 6 )) & 0x07ff;//SWC
         sbus_ctrl-> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
 
-       //ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
+       //Êı¾İÆ«ÒÆ
         for(int i = 0;i<8;i++)
         {
             sbus_ctrl->ch[i] = (int16_t)(sbus_ctrl->ch[i] - SBUS_CH_VALUE_OFFSET);
         }
        
-        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â°´ï¿½ï¿½×´Ì¬
+        // ¸üĞÂĞéÄâ¼üÎ»×´Ì¬
         virtual_key_update(sbus_ctrl);
 
-        //ï¿½ï¿½Ò»ï¿½ï¿½
+        //¹éÒ»»¯Êı¾İ
         car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         
-        //Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //Ó¦ÓÃËÀÇø
         car_x=apply_deadzone(car_x, DEADZONE);
         car_y=apply_deadzone(car_y, DEADZONE);
         car_w=apply_deadzone(car_w, DEADZONE);
 
         MecanumWheel_Move(car_x,car_y,car_w);
-        // ä½¿ç”¨USART2æ‰“å°é€šé“æ•°æ®
-
-        USART2_Print("Channel Data: Ch0=%d\r\n, Ch1=%d\r\n, Ch2=%d\r\n, Ch3=%d\r\n, Ch4=%d\r\n, Ch5=%d\r\n, Ch6=%d\r\n, Ch7=%d\r\n",
+       
+        // ´òÓ¡Í¨µÀÊı¾İ
+        static uint32_t print_count = 0;
+        print_count++;
+        if(print_count == 10)
+        {
+            print_count = 0;
+            USART2_Print("Channel Data: Ch0=%d, Ch1=%d, Ch2=%d, Ch3=%d, Ch4=%d, Ch5=%d, Ch6=%d, Ch7=%d\r\n",
              sbus_ctrl->ch[0],sbus_ctrl->ch[1],sbus_ctrl->ch[2],sbus_ctrl->ch[3],
              sbus_ctrl->ch[4],sbus_ctrl->ch[5],sbus_ctrl->ch[6],sbus_ctrl->ch[7]);
-
-        // æ‰“å°å½’ä¸€åŒ–åçš„é€Ÿåº¦æ•°æ®
-
-        USART2_Print("Speed Data: car_x=%.2f, car_y=%.2f, car_w=%.2f\r\n", 
+            USART2_Print("Speed Data: car_x=%.2f, car_y=%.2f, car_w=%.2f\r\n", 
              car_x, car_y, car_w);
+        }
     }
 
 }
-
+ 
 static uint8_t detect_switch_position(int16_t value)
 {
     if (value <= SWITCH_SBUS_CH_VALUE_MIN + DEADZONE) 
     {
-        return POS_UP;  // ï¿½ï¿½
+        return POS_UP;  // ÉÏ
     } 
     else if (value >= SWITCH_SBUS_CH_VALUE_MAX - DEADZONE) 
     {
-        return POS_DOWN;  // ï¿½ï¿½
+        return POS_DOWN;  // ÏÂ
     } 
     else 
     {
-        return POS_MID;  // ï¿½ï¿½
+        return POS_MID;  // ÖĞ
     }
 }
 
 static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
 {
-    // ï¿½ï¿½âµ±Ç°ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+    // ¸üĞÂ¿ª¹Ø×´Ì¬
     uint8_t SWA_pos = detect_switch_position(sbus_ctrl -> ch[4]);
     uint8_t SWB_pos = detect_switch_position(sbus_ctrl -> ch[5]);
     uint8_t SWC_pos = detect_switch_position(sbus_ctrl -> ch[6]);
     uint8_t SWD_pos = detect_switch_position(sbus_ctrl -> ch[7]);
 
-    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾
+    //³õÊ¼»¯ĞéÄâ¼üÎ»×´Ì¬
     sbus_ctrl->key_flag = KEY_NONE;
 
-    //SWAï¿½ï¿½ï¿½ï¿½
+    //SWA´¦Àí
     if(sbus_ctrl -> last_swa_state == POS_MID && SWA_pos == POS_UP)
     {
         sbus_ctrl->key_flag |= KEY_SWA_UP;
@@ -192,7 +196,7 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
         sbus_ctrl->key_flag |= KEY_SWA_MID;
     }
 
-    //SWBï¿½ï¿½ï¿½ï¿½
+    //SWB´¦Àí
     if(sbus_ctrl -> last_swb_state == POS_DOWN && SWB_pos == POS_UP)
     {
         sbus_ctrl->key_flag |= KEY_SWB_UP;
@@ -202,7 +206,7 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
         sbus_ctrl->key_flag |= KEY_SWB_DOWN;
     }
 
-    //SWCï¿½ï¿½ï¿½ï¿½
+    //SWC´¦Àí
     if(sbus_ctrl -> last_swc_state == POS_DOWN && SWC_pos == POS_UP)
     {
         sbus_ctrl->key_flag |= KEY_SWC_UP;
@@ -212,7 +216,7 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
         sbus_ctrl->key_flag |= KEY_SWC_DOWN;
     }
 
-    //SWDï¿½ï¿½ï¿½ï¿½
+    //SWD´¦Àí
     if(sbus_ctrl -> last_swd_state == POS_MID && SWD_pos == POS_UP)
     {
         sbus_ctrl->key_flag |= KEY_SWD_UP;
@@ -226,7 +230,7 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
         sbus_ctrl->key_flag |= KEY_SWD_MID;
     }
 
-    // ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½×´Ì¬
+    //¸üĞÂ×´Ì¬
     sbus_ctrl->last_swa_state = SWA_pos;
     sbus_ctrl->last_swb_state = SWB_pos;
     sbus_ctrl->last_swc_state = SWC_pos;

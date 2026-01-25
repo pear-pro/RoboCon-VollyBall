@@ -23,7 +23,7 @@
 #define POS_MID 3//定义开关位置MID
 #define POS_DOWN 2//定义开关位置DOWN
 
-#define DEADZONE 50.0f//定义死区阈值（绝对值范围），用于过滤小范围值
+#define DEADZONE 150.0f//定义死区阈值（绝对值范围），用于过滤小范围值
 
 #define KEY_NONE 0X00//定义虚拟按键初始状态
 #define KEY_SWA_DOWN 0X01//定义虚拟按键SWITCH_DOWN

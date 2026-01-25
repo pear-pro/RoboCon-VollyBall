@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/LarkS/Desktop/VolleyBall/RoboCon-VollyBall/build/Debug/cmake_install.cmake",
+		"C:/Users/LarkS/Desktop/VolleyBall/RoboCon-VollyBall/build/Debug/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

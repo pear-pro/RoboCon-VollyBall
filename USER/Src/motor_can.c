@@ -139,19 +139,19 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	}
   }
   //  if(hcan==&hcan2)
-		{
-	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-		 for(int i=0;i<MotorCount;i++)
-		 {
-			 if(can2RxMsg.StdId==0x301+i){
-				 damiao[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-				 damiao[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-				 damiao[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-				 damiao[i].Rxmsg.Temp=can2RxData[6];
-				 flag=1;
-			 }
-		 }	
-		}
+//		{
+//	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+//		 for(int i=0;i<MotorCount;i++)
+//		 {
+//			 if(can2RxMsg.StdId==0x301+i){
+//				 damiao[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+//				 damiao[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+//				 damiao[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
+//				 damiao[i].Rxmsg.Temp=can2RxData[6];
+//				 flag=1;
+//			 }
+//		 }	
+//		}
 	
 }
 
