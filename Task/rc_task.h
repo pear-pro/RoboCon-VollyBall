@@ -16,17 +16,29 @@
   @endverbatim
   ****************************(C) COPYRIGHT 2016 DJI****************************
   */
-#ifndef REMOTE_CONTROL_H
-#define REMOTE_CONTROL_H
+#ifndef __RC_TASK_H
+#define __RC_TASK_H
 //#include "struct_typedef.h"
 #include "main.h"
 #include "bsp_rc.h"
+
+#include "FreeRTOSConfig.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "timers.h"
+#include "queue.h"
+#include "chassis_task.h"
+
+#include "includes.h"
+
+extern QueueHandle_t xRCRawDataQueue;
+void rc_task_creat(void);
 
 #define DBUS_MAX_LEN     (50)
 #define DBUS_BUFLEN      (18)
 #define DBUS_HUART       huart1
 
-#define SBUS_RX_BUF_NUM 36u
+
 
 #define RC_FRAME_LENGTH 18u
 
@@ -81,29 +93,8 @@ typedef __packed struct
 
 } RC_ctrl_t;
 
-/* ----------------------- Internal Data ----------------------------------- */
 
-/**
-  * @brief          remote control init
-  * @param[in]      none
-  * @retval         none
-  */
-/**
-  * @brief          遥控器初始化
-  * @param[in]      none
-  * @retval         none
-  */
 extern void remote_control_init(void);
-/**
-  * @brief          get remote control data point
-  * @param[in]      none
-  * @retval         remote control data point
-  */
-/**
-  * @brief          获取遥控器数据指针
-  * @param[in]      none
-  * @retval         遥控器数据指针
-  */
 extern const RC_ctrl_t *get_remote_control_point(void);
 
 #define DBUS_MAX_LEN     (50)
@@ -111,7 +102,5 @@ extern const RC_ctrl_t *get_remote_control_point(void);
 #define DBUS_HUART       huart1
 
 extern uint8_t   dbus_buf[DBUS_BUFLEN];
-void USART1_IRQHandlerCallBack(void);
-
 
 #endif

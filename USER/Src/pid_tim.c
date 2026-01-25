@@ -16,7 +16,7 @@ uint16_t PID_Calc_Flag = 0;
 
 /************************ 全局变量（HAL库定时器句柄） ************************/
 TIM_HandleTypeDef htim_pid;  // PID定时器句柄
-
+ int16_t k;
 
 /************************ 定时器更新中断回调函数 ************************/
 /**
@@ -28,38 +28,47 @@ TIM_HandleTypeDef htim_pid;  // PID定时器句柄
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
+	
     if (htim == &htim3)  // 确认是PID定时器的更新中断
     {
-        for(int i=0;i<MotorCount;i++)
-        {
-            voltages[i]=(int16_t)C620[i].Speed_pid.out;
-            
-        }
-        for(int i=0;i<MotorCount;i++)
-        {
-            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Speed_pid.set);
-            voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
-            
-        }
-        Set_dm(&hcan2,voltages);
-        Set_voltagec1(&hcan1,voltages);
+//        for(int i=0;i<MotorCount;i++)
+//        {
+//            voltages[i]=(int16_t)C620[i].Speed_pid.out;
+//            
+//        }
+//        for(int i=0;i<MotorCount;i++)
+//        {
+//            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Speed_pid.set);
+//            voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
+//            
+//        }
+//        Set_dm(&hcan2,voltages);
+//        Set_voltagec1(&hcan1,voltages);
+		k=k+1;
+		if(k>500)
+		{
+			HAL_GPIO_TogglePin(led1_GPIO_Port,led1_Pin);
+			
+			k=0;
+		}
+
     }
-	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
-	{
-		HAL_CAN_DeInit(&hcan1);
-		HAL_CAN_Init(&hcan1);
-		HAL_CAN_Start(&hcan1);
-	
-	
-	}
-    if(hcan2.ErrorCode!=0)//避免can总线错误导致死机
-	{
-		HAL_CAN_DeInit(&hcan2);
-		HAL_CAN_Init(&hcan2);
-		HAL_CAN_Start(&hcan2);
-	
-	
-	}
+//	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
+//	{
+//		HAL_CAN_DeInit(&hcan1);
+//		HAL_CAN_Init(&hcan1);
+//		HAL_CAN_Start(&hcan1);
+//	
+//	
+//	}
+//    if(hcan2.ErrorCode!=0)//避免can总线错误导致死机
+//	{
+//		HAL_CAN_DeInit(&hcan2);
+//		HAL_CAN_Init(&hcan2);
+//		HAL_CAN_Start(&hcan2);
+//	
+//	
+//	}
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {

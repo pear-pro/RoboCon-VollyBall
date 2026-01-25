@@ -25,13 +25,13 @@ typedef struct {
  * @param  wz: 旋转速度（顺时针=正，逆时针=负），单位：rad/s
  * @retval 四轮目标转速（已限幅，可直接输出到电机驱动）
  */
-void MecanumWheel_Move(float vx, float vy, float wz)
+void MecanumWheel_Move(float vx, float vy, float wz,motor_info_t *moto_goal)
 {
     WheelSpeed_t wheel_speed = {0};
     float omega_fl, omega_fr, omega_rr, omega_rl;
     float max_omega = 0.0f;
     float scale = 1.0f;
-
+	
     // 1. 运动学逆解：计算原始转速（rad/s）
     float lw_sum = WHEEL_BASE_HALF + WHEEL_TRACK_HALF;  // L+W
     omega_fl = (vx - vy - lw_sum * wz) / WHEEL_RADIUS;
@@ -51,10 +51,9 @@ void MecanumWheel_Move(float vx, float vy, float wz)
     wheel_speed.fr = (int16_t)(omega_fr * scale);
     wheel_speed.rr = (int16_t)(omega_rr * scale);
     wheel_speed.rl = (int16_t)(omega_rl * scale);
-	
-	C620[0].Speed_pid.set = -wheel_speed.rr;
-	C620[1].Speed_pid.set = -wheel_speed.fr;
-	C620[2].Speed_pid.set = wheel_speed.fl;
-	C620[3].Speed_pid.set = wheel_speed.rl;
 
+	moto_goal[0].Speed_pid.set = -wheel_speed.rr;
+	moto_goal[1].Speed_pid.set = -wheel_speed.fr;
+	moto_goal[2].Speed_pid.set = wheel_speed.fl;
+	moto_goal[3].Speed_pid.set = wheel_speed.rl;
 }

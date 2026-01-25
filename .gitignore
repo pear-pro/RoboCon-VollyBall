@@ -17,10 +17,11 @@
 *.htm
 *.lnp
 *.sct
-
+*.idx
 *.uvgui.*
 *.uvguix.*
-
+*.log
+*.swo
 
 # Object, binary and map files
 *.o

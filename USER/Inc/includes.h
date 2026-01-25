@@ -14,7 +14,7 @@
 #include "car_ctrl.h"
 #include "bsp_rc.h"
 #include "Initialize.h"
-#include "remote_control.h"
+#include "rc_task.h"
 #include "math_utils.h"
 
 extern motor_info_t C620[MotorCount];

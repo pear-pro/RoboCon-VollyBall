@@ -38,7 +38,11 @@ typedef struct{
 	RxMsg_t 			Rxmsg;
 }motor_info_t;
 
-
+typedef struct {
+    float vx;   // x轴速度 (m/s)
+    float vy;   // y轴速度 (m/s)
+    float wz;   // 角速度 (rad/s)
+} Chassis_MoveCmd_t;
 
 void can_filter_init(void);
 void can1_filter_init(void);

@@ -4,7 +4,7 @@ extern motor_info_t damiao[MotorCount];
 void All_Init(){
 
     can1_filter_init();
-    can2_fliter_init();
+//    can2_fliter_init();
 	remote_control_init();
 
     for(int i=0;i<MotorCount;i++){
