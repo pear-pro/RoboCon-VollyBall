@@ -38,10 +38,10 @@ typedef struct{
 	uint16_t 			lastRead;//上一次读取值
 	uint16_t 			currentRead;//当前读取值
 	uint16_t 			Zero;//上电后的第一个位置做为零点
-	int16_t 			totalAngle;//总角度
+	int32_t 			totalAngle;//总角度
 	float				encoderAngle;//经过处理的电机角度
 	int16_t				Current;//输出电流
-	int16_t				out;//输出电压
+	float				out;//输出电压
 
 	
 	RxMsg_t 			Rxmsg;
@@ -57,6 +57,6 @@ void can2_fliter_init(void);
 void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_dm(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void SET_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
-void MIT_Calc(motor_info_t *motor,int16_t target_torque,uint16_t target_Angle,int16_t target_speed);
+void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed);
 
 #endif

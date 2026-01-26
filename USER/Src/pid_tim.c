@@ -38,7 +38,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //        Set_voltagec1(&hcan1,voltages);
 		for(int i=0;i<MotorCount;i++)
         {
-			MIT_Calc(&C620[i],1000,160,500);  
+			MIT_Calc(&C620[i],1000,35536,0);  
         } 
 		voltages[0]=C620[0].out;
 		voltages[1]=C620[1].out;
@@ -68,13 +68,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
         for(int i=0;i<MotorCount;i++)
         {
-			MIT_Calc(&C620[i],1000,160,500);  
+			MIT_Calc(&C620[i],100,160,0);  
         } 
 		voltages[0]=C620[0].out;
 		voltages[1]=C620[1].out;
 		voltages[2]=C620[2].out;
 		voltages[3]=C620[3].out;
         Set_voltagec1(&hcan1,voltages);
+		
     }
 }
 

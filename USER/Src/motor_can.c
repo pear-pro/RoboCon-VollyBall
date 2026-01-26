@@ -125,21 +125,21 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
 			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
-void MIT_Calc(motor_info_t *motor,int16_t target_torque,uint16_t target_Angle,int16_t target_speed)
+void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed)
 {
 
-	int16_t Angle_delta=target_Angle-motor->totalAngle;
+	int32_t Angle_delta=target_Angle-motor->totalAngle;
 	int16_t speed_delta=target_speed-motor->Rxmsg.Speed;
-	float kp=1;
-	float kd=0.1;
+	float kp=2;
+	float kd=1;
 	motor->out=target_torque+
 				kp*Angle_delta+
 				kd*speed_delta;
-	abs_limit((float*)&(motor->out), 16000);
+	abs_limit(&(motor->out),16000);
 }
 
 
-
+  
 /********************CAN接收*****************************/
 //接收中断回调函数
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
@@ -180,15 +180,16 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 						C620[i].Zero=C620[i].currentRead;
 						C620[i].FirstEntre=1;
 						C620[i].lastRead=C620[i].currentRead;
+						C620[i].totalAngle=0;
 					}
 					int16_t delta=C620[i].currentRead-C620[i].lastRead;
-					if(delta>4096)
+					if(delta>180)
 					{
-						delta=delta-8192;
+						delta=delta-360;
 					}
-					else if(delta<-4096)
+					else if(delta<-180)
 					{
-						delta=delta+8192;
+						delta=delta+360;
 					}
 					else
 					{
@@ -196,6 +197,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					}
 					C620[i].totalAngle+=delta;
 					C620[i].lastRead=C620[i].currentRead;
+					Vofa_JustFloat((float*)C620[i].totalAngle, 1);
 				}
 			}
 
