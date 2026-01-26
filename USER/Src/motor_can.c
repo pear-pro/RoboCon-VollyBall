@@ -35,6 +35,16 @@ void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 	}
 }
 
+static void abs_limit(float *x, int32_t limit)
+{
+	/* 如果值超过正边界，则设置为正边界值 */
+	if (*x > limit)
+		*x = limit;
+	/* 如果值超过负边界，则设置为负边界值 */
+	if (*x < -limit)
+		*x = -limit;
+}
+
 /*滤波器配置及can初始化*/
 void can1_filter_init(void)
 { 	
@@ -115,6 +125,18 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
 			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
+void MIT_Calc(motor_info_t *motor,int16_t target_torque,uint16_t target_Angle,int16_t target_speed)
+{
+
+	int16_t Angle_delta=target_Angle-motor->totalAngle;
+	int16_t speed_delta=target_speed-motor->Rxmsg.Speed;
+	float kp=1;
+	float kd=0.1;
+	motor->out=target_torque+
+				kp*Angle_delta+
+				kd*speed_delta;
+	abs_limit((float*)&(motor->out), 16000);
+}
 
 
 
@@ -125,25 +147,58 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-  if(hcan==&hcan1)
-  {
-	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-	for(int i=0;i<MotorCount;i++)
-	{
-		if(can1RxMsg.StdId==0x201+i){
-			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-			C620[i].Rxmsg.Temp=can1RxData[6];
-			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
-			pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
-			flag=1;
-		}
-	}
-  }
-    if(hcan==&hcan2)
+//  if(hcan==&hcan1)
+//  {
+//	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+//	for(int i=0;i<MotorCount;i++)
+//	{
+//		if(can1RxMsg.StdId==0x201+i){
+//			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+//			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
+//			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
+//			C620[i].Rxmsg.Temp=can1RxData[6];
+//			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+//			pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+//			flag=1;
+//		}
+//	}
+//  }
+    if(hcan==&hcan1)
 		{
-	     
+			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+			for(int i=0;i<MotorCount;i++)
+			{
+				if(can1RxMsg.StdId==0x201+i){
+					C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+					C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
+					C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
+					C620[i].Rxmsg.Temp=can1RxData[6];
+					C620[i].currentRead=C620[i].Rxmsg.Angle;
+					//计算相对零点转了多少度
+					if(C620[i].FirstEntre==0)
+					{
+						C620[i].Zero=C620[i].currentRead;
+						C620[i].FirstEntre=1;
+						C620[i].lastRead=C620[i].currentRead;
+					}
+					int16_t delta=C620[i].currentRead-C620[i].lastRead;
+					if(delta>4096)
+					{
+						delta=delta-8192;
+					}
+					else if(delta<-4096)
+					{
+						delta=delta+8192;
+					}
+					else
+					{
+						delta=delta+0;
+					}
+					C620[i].totalAngle+=delta;
+					C620[i].lastRead=C620[i].currentRead;
+				}
+			}
+
 		}
 	
 }
