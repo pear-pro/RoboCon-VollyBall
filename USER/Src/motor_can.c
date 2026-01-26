@@ -127,11 +127,11 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
 }
 void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed)
 {
-
+	target_Angle*=19;
 	int32_t Angle_delta=target_Angle-motor->totalAngle;
 	int16_t speed_delta=target_speed-motor->Rxmsg.Speed;
-	float kp=2;
-	float kd=1;
+	float kp=10;
+	float kd=5;
 	motor->out=target_torque+
 				kp*Angle_delta+
 				kd*speed_delta;
