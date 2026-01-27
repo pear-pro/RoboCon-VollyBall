@@ -114,11 +114,35 @@ HAL_TIM_Base_Start_IT(&htim3);
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_Delay(2000);
-
+enum State Set=0;
   while (1)
   {
 
     /* USER CODE END WHILE */
+	  switch (Set)
+	  {
+		  case 0:
+			  C620[0].Target=0;
+			  C620[1].Target=0;
+			  C620[2].Target=0;
+			  C620[3].Target=0;
+		  
+		  break;
+		   
+		  case 1:
+			  C620[0].Target=0;
+			  C620[1].Target=0;
+			  C620[2].Target=0;
+			  C620[3].Target=0;
+		  break;
+		  
+		  case 2:
+			  C620[0].Target=0;
+			  C620[1].Target=0;
+			  C620[2].Target=0;
+			  C620[3].Target=0;
+		  break;
+	  }
 
     /* USER CODE BEGIN 3 */
   }
