@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F427xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../USER/Inc;../USER/Src;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Task</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../USER/Inc;../USER/Src;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Task;..\Math</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -384,9 +384,9 @@
           <GroupName>USER/Src</GroupName>
           <Files>
             <File>
-              <FileName>bsp_rc.c</FileName>
+              <FileName>bsp_usart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\USER\Src\bsp_rc.c</FilePath>
+              <FilePath>..\USER\Src\bsp_usart.c</FilePath>
             </File>
             <File>
               <FileName>motor_can.c</FileName>
@@ -394,24 +394,9 @@
               <FilePath>..\USER\Src\motor_can.c</FilePath>
             </File>
             <File>
-              <FileName>pid.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\pid.c</FilePath>
-            </File>
-            <File>
               <FileName>pid_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\pid_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>math_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\math_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>start_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\start_task.c</FilePath>
             </File>
             <File>
               <FileName>car_ctrl.c</FileName>
@@ -423,15 +408,20 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Src\Initialize.c</FilePath>
             </File>
+            <File>
+              <FileName>start_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\start_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>USER/Inc</GroupName>
           <Files>
             <File>
-              <FileName>bsp_rc.h</FileName>
+              <FileName>bsp_usart.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\USER\Inc\bsp_rc.h</FilePath>
+              <FilePath>..\USER\Inc\bsp_usart.h</FilePath>
             </File>
             <File>
               <FileName>car_ctrl.h</FileName>
@@ -454,19 +444,39 @@
               <FilePath>..\USER\Inc\pid_tim.h</FilePath>
             </File>
             <File>
-              <FileName>pid.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\pid.h</FilePath>
-            </File>
-            <File>
-              <FileName>math_utils.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\math_utils.h</FilePath>
-            </File>
-            <File>
               <FileName>Initialize.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\Initialize.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Math</GroupName>
+          <Files>
+            <File>
+              <FileName>math_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Math\math_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Math\pid.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Task</GroupName>
+          <Files>
+            <File>
+              <FileName>chassis_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\chassis_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>rc_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Task\rc_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1530,21 +1540,6 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Task</GroupName>
-          <Files>
-            <File>
-              <FileName>chassis_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Task\chassis_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>rc_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Task\rc_task.c</FilePath>
             </File>
           </Files>
         </Group>

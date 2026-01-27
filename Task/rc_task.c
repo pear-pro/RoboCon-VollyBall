@@ -11,7 +11,6 @@
 */
 #include "rc_task.h"
 
-
 /* 任务配置参数 */
 #define RC_PARSE_TASK_PRIO    24  // 遥控解析任务优先级：低于底盘PID任务，高于普通任务
 #define RC_PARSE_TASK_SIZE    128 // 栈大小

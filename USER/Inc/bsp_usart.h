@@ -1,5 +1,5 @@
-#ifndef BSP_RC_H
-#define BSP_RC_H
+#ifndef BSP_USART_H
+#define BSP_USART_H
 //#include "struct_typedef.h"
 #include "main.h"
 #include "FreeRTOSConfig.h"

@@ -10,6 +10,7 @@
   ******************************************************************************
   */
 #include "motor_can.h"
+
 #include "includes.h"
 #include "can.h"
 #include "main.h"

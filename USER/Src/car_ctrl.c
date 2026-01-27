@@ -1,4 +1,6 @@
+#include "car_ctrl.h"
 #include "includes.h"
+
  motor_info_t C620[MotorCount];
 /************************ 麦轮机器人参数配置 ************************/
 // 物理参数（根据实际机器人修改）
