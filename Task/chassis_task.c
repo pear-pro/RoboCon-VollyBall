@@ -14,7 +14,7 @@
 /* 任务配置参数 */
 #define CHASSIS_TASK_PRIO 26		// 任务优先级
 #define CHASSIS_TASK_SIZE 128		// 128 * 4 Byte = 128 * 32 Bit（堆栈）
-#define CHASSIS_TASK_PERIOD_MS 1UL  // 调度周期设置：1ms
+#define CHASSIS_TASK_PERIOD_MS 1UL  // 调度周期设置：1ms  
 #define CHASSIS_TASK_PERIOD_TICKS pdMS_TO_TICKS(CHASSIS_TASK_PERIOD_MS) 
 
 TaskHandle_t chassis_Task_Handle;	//任务句柄
@@ -22,7 +22,6 @@ TaskHandle_t chassis_Task_Handle;	//任务句柄
 /* 队列句柄定义（FreeRTOS进程间通信） */
 QueueHandle_t xChassisCtrlQueue;		// 底盘控制指令队列：接收遥控器/上位机的运动指令（vx/vy/wz）
 QueueHandle_t xChassisFeedbackQueue;	// 电机反馈队列：接收CAN中断中解析的电机状态（转速、电流等）
-
 
 /**********************************************************************
  * 函数名称： chassis_task
