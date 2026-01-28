@@ -117,7 +117,6 @@ void Set_voltagec2(CAN_HandleTypeDef* hcan,int16_t voltage[])
 //接收中断回调函数
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-  uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
   if(hcan==&hcan1)
@@ -132,7 +131,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			C620[i].Rxmsg.Temp=can1RxData[6];
 			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
 			pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
-			flag=1;
 		}
 	}
   }
@@ -146,7 +144,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				 C6xx[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
 				 C6xx[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 				 C6xx[i].Rxmsg.Temp=can2RxData[6];
-				 flag=1;
 			 }
 		 }	
 		}

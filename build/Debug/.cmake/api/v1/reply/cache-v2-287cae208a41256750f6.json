@@ -179,7 +179,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/pear/Desktop/RoboCon-VollyBall/build/Debug"
+			"value" : "c:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -635,7 +635,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall/build/Debug/CMakeFiles/pkgRedirects"
+			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -695,7 +695,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall"
+			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall - main"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1183,11 +1183,11 @@
 			[
 				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "The CMake toolchain file"
 				}
 			],
-			"type" : "UNINITIALIZED",
-			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall/cmake/gcc-arm-none-eabi.cmake"
+			"type" : "FILEPATH",
+			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/gcc-arm-none-eabi.cmake"
 		},
 		{
 			"name" : "CMAKE_VERBOSE_MAKEFILE",
@@ -1215,7 +1215,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall/build/Debug"
+			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug"
 		},
 		{
 			"name" : "DJ_A_wheel_IS_TOP_LEVEL",
@@ -1239,7 +1239,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall"
+			"value" : "C:/Users/pear/Desktop/RoboCon-VollyBall - main"
 		}
 	],
 	"kind" : "cache",
