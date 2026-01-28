@@ -34,6 +34,11 @@
 #define RC_CH_VALUE_OFFSET      ((uint16_t)1024)
 #define RC_CH_VALUE_MAX         ((uint16_t)1684)
 
+/* ----------------------- RC Channel Scaling Factor ------------------------ */
+#define RC_CH_SCALE_X           (0.7f)      // 左右移动灵敏度系数 (0.0~1.0)
+#define RC_CH_SCALE_Y           (1.0f)      // 前后移动灵敏度系数 (0.0~1.0)
+#define RC_CH_SCALE_W           (1.0f)      // 旋转灵敏度系数 (0.0~1.0)
+
 /* ----------------------- RC Switch Definition----------------------------- */
 #define RC_SW_UP                ((uint16_t)1)
 #define RC_SW_MID               ((uint16_t)3)
