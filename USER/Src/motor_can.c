@@ -36,15 +36,6 @@ void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 	}
 }
 
-static void abs_limit(float *x, int32_t limit)
-{
-	/* 如果值超过正边界，则设置为正边界值 */
-	if (*x > limit)
-		*x = limit;
-	/* 如果值超过负边界，则设置为负边界值 */
-	if (*x < -limit)
-		*x = -limit;
-}
 
 /*滤波器配置及can初始化*/
 void can1_filter_init(void)
