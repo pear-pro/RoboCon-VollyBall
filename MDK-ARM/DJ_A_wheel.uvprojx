@@ -415,6 +415,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\RoboCon-VollyBall\USER\Src\car_ctrl.c</FilePath>
             </File>
+            <File>
+              <FileName>math_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\math_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\debug_uart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -459,6 +469,16 @@
               <FileName>Initialize.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\RoboCon-VollyBall\USER\Inc\Initialize.h</FilePath>
+            </File>
+            <File>
+              <FileName>math_utils.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\math_utils.h</FilePath>
+            </File>
+            <File>
+              <FileName>debug_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\debug_uart.h</FilePath>
             </File>
           </Files>
         </Group>

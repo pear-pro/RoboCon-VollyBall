@@ -24,7 +24,7 @@ https://marketplace.visualstudio.com/items?itemName=MS-CEINTL.vscode-language-pa
 1.tim3中断作速度环的更新处理
 2.tim14中断作角度环的更新处理
 3.uart1作为遥控器接收接口
-4.uart2作为串口打印接口
+4.uart6作为串口打印接口
 5.i2c1后续挂载陀螺仪
 6.can1控制底盘电机
 7.can2控制机械臂等,有一个陀螺仪也用can

@@ -13,6 +13,7 @@
 #include "includes.h"
 #include "can.h"
 #include "main.h"
+#include "pid.h"
 #include "pid_tim.h"
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
@@ -67,10 +68,10 @@ void can2_fliter_init(void)
 	can2_filter_structure.FilterMaskIdLow = 0x0000;
 	can2_filter_structure.FilterBank = 0;
 	can2_filter_structure.FilterFIFOAssignment = CAN_RX_FIFO0;//使用FIFO0
-	//HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
+	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
 	
-	//HAL_CAN_Start(&hcan2);
-	//HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
+	HAL_CAN_Start(&hcan2);
+	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
     isRcan2Started=1;
 }
 /*设置电机电压*/
@@ -119,6 +120,8 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[],int16_t g)
 	}
 }
 
+
+
 /********************CAN接收*****************************/
 //接收中断回调函数
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
@@ -126,59 +129,28 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-//  if(hcan==&hcan1)
-//  {
-//	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-//	for(int i=0;i<MotorCount;i++)
-//	{
-//		if(can1RxMsg.StdId==0x201+i){
-//			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-//			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-//			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-//			C620[i].Rxmsg.Temp=can1RxData[6];
-//			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
-//			flag=1;
-//		}
-//	}
-//  }
-  		if(hcan==&hcan1)
+  if(hcan==&hcan1)
+  {
+	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+	for(int i=0;i<MotorCount;i++)
+	{
+		if(can1RxMsg.StdId==0x201+i){
+			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
+			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
+			C620[i].Rxmsg.Temp=can1RxData[6];
+			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+			pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+			flag=1;
+		}
+	}
+  }
+    if(hcan==&hcan2)
 		{
-	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-		 for(int i=0;i<MotorCount;i++)
-		 {
-			 if(can2RxMsg.StdId==0x301+i){
-				 damiao[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-				 damiao[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-				 damiao[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-				 damiao[i].Rxmsg.Temp=can2RxData[6];
-				 damiao[i].Speed_pid.get=damiao[i].Rxmsg.Speed;
-		     	 damiao[i].Angel_pid.get=damiao[i].Rxmsg.Angle;
-
-				 pid_calc(&damiao[i].Speed_pid, damiao[i].Speed_pid.get, damiao[i].Speed_pid.set);
-				 flag=1;
-			 }
-		 }	
+	     
 		}
 	
 }
 
-void Angle_Ctrl(motor_info_t *ID,uint16_t Target)
-{
-	if(ID->FirstEntre==1)
-	{
-		ID->relative=0;
-		ID->lastRead=ID->Rxmsg.Angle;
-		ID->FirstEntre=0;
-	}
-	else
-	{
-		ID->Target=Target;
-		int16_t tmp=(int16_t)ID->Rxmsg.Angle- (int16_t)ID->lastRead;
-		ID->relative+=(tmp<180?(tmp>-180?tmp:tmp+360):tmp-360);
-		//if(ID->Rxmsg.Angle*Target<0&&fabs(ID->Rxmsg.Angle-Target)>180);
-		ID->Current=PID_PROCESS_Double(&ID->Angel_pid,&ID->Speed_pid,Target,ID->Rxmsg.Angle,ID->Rxmsg.Speed);
-		ID->lastRead=ID->Rxmsg.Angle;
-	}
 
-}
 
