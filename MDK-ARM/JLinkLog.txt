@@ -1,0 +1,62 @@
+T1DE8 000:039.756   SEGGER J-Link V6.70e Log File
+T1DE8 000:039.878   DLL Compiled: Apr 17 2020 17:55:05
+T1DE8 000:039.884   Logging started @ 2026-01-26 06:47
+T1DE8 000:039.892 JLINK_SetWarnOutHandler(...)
+T1DE8 000:039.899 - 0.009ms
+T1DE8 000:039.909 JLINK_OpenEx(...)
+T1DE8 000:043.246   Firmware: J-Link ARM-OB STM32 compiled Aug 22 2012 19:52:04
+T1DE8 000:047.723   Hardware: V7.00
+T1DE8 000:047.771   S/N: 20090928
+T1DE8 000:047.787   OEM: SEGGER
+T1DE8 000:047.802   Feature(s): RDI,FlashDL,FlashBP,JFlash,GDB
+T1DE8 000:050.181   TELNET listener socket opened on port 19021
+T1DE8 000:050.332   WEBSRV Starting webserver
+T1DE8 000:050.620   WEBSRV Webserver running on local port 19080
+T1DE8 000:050.644 - 10.740ms returns "O.K."
+T1DE8 000:050.692 JLINK_GetEmuCaps()
+T1DE8 000:050.704 - 0.023ms returns 0x88EA5833
+T1DE8 000:050.729 JLINK_TIF_GetAvailable(...)
+T1DE8 000:051.357 - 0.636ms
+T1DE8 000:051.385 JLINK_SetErrorOutHandler(...)
+T1DE8 000:051.396 - 0.016ms
+T1DE8 000:051.436 JLINK_ExecCommand("ProjectFile = "C:\Users\pear\Desktop\RoboCon-VollyBall - main\MDK-ARM\JLinkSettings.ini"", ...). 
+T1DE8 000:057.392 - 5.989ms returns 0x00
+T1DE8 000:061.745 JLINK_ExecCommand("Device = STM32F427IIHx", ...). 
+T1DE8 000:066.127   Device "STM32F427II" selected.
+T1DE8 000:066.597 - 4.810ms returns 0x00
+T1DE8 000:066.613 JLINK_ExecCommand("DisableConnectionTimeout", ...). 
+T1DE8 000:066.623 - 0.005ms returns 0x01
+T1DE8 000:066.629 JLINK_GetHardwareVersion()
+T1DE8 000:066.635 - 0.008ms returns 0x11170
+T1DE8 000:066.641 JLINK_GetDLLVersion()  returns 67005
+T1DE8 000:066.653 JLINK_GetFirmwareString(...)
+T1DE8 000:066.659 - 0.007ms
+T1DE8 000:077.136 JLINK_GetDLLVersion()  returns 67005
+T1DE8 000:077.165 JLINK_GetCompileDateTime()
+T1DE8 000:077.171 - 0.008ms
+T1DE8 000:081.051 JLINK_GetFirmwareString(...)
+T1DE8 000:081.070 - 0.022ms
+T1DE8 000:084.206 JLINK_GetHardwareVersion()
+T1DE8 000:084.223 - 0.020ms returns 0x11170
+T1DE8 000:098.876 JLINK_TIF_Select(JLINKARM_TIF_JTAG)
+T1DE8 000:102.420 - 3.565ms returns 0x00
+T1DE8 000:102.473 JLINK_SetSpeed(5000)
+T1DE8 000:103.050 - 0.585ms
+T1DE8 000:103.069 JLINK_GetIdData(pIdData)
+T1DE8 000:111.828   Could not measure total IR len. TDO is constant high.
+T1DE8 000:116.961   STM32 (connect): Can not attach to CPU. Trying connect under reset.
+T1DE8 000:176.698   Could not measure total IR len. TDO is constant high.
+T1DE8 000:177.764   
+  ***** Error: 
+T1DE8 000:177.800   STM32: Connecting to CPU via connect under reset failed.
+T1DE8 000:301.223   Could not measure total IR len. TDO is constant high.
+T1DE8 000:307.418   STM32 (connect): Can not attach to CPU. Trying connect under reset.
+T1DE8 000:367.459   Could not measure total IR len. TDO is constant high.
+T1DE8 000:368.445   
+  ***** Error: 
+T1DE8 000:368.465   STM32: Connecting to CPU via connect under reset failed.
+T1DE8 000:419.527 - 316.477ms
+T1DE8 010:010.286 JLINK_Close()
+T1DE8 010:021.232 - 10.969ms
+T1DE8 010:021.261   
+T1DE8 010:021.271   Closed

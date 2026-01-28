@@ -107,7 +107,7 @@ int main(void)
   All_Init();
   
 	
-	HAL_TIM_Base_Start_IT(&htim3);
+HAL_TIM_Base_Start_IT(&htim3);
   HAL_TIM_Base_Start_IT(&htim14);
   /* USER CODE END 2 */
 
@@ -168,10 +168,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
-  /** Enables the Clock Security System
-  */
-  HAL_RCC_EnableCSS();
 }
 
 /* USER CODE BEGIN 4 */

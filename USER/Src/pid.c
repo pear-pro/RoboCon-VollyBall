@@ -1,4 +1,5 @@
 #include "includes.h"
+#include <stdint.h>
 #define POSITION_PID 1 // 位置式
 #define DELTA_PID 2	   // 增量式
 #define PID_MODE 1
@@ -163,4 +164,6 @@ int16_t PID_PROCESS_Double(pid_t *pid_Angle,pid_t *pid_speed,float target, float
 	pid_speed->pid_calc(pid_speed, speed_get, pid_Angle->out);
 	return pid_speed->out;
 }
+
+
 

@@ -54,11 +54,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		HAL_CAN_Start(&hcan2);
 	
 	
-	}
+	}	
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-        
+        for(int i=0;i<MotorCount;i++)
+        {
+			MIT_Calc(&C6xx[i],100,160,0);  
+        } 
+		voltages[0]=C6xx[0].out;
+		voltages[1]=C6xx[1].out;
+		voltages[2]=C6xx[2].out;
+		voltages[3]=C6xx[3].out;
+        Set_voltagec1(&hcan2,voltages);
+		
     }
 }
 
