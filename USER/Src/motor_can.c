@@ -65,10 +65,10 @@ void can2_fliter_init(void)
 	can2_filter_structure.FilterMaskIdLow = 0x0000;
 	can2_filter_structure.FilterBank = 0;
 	can2_filter_structure.FilterFIFOAssignment = CAN_RX_FIFO0;//使用FIFO0
-	//HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
+	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
 	
-	//HAL_CAN_Start(&hcan2);
-	//HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
+	HAL_CAN_Start(&hcan2);
+	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
     isRcan2Started=1;
 }
 /*设置电机电压*/
