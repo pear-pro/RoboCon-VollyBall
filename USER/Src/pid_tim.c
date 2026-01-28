@@ -59,7 +59,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
         for(int i=0;i<MotorCount;i++)
         {
-			MIT_Calc(&C6xx[i],100,160,0);  
+			MIT_Calc(&C6xx[i],100,360,0);  
         } 
 		voltages[0]=C6xx[0].out;
 		voltages[1]=C6xx[1].out;
