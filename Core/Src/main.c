@@ -29,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "PID_TIM.h"
 #include "includes.h"
+#include "pg_led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
