@@ -43,7 +43,7 @@
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 60,
+				"line" : 61,
 				"parent" : 0
 			},
 			{
@@ -66,7 +66,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11"
+					"fragment" : " -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11"
 				}
 			],
 			"defines" : 
@@ -140,14 +140,15 @@
 				16,
 				17,
 				18,
-				19
+				19,
+				20
 			]
 		},
 		{
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -x assembler-with-cpp -MMD -MP -g"
+					"fragment" : " -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -x assembler-with-cpp -MMD -MP -g"
 				}
 			],
 			"defines" : 
@@ -212,7 +213,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3",
+				"fragment" : "-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3",
 				"role" : "flags"
 			},
 			{
@@ -258,7 +259,8 @@
 				16,
 				17,
 				18,
-				19
+				19,
+				20
 			]
 		},
 		{
@@ -272,7 +274,6 @@
 			"name" : "Object Libraries",
 			"sourceIndexes" : 
 			[
-				20,
 				21,
 				22,
 				23,
@@ -291,7 +292,8 @@
 				36,
 				37,
 				38,
-				39
+				39,
+				40
 			]
 		}
 	],
@@ -415,6 +417,12 @@
 			"backtrace" : 6,
 			"compileGroupIndex" : 0,
 			"path" : "USER/Src/ht_10a_remote_control.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 6,
+			"compileGroupIndex" : 0,
+			"path" : "USER/Src/jumper_t15_rc.c",
 			"sourceGroupIndex" : 0
 		},
 		{

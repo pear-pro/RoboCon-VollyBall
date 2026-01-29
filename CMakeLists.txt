@@ -54,6 +54,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/USER/Src/remote_control.c
     ${CMAKE_SOURCE_DIR}/USER/Src/math_utils.c
     ${CMAKE_SOURCE_DIR}/USER/Src/ht_10a_remote_control.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/jumper_t15_rc.c
 )
 
 # Add include paths

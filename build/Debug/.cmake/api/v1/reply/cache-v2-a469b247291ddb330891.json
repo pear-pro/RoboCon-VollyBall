@@ -1183,10 +1183,10 @@
 			[
 				{
 					"name" : "HELPSTRING",
-					"value" : "The CMake toolchain file"
+					"value" : "No help, variable specified on the command line."
 				}
 			],
-			"type" : "FILEPATH",
+			"type" : "UNINITIALIZED",
 			"value" : "C:/Users/LarkS/Desktop/VolleyBall/RoboCon-VollyBall/cmake/gcc-arm-none-eabi.cmake"
 		},
 		{
