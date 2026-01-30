@@ -156,41 +156,41 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   }
     if(hcan==&hcan2)
 		{
-			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-			for(int i=0;i<MotorCount;i++)
-			{
-				if(can2RxMsg.StdId==0x201+i){
-					C6xx[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-					C6xx[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-					C6xx[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-					C6xx[i].Rxmsg.Temp=can2RxData[6];
-					C6xx[i].currentRead=C6xx[i].Rxmsg.Angle;
-					//计算相对零点转了多少度
-					if(C6xx[i].FirstEntre==0)
-					{
-						C6xx[i].Zero=C6xx[i].currentRead;
-						C6xx[i].FirstEntre=1;
-						C6xx[i].lastRead=C6xx[i].currentRead;
-						C6xx[i].totalAngle=0;
-					}
-					int16_t delta=C6xx[i].currentRead-C6xx[i].lastRead;
-					if(delta>180)
-					{
-						delta=delta-360;
-					}
-					else if(delta<-180)
-					{
-						delta=delta+360;
-					}
-					else
-					{
-						delta=delta+0;
-					}
-					C6xx[i].totalAngle+=delta;
-					C6xx[i].lastRead=C6xx[i].currentRead;
-					Vofa_JustFloat((float*)C6xx[i].totalAngle, 1);
-				}
-			}
+			//HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+			//for(int i=0;i<MotorCount;i++)
+			//{
+			//	if(can2RxMsg.StdId==0x201+i){
+			//		C6xx[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+			//		C6xx[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+			//		C6xx[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
+			//		C6xx[i].Rxmsg.Temp=can2RxData[6];
+			//		C6xx[i].currentRead=C6xx[i].Rxmsg.Angle;
+			//		//计算相对零点转了多少度
+			//		if(C6xx[i].FirstEntre==0)
+			//		{
+			//			C6xx[i].Zero=C6xx[i].currentRead;
+			//			C6xx[i].FirstEntre=1;
+			//			C6xx[i].lastRead=C6xx[i].currentRead;
+			//			C6xx[i].totalAngle=0;
+			//		}
+			//		int16_t delta=C6xx[i].currentRead-C6xx[i].lastRead;
+			//		if(delta>180)
+			//		{
+			//			delta=delta-360;
+			//		}
+			//		else if(delta<-180)
+			//		{
+			//			delta=delta+360;
+			//		}
+			//		else
+			//		{
+			//			delta=delta+0;
+			//		}
+			//		C6xx[i].totalAngle+=delta;
+			//		C6xx[i].lastRead=C6xx[i].currentRead;
+			//		Vofa_JustFloat((float*)C6xx[i].totalAngle, 1);
+			//	}
+			//}
 
 		}
 	
