@@ -52,7 +52,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/USER/Src/motor_can.c
     ${CMAKE_SOURCE_DIR}/USER/Src/pid.c
     ${CMAKE_SOURCE_DIR}/USER/Src/pid_tim.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/pg_led.c
     ${CMAKE_SOURCE_DIR}/USER/Src/remote_control.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/math_utils.c
 )
 
 # Add include paths

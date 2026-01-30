@@ -13,6 +13,7 @@
 #include "includes.h"
 #include "can.h"
 #include "main.h"
+#include "math_utils.h"
 #include "pid.h"
 #include "pid_tim.h"
 #include "stm32f4xx_hal_can.h"
@@ -34,6 +35,7 @@ void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 		can2_update = 1;
 	}
 }
+
 
 /*滤波器配置及can初始化*/
 void can1_filter_init(void)
@@ -115,9 +117,20 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
 			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
+void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed)
+{
+	target_Angle*=19;
+	int32_t Angle_delta=target_Angle-motor->totalAngle;
+	int16_t speed_delta=target_speed-motor->Rxmsg.Speed;
+	float kp=10;
+	float kd=5;
+	motor->out=clamp_max(target_torque+
+				kp*Angle_delta+
+				kd*speed_delta, 16000);
+}
 
 
-
+  
 /********************CAN接收*****************************/
 //接收中断回调函数
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
@@ -143,7 +156,42 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   }
     if(hcan==&hcan2)
 		{
-	     
+			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+			for(int i=0;i<MotorCount;i++)
+			{
+				if(can2RxMsg.StdId==0x201+i){
+					C6xx[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C6xx[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+					C6xx[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
+					C6xx[i].Rxmsg.Temp=can2RxData[6];
+					C6xx[i].currentRead=C6xx[i].Rxmsg.Angle;
+					//计算相对零点转了多少度
+					if(C6xx[i].FirstEntre==0)
+					{
+						C6xx[i].Zero=C6xx[i].currentRead;
+						C6xx[i].FirstEntre=1;
+						C6xx[i].lastRead=C6xx[i].currentRead;
+						C6xx[i].totalAngle=0;
+					}
+					int16_t delta=C6xx[i].currentRead-C6xx[i].lastRead;
+					if(delta>180)
+					{
+						delta=delta-360;
+					}
+					else if(delta<-180)
+					{
+						delta=delta+360;
+					}
+					else
+					{
+						delta=delta+0;
+					}
+					C6xx[i].totalAngle+=delta;
+					C6xx[i].lastRead=C6xx[i].currentRead;
+					Vofa_JustFloat((float*)C6xx[i].totalAngle, 1);
+				}
+			}
+
 		}
 	
 }

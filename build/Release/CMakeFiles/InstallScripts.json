@@ -1,8 +1,8 @@
 {
 	"InstallScripts" : 
 	[
-		"E:/co_robocon/RoboCon-VollyBall/build/Release/cmake_install.cmake",
-		"E:/co_robocon/RoboCon-VollyBall/build/Release/cmake/stm32cubemx/cmake_install.cmake"
+		"C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Release/cmake_install.cmake",
+		"C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Release/cmake/stm32cubemx/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

@@ -67,6 +67,12 @@
 },
 {
   "directory": "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug",
+  "command": "C:\\Users\\pear\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DDEBUG -DSTM32F427xx -DUSE_HAL_DRIVER -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/USER/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Core/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Include\"  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\Core\\Src\\dma.c.obj -c \"C:\\Users\\pear\\Desktop\\RoboCon-VollyBall - main\\Core\\Src\\dma.c\"",
+  "file": "C:\\Users\\pear\\Desktop\\RoboCon-VollyBall - main\\Core\\Src\\dma.c",
+  "output": "CMakeFiles\\DJ_A_wheel.dir\\Core\\Src\\dma.c.obj"
+},
+{
+  "directory": "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug",
   "command": "C:\\Users\\pear\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DDEBUG -DSTM32F427xx -DUSE_HAL_DRIVER -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/USER/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Core/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Include\"  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\bsp_rc.c.obj -c \"C:\\Users\\pear\\Desktop\\RoboCon-VollyBall - main\\USER\\Src\\bsp_rc.c\"",
   "file": "C:\\Users\\pear\\Desktop\\RoboCon-VollyBall - main\\USER\\Src\\bsp_rc.c",
   "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\bsp_rc.c.obj"
@@ -112,6 +118,12 @@
   "command": "C:\\Users\\pear\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DDEBUG -DSTM32F427xx -DUSE_HAL_DRIVER -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/USER/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Core/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Include\"  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\remote_control.c.obj -c \"C:\\Users\\pear\\Desktop\\RoboCon-VollyBall - main\\USER\\Src\\remote_control.c\"",
   "file": "C:\\Users\\pear\\Desktop\\RoboCon-VollyBall - main\\USER\\Src\\remote_control.c",
   "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\remote_control.c.obj"
+},
+{
+  "directory": "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug",
+  "command": "C:\\Users\\pear\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DDEBUG -DSTM32F427xx -DUSE_HAL_DRIVER -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/USER/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Core/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include\" -I\"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Include\"  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\math_utils.c.obj -c \"C:\\Users\\pear\\Desktop\\RoboCon-VollyBall - main\\USER\\Src\\math_utils.c\"",
+  "file": "C:\\Users\\pear\\Desktop\\RoboCon-VollyBall - main\\USER\\Src\\math_utils.c",
+  "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\math_utils.c.obj"
 },
 {
   "directory": "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug",
