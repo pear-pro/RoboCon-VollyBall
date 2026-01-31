@@ -470,9 +470,7 @@ ARM Macro Assembler    Page 8
   178 00000000                 IMPORT           __main
   179 00000000         
   180 00000000 4806            LDR              R0, =SystemInit
-  180 00000000 4806            LDR              R0, =SystemInit
   181 00000002 4780            BLX              R0
-  182 00000004 4806            LDR              R0, =__main
   182 00000004 4806            LDR              R0, =__main
   183 00000006 4700            BX               R0
   184 00000008                 ENDP
@@ -862,12 +860,12 @@ ARM Macro Assembler    Page 14
   441 0000001C                 END
               00000000 
               00000000 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --depend=d
-j_a_wheel\startup_stm32f427xx.d -odj_a_wheel\startup_stm32f427xx.o -I.\RTE\_DJ_
-A_wheel -ID:\keil\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include -ID:\keil\ARM\PACK\Kei
-l\STM32F4xx_DFP\1.0.8\Device\Include --predefine="__MICROLIB SETA 1" --predefin
-e="__UVISION_VERSION SETA 524" --predefine="_RTE_ SETA 1" --predefine="STM32F42
-7_437xx SETA 1" --list=startup_stm32f427xx.lst startup_stm32f427xx.s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --depen
+d=.\dj_a_wheel\startup_stm32f427xx.d -o.\dj_a_wheel\startup_stm32f427xx.o -I"E:
+\Keil5 C51\ARM\CMSIS\Include" -I"E:\Keil5 C51\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1
+\Device\Include" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION
+ SETA 531" --predefine="STM32F427xx SETA 1" --list=startup_stm32f427xx.lst star
+tup_stm32f427xx.s
 
 
 
@@ -2021,4 +2019,4 @@ Symbol: __main
       At line 182 in file startup_stm32f427xx.s
 Comment: __main used once
 2 symbols
-452 symbols in table
+451 symbols in table
