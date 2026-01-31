@@ -15,6 +15,7 @@
 #include "main.h"
 #include "math_utils.h"
 #include "pid.h"
+#include "pid.h"
 #include "pid_tim.h"
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
@@ -71,7 +72,10 @@ void can2_fliter_init(void)
 	can2_filter_structure.FilterBank = 0;
 	can2_filter_structure.FilterFIFOAssignment = CAN_RX_FIFO0;//使用FIFO0
 	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
+	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
 	
+	HAL_CAN_Start(&hcan2);
+	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
 	HAL_CAN_Start(&hcan2);
 	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
     isRcan2Started=1;
@@ -98,19 +102,94 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
-void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
+/**************达妙电机******** */
+
+void Set_dm(CAN_HandleTypeDef* hcan,int16_t g)
 {
+	uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
-  can2TxMsg.StdId = 0x3FE;
+  if (g==1){
+  can2TxMsg.StdId =  damiao[0].ID +0x000;
+  }
+  else if(g==2)
+  {
+  can2TxMsg.StdId =  damiao[1].ID +0x000;
+	  
+  }
+   else if(g==3)
+  {
+  can2TxMsg.StdId =  damiao[2].ID+0x000 ;
+	  
+  }
+  else if(g==4)
+  {
+  can2TxMsg.StdId =  damiao[3].ID +0x000;
+	  
+  }
+    pos_tmp = float_to_uint(damiao[g].angle, -12.5, 12.5, 16);
+    vel_tmp = float_to_uint(damiao[g].speed, -30, 30, 12);
+    tor_tmp = float_to_uint(damiao[g].tor, -10,10, 12);
+    kp_tmp  = float_to_uint(damiao[g].KP, 0.0, 500.0, 12);
+    kd_tmp  = float_to_uint(damiao[g].KD,  0.0, 5.0, 12);  
   can2TxMsg.IDE   = CAN_ID_STD;//标准ID
   can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can2TxMsg.DLC   = 8;//数据长度
-  for(int8_t i=0;i<4;i++)
-  {
-   can2TxData[2*i]=(voltage[i]>>8)&0xff;
-   can2TxData[2*i+1]=(voltage[i])&0xff;
-  }
+  
+    can2TxData[0] = (pos_tmp >> 8);
+    can2TxData[1] = pos_tmp;
+    can2TxData[2] = (vel_tmp >> 4);
+    can2TxData[3] = ((vel_tmp&0xF)<<4)|(kp_tmp>>8);
+    can2TxData[4] = kp_tmp;
+    can2TxData[5] = (kd_tmp >> 4);
+    can2TxData[6] = ((kd_tmp&0xF)<<4)|(tor_tmp>>8);
+    can2TxData[7] = tor_tmp;
+  
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+ 			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+	}
+}
+void Set_dm_enable(CAN_HandleTypeDef* hcan)
+{
+
+
+  CAN_TxHeaderTypeDef can2TxMsg;
+  uint8_t             can2TxData[8] = {0};
+  can2TxMsg.StdId = 0x1;
+  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can2TxMsg.DLC   = 8;//数据长度
+  
+    can2TxData[0] = 0xFF;
+    can2TxData[1] = 0xFF;
+    can2TxData[2] = 0xFF;
+    can2TxData[3] = 0xFF;
+    can2TxData[4] = 0xFF;
+    can2TxData[5] = 0xFF;
+    can2TxData[6] = 0xFF;
+    can2TxData[7] = 0xFC;	
+		
+  
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//·￠?í±¨??
+	}
+}
+
+void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
+{
+  CAN_TxHeaderTypeDef can2TxMsg;
+  uint8_t             can2TxData[8] = {0};
+  can2TxMsg.StdId = 0x7FF;
+  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can2TxMsg.DLC   = 4;//数据长度
+  can2TxData[0]=(CAN_ID>>8)&0xff;
+  can2TxData[1]=(CAN_ID)&0xff;
+  can2TxData[2]=0x55;
+  can2TxData[3]=0x50;
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
@@ -131,6 +210,9 @@ void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int
 
 
   
+
+
+
 /********************CAN接收*****************************/
 //接收中断回调函数
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)

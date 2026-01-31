@@ -33,7 +33,7 @@ typedef struct pid
 
 	int32_t maxout;
 	int32_t integral_limit;
-	float output_deadband; // ËÀÇø
+	float output_deadband; // ï¿½ï¿½ï¿½ï¿½
 
 	void (*f_pid_init)(struct pid *pid_t,
 					   float p,

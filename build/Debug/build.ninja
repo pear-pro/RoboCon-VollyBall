@@ -148,6 +148,7 @@ build CMakeFiles/DJ_A_wheel.dir/startup_stm32f427xx.s.obj: ASM_COMPILER__DJ_A_wh
   OBJECT_DIR = CMakeFiles\DJ_A_wheel.dir
   OBJECT_FILE_DIR = CMakeFiles\DJ_A_wheel.dir
 
+<<<<<<< HEAD
 build CMakeFiles/DJ_A_wheel.dir/Core/Src/dma.c.obj: C_COMPILER__DJ_A_wheel_unscanned_Debug C$:/Users/pear/Desktop/RoboCon-VollyBall$ -$ main/Core/Src/dma.c || cmake_object_order_depends_target_DJ_A_wheel
   CONFIG = Debug
   DEFINES = -DDEBUG -DSTM32F427xx -DUSE_HAL_DRIVER
@@ -157,6 +158,8 @@ build CMakeFiles/DJ_A_wheel.dir/Core/Src/dma.c.obj: C_COMPILER__DJ_A_wheel_unsca
   OBJECT_DIR = CMakeFiles\DJ_A_wheel.dir
   OBJECT_FILE_DIR = CMakeFiles\DJ_A_wheel.dir\Core\Src
 
+=======
+>>>>>>> origin/dm_motor
 build CMakeFiles/DJ_A_wheel.dir/USER/Src/bsp_rc.c.obj: C_COMPILER__DJ_A_wheel_unscanned_Debug C$:/Users/pear/Desktop/RoboCon-VollyBall$ -$ main/USER/Src/bsp_rc.c || cmake_object_order_depends_target_DJ_A_wheel
   CONFIG = Debug
   DEFINES = -DDEBUG -DSTM32F427xx -DUSE_HAL_DRIVER
@@ -175,6 +178,7 @@ build CMakeFiles/DJ_A_wheel.dir/USER/Src/car_ctrl.c.obj: C_COMPILER__DJ_A_wheel_
   OBJECT_DIR = CMakeFiles\DJ_A_wheel.dir
   OBJECT_FILE_DIR = CMakeFiles\DJ_A_wheel.dir\USER\Src
 
+<<<<<<< HEAD
 build CMakeFiles/DJ_A_wheel.dir/USER/Src/debug_uart.c.obj: C_COMPILER__DJ_A_wheel_unscanned_Debug C$:/Users/pear/Desktop/RoboCon-VollyBall$ -$ main/USER/Src/debug_uart.c || cmake_object_order_depends_target_DJ_A_wheel
   CONFIG = Debug
   DEFINES = -DDEBUG -DSTM32F427xx -DUSE_HAL_DRIVER
@@ -184,6 +188,8 @@ build CMakeFiles/DJ_A_wheel.dir/USER/Src/debug_uart.c.obj: C_COMPILER__DJ_A_whee
   OBJECT_DIR = CMakeFiles\DJ_A_wheel.dir
   OBJECT_FILE_DIR = CMakeFiles\DJ_A_wheel.dir\USER\Src
 
+=======
+>>>>>>> origin/dm_motor
 build CMakeFiles/DJ_A_wheel.dir/USER/Src/Initialize.c.obj: C_COMPILER__DJ_A_wheel_unscanned_Debug C$:/Users/pear/Desktop/RoboCon-VollyBall$ -$ main/USER/Src/Initialize.c || cmake_object_order_depends_target_DJ_A_wheel
   CONFIG = Debug
   DEFINES = -DDEBUG -DSTM32F427xx -DUSE_HAL_DRIVER
@@ -226,6 +232,7 @@ build CMakeFiles/DJ_A_wheel.dir/USER/Src/remote_control.c.obj: C_COMPILER__DJ_A_
   DEP_FILE = CMakeFiles\DJ_A_wheel.dir\USER\Src\remote_control.c.obj.d
   FLAGS = -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11
   INCLUDES = -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/USER/Inc" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Core/Inc" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Include"
+<<<<<<< HEAD
   OBJECT_DIR = CMakeFiles\DJ_A_wheel.dir
   OBJECT_FILE_DIR = CMakeFiles\DJ_A_wheel.dir\USER\Src
 
@@ -235,6 +242,8 @@ build CMakeFiles/DJ_A_wheel.dir/USER/Src/math_utils.c.obj: C_COMPILER__DJ_A_whee
   DEP_FILE = CMakeFiles\DJ_A_wheel.dir\USER\Src\math_utils.c.obj.d
   FLAGS = -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11
   INCLUDES = -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/USER/Inc" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Core/Inc" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx/../../Drivers/CMSIS/Include"
+=======
+>>>>>>> origin/dm_motor
   OBJECT_DIR = CMakeFiles\DJ_A_wheel.dir
   OBJECT_FILE_DIR = CMakeFiles\DJ_A_wheel.dir\USER\Src
 

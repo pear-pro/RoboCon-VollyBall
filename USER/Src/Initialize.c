@@ -22,8 +22,18 @@ void All_Init(){
             300,
             300,
             INIT);
-
-
+        PID_Struct_Init(&damiao[i].Speed_pid, 
+            0.004f, 
+            0.000001f,
+            0.0f, 
+            16000, 
+            16000,
+            INIT);
+       damiao[i].ID=0X001;
+	   damiao[i].KP=   normalize_to_range(55.0, 30.0, 55.0, 1.0, 10.0); 
+	   damiao[i].KD=1.0f;
+	   damiao[i].tor=55.0f;
+	   
     }
         
 }
