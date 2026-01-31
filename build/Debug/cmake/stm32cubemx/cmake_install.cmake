@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Install script for directory: E:/Github/RoboCon-VollyBall/cmake/stm32cubemx
+=======
+# Install script for directory: C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx
+>>>>>>> origin/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,6 +44,10 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
+<<<<<<< HEAD
   file(WRITE "E:/Github/RoboCon-VollyBall/build/Debug/cmake/stm32cubemx/install_local_manifest.txt"
+=======
+  file(WRITE "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/install_local_manifest.txt"
+>>>>>>> origin/main
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

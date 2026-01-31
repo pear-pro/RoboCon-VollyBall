@@ -4,18 +4,6 @@
 #include "motor_can.h"
 #include <stdint.h>
 uint16_t PID_Calc_Flag = 0;
-/************************ 需根据实际硬件修改的宏定义 ************************/
-// 定时器选择（示例：TIM3，根据实际使用的定时器修改）
-#define PID_TIMx               TIM3
-// 定时器时钟使能宏（示例：TIM3属于APB1总线）
-#define PID_TIM_RCC_CLK_ENABLE()  __HAL_RCC_TIM3_CLK_ENABLE()
-// 定时器中断号（示例：TIM3全局中断）
-#define PID_TIM_IRQn           TIM3_IRQn
-// 定时器中断服务函数名（需和启动文件中的中断向量表一致）
-#define PID_TIM_IRQHandler     TIM3_IRQHandler
-
-/************************ 全局变量（HAL库定时器句柄） ************************/
-TIM_HandleTypeDef htim_pid;  // PID定时器句柄
 
 
 /************************ 定时器更新中断回调函数 ************************/
@@ -28,20 +16,13 @@ TIM_HandleTypeDef htim_pid;  // PID定时器句柄
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
-    if (htim == &htim3)  // 确认是PID定时器的更新中断
+	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
         for(int i=0;i<MotorCount;i++)
         {
             voltages[i]=(int16_t)C620[i].Speed_pid.out;
             
         }
-        for(int i=0;i<MotorCount;i++)
-        {
-            pid_calc(&damiao[i].Speed_pid,damiao[i].Speed_pid.get,damiao[i].Speed_pid.set);
-            voltages[i+2]=(int16_t)damiao[i].Speed_pid.out;
-            
-        }
-        Set_dm(&hcan2,voltages);
         Set_voltagec1(&hcan1,voltages);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
@@ -59,11 +40,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		HAL_CAN_Start(&hcan2);
 	
 	
-	}
+	}	
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-        
+        //for(int i=0;i<MotorCount;i++)
+        //{
+		//	MIT_Calc(&C6xx[i],100,360,0);  
+        //} 
+		//voltages[0]=C6xx[0].out;
+		//voltages[1]=C6xx[1].out;
+		//voltages[2]=C6xx[2].out;
+		//voltages[3]=C6xx[3].out;
+        //Set_voltagec1(&hcan2,voltages);
+		
     }
 }
 

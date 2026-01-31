@@ -33,6 +33,7 @@
 #include "JY901P_Calibrate.h"
 #include "pid_3axis.h"
 
+#include "pg_led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,26 +101,26 @@ int main(void)
   MX_CAN1_Init();
   MX_I2C1_Init();
   MX_TIM3_Init();
-  MX_USART1_UART_Init();
-  MX_CAN2_Init();
+//  MX_USART1_UART_Init();
+//  MX_CAN2_Init();
   MX_TIM14_Init();
   MX_I2C2_Init();
+  MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
   
   
- 
-	
+ HAL_TIM_Base_Start_IT(&htim14);
+	 HAL_TIM_Base_Start_IT(&htim3);
   All_Init();
   
 	
-	HAL_TIM_Base_Start_IT(&htim3);
-//  HAL_TIM_Base_Start_IT(&htim14);
+HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_Base_Start_IT(&htim14);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_Delay(2000);
-
 
   while (1)
   {
@@ -175,10 +176,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
-  /** Enables the Clock Security System
-  */
-  HAL_RCC_EnableCSS();
 }
 
 /* USER CODE BEGIN 4 */

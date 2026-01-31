@@ -13,6 +13,9 @@
 #include "includes.h"
 #include "can.h"
 #include "main.h"
+#include "math_utils.h"
+#include "pid.h"
+#include "pid.h"
 #include "pid_tim.h"
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
@@ -33,6 +36,7 @@ void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 		can2_update = 1;
 	}
 }
+
 
 /*滤波器配置及can初始化*/
 void can1_filter_init(void)
@@ -67,10 +71,13 @@ void can2_fliter_init(void)
 	can2_filter_structure.FilterMaskIdLow = 0x0000;
 	can2_filter_structure.FilterBank = 0;
 	can2_filter_structure.FilterFIFOAssignment = CAN_RX_FIFO0;//使用FIFO0
-	//HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
+	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
+	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
 	
-	//HAL_CAN_Start(&hcan2);
-	//HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
+	HAL_CAN_Start(&hcan2);
+	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
+	HAL_CAN_Start(&hcan2);
+	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
     isRcan2Started=1;
 }
 /*设置电机电压*/
@@ -95,25 +102,116 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
-void Set_dm(CAN_HandleTypeDef* hcan,int16_t voltage[])
+/**************达妙电机******** */
+
+void Set_dm(CAN_HandleTypeDef* hcan,int16_t g)
 {
+	uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
-  can2TxMsg.StdId = 0x3FE;
+  if (g==1){
+  can2TxMsg.StdId =  damiao[0].ID +0x000;
+  }
+  else if(g==2)
+  {
+  can2TxMsg.StdId =  damiao[1].ID +0x000;
+	  
+  }
+   else if(g==3)
+  {
+  can2TxMsg.StdId =  damiao[2].ID+0x000 ;
+	  
+  }
+  else if(g==4)
+  {
+  can2TxMsg.StdId =  damiao[3].ID +0x000;
+	  
+  }
+    pos_tmp = float_to_uint(damiao[g].angle, -12.5, 12.5, 16);
+    vel_tmp = float_to_uint(damiao[g].speed, -30, 30, 12);
+    tor_tmp = float_to_uint(damiao[g].tor, -10,10, 12);
+    kp_tmp  = float_to_uint(damiao[g].KP, 0.0, 500.0, 12);
+    kd_tmp  = float_to_uint(damiao[g].KD,  0.0, 5.0, 12);  
   can2TxMsg.IDE   = CAN_ID_STD;//标准ID
   can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can2TxMsg.DLC   = 8;//数据长度
-  for(int8_t i=0;i<4;i++)
-  {
-   can2TxData[2*i]=(voltage[i]>>8)&0xff;
-   can2TxData[2*i+1]=(voltage[i])&0xff;
-  }
+  
+    can2TxData[0] = (pos_tmp >> 8);
+    can2TxData[1] = pos_tmp;
+    can2TxData[2] = (vel_tmp >> 4);
+    can2TxData[3] = ((vel_tmp&0xF)<<4)|(kp_tmp>>8);
+    can2TxData[4] = kp_tmp;
+    can2TxData[5] = (kd_tmp >> 4);
+    can2TxData[6] = ((kd_tmp&0xF)<<4)|(tor_tmp>>8);
+    can2TxData[7] = tor_tmp;
+  
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+ 			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+	}
+}
+void Set_dm_enable(CAN_HandleTypeDef* hcan)
+{
+
+
+  CAN_TxHeaderTypeDef can2TxMsg;
+  uint8_t             can2TxData[8] = {0};
+  can2TxMsg.StdId = 0x1;
+  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can2TxMsg.DLC   = 8;//数据长度
+  
+    can2TxData[0] = 0xFF;
+    can2TxData[1] = 0xFF;
+    can2TxData[2] = 0xFF;
+    can2TxData[3] = 0xFF;
+    can2TxData[4] = 0xFF;
+    can2TxData[5] = 0xFF;
+    can2TxData[6] = 0xFF;
+    can2TxData[7] = 0xFC;	
+		
+  
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//·￠?í±¨??
+	}
+}
+
+void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
+{
+  CAN_TxHeaderTypeDef can2TxMsg;
+  uint8_t             can2TxData[8] = {0};
+  can2TxMsg.StdId = 0x7FF;
+  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can2TxMsg.DLC   = 4;//数据长度
+  can2TxData[0]=(CAN_ID>>8)&0xff;
+  can2TxData[1]=(CAN_ID)&0xff;
+  can2TxData[2]=0x55;
+  can2TxData[3]=0x50;
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
 			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
+void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed)
+{
+	target_Angle*=19;
+	int32_t Angle_delta=target_Angle-motor->totalAngle;
+	int16_t speed_delta=target_speed-motor->Rxmsg.Speed;
+	float kp=10;
+	float kd=5;
+	motor->out=clamp_max(target_torque+
+				kp*Angle_delta+
+				kd*speed_delta, 16000);
+}
+
+
+  
+
+
 
 /********************CAN接收*****************************/
 //接收中断回调函数
@@ -138,40 +236,47 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		}
 	}
   }
-  //  if(hcan==&hcan2)
+    if(hcan==&hcan2)
 		{
-	     HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-		 for(int i=0;i<MotorCount;i++)
-		 {
-			 if(can2RxMsg.StdId==0x301+i){
-				 damiao[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-				 damiao[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-				 damiao[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-				 damiao[i].Rxmsg.Temp=can2RxData[6];
-				 flag=1;
-			 }
-		 }	
+			//HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+			//for(int i=0;i<MotorCount;i++)
+			//{
+			//	if(can2RxMsg.StdId==0x201+i){
+			//		C6xx[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+			//		C6xx[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+			//		C6xx[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
+			//		C6xx[i].Rxmsg.Temp=can2RxData[6];
+			//		C6xx[i].currentRead=C6xx[i].Rxmsg.Angle;
+			//		//计算相对零点转了多少度
+			//		if(C6xx[i].FirstEntre==0)
+			//		{
+			//			C6xx[i].Zero=C6xx[i].currentRead;
+			//			C6xx[i].FirstEntre=1;
+			//			C6xx[i].lastRead=C6xx[i].currentRead;
+			//			C6xx[i].totalAngle=0;
+			//		}
+			//		int16_t delta=C6xx[i].currentRead-C6xx[i].lastRead;
+			//		if(delta>180)
+			//		{
+			//			delta=delta-360;
+			//		}
+			//		else if(delta<-180)
+			//		{
+			//			delta=delta+360;
+			//		}
+			//		else
+			//		{
+			//			delta=delta+0;
+			//		}
+			//		C6xx[i].totalAngle+=delta;
+			//		C6xx[i].lastRead=C6xx[i].currentRead;
+			//		Vofa_JustFloat((float*)C6xx[i].totalAngle, 1);
+			//	}
+			//}
+
 		}
 	
 }
 
-void Angle_Ctrl(motor_info_t *ID,uint16_t Target)
-{
-	if(ID->FirstEntre==1)
-	{
-		ID->relative=0;
-		ID->lastRead=ID->Rxmsg.Angle;
-		ID->FirstEntre=0;
-	}
-	else
-	{
-		ID->Target=Target;
-		int16_t tmp=(int16_t)ID->Rxmsg.Angle- (int16_t)ID->lastRead;
-		ID->relative+=(tmp<180?(tmp>-180?tmp:tmp+360):tmp-360);
-		//if(ID->Rxmsg.Angle*Target<0&&fabs(ID->Rxmsg.Angle-Target)>180);
-		ID->Current=PID_PROCESS_Double(&ID->Angel_pid,&ID->Speed_pid,Target,ID->Rxmsg.Angle,ID->Rxmsg.Speed);
-		ID->lastRead=ID->Rxmsg.Angle;
-	}
 
-}
 

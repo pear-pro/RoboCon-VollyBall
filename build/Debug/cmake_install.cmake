@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Install script for directory: E:/Github/RoboCon-VollyBall
+=======
+# Install script for directory: C:/Users/pear/Desktop/RoboCon-VollyBall - main
+>>>>>>> origin/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,13 +43,21 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+<<<<<<< HEAD
   include("E:/Github/RoboCon-VollyBall/build/Debug/cmake/stm32cubemx/cmake_install.cmake")
+=======
+  include("C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/cmake_install.cmake")
+>>>>>>> origin/main
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
+<<<<<<< HEAD
   file(WRITE "E:/Github/RoboCon-VollyBall/build/Debug/install_local_manifest.txt"
+=======
+  file(WRITE "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/install_local_manifest.txt"
+>>>>>>> origin/main
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -61,6 +73,10 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+<<<<<<< HEAD
   file(WRITE "E:/Github/RoboCon-VollyBall/build/Debug/${CMAKE_INSTALL_MANIFEST}"
+=======
+  file(WRITE "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/${CMAKE_INSTALL_MANIFEST}"
+>>>>>>> origin/main
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

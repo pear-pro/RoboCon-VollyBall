@@ -1,4 +1,5 @@
 #include "includes.h"
+#include <stdint.h>
 #define POSITION_PID 1 // 位置式
 #define DELTA_PID 2	   // 增量式
 #define PID_MODE 1
@@ -20,7 +21,7 @@ static void abs_limit(float *x, int32_t limit)
 	if (*x < -limit)
 		*x = -limit;
 }
-
+///////
 /**
  * @brief 初始化PID控制器参数
  * @param pid 指向PID控制器结构体的指针
@@ -163,4 +164,6 @@ int16_t PID_PROCESS_Double(pid_t *pid_Angle,pid_t *pid_speed,float target, float
 	pid_speed->pid_calc(pid_speed, speed_get, pid_Angle->out);
 	return pid_speed->out;
 }
+
+
 

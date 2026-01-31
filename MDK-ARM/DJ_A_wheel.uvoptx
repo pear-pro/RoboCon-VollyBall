@@ -101,7 +101,17 @@
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <bEvRecOn>1</bEvRecOn>
+<<<<<<< HEAD
         <nTsel>5</nTsel>
+=======
+<<<<<<< HEAD
+        <bSchkAxf>0</bSchkAxf>
+        <bTchkAxf>0</bTchkAxf>
+        <nTsel>5</nTsel>
+=======
+        <nTsel>2</nTsel>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -117,6 +127,7 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
+<<<<<<< HEAD
           <Key>UL2CM3</Key>
           <Name>UL2CM3(-S0 -C0 -P0 ) -FN1 -FC1000 -FD20000000 -FF0STM32F4xx_2048 -FL0200000 -FS08000000 -FP0($$Device:STM32F427II$Flash\STM32F4xx_2048.FLM)</Name>
         </SetRegEntry>
@@ -124,6 +135,20 @@
           <Number>0</Number>
           <Key>ST-LINKIII-KEIL_SWO</Key>
           <Name>-U37FF71064E573436475C1143 -O206 -SF4000 -C0 -A0 -I0 -HNlocalhost -HP7184 -P2 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD20000000 -FC800 -FN1 -FF0STM32F4xx_2048.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32F427II$Flash\STM32F4xx_2048.FLM)</Name>
+=======
+<<<<<<< HEAD
+          <Key>JL2CM3</Key>
+          <Name>-U20090928 -O14 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32F427IIHx$CMSIS\Flash\STM32F4xx_2048.FLM)</Name>
+=======
+          <Key>UL2CM3</Key>
+          <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048 -FS08000000 -FL0200000 -FP0($$Device:STM32F427II$Flash\STM32F4xx_2048.FLM))</Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>CMSIS_AGDI</Key>
+          <Name>-X"Any" -UAny -O2287 -S8 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO65554 -TC10000000 -TP20 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32F427II$Flash\STM32F4xx_2048.FLM)</Name>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -144,53 +169,102 @@
           <Number>0</Number>
           <Key>DLGUARM</Key>
           <Name>(105=-1,-1,-1,-1,0)</Name>
+<<<<<<< HEAD
+=======
         </SetRegEntry>
+<<<<<<< HEAD
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>CMSIS_AGDI</Key>
+          <Name>-X"Any" -UAny -O18671 -S8 -C0 -P00000000 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO65554 -TC10000000 -TT10000000 -TP20 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32F427IIHx$CMSIS\Flash\STM32F4xx_2048.FLM)</Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>UL2CM3</Key>
+          <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048 -FS08000000 -FL0200000 -FP0($$Device:STM32F427IIHx$CMSIS\Flash\STM32F4xx_2048.FLM))</Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>ST-LINKIII-KEIL_SWO</Key>
+          <Name>-U37FF71064E573436312A1043 -O2254 -SF10000 -C0 -A0 -I0 -HNlocalhost -HP7184 -P1 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO131090 -TC10000000 -TT10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD20000000 -FC800 -FN1 -FF0STM32F4xx_2048.FLM -FS08000000 -FL0200000 -FP0($$Device:STM32F427IIHx$CMSIS\Flash\STM32F4xx_2048.FLM)</Name>
+>>>>>>> origin/main
+        </SetRegEntry>
+=======
+>>>>>>> origin/dm_motor
       </TargetDriverDllRegistry>
       <Breakpoint>
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>3899</LineNumber>
+          <LineNumber>25</LineNumber>
           <EnabledFlag>1</EnabledFlag>
+<<<<<<< HEAD
           <Address>134235906</Address>
+=======
+<<<<<<< HEAD
+          <Address>134233434</Address>
+=======
+          <Address>134232030</Address>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c</Filename>
+          <Filename>E:\RC\RC鎺掔悆\RoboCon-VollyBall\USER\Src\pid_tim.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\DJ_A_wheel\../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c\3899</Expression>
+          <Expression>\\DJ_A_wheel\../USER/Src/pid_tim.c\25</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>3896</LineNumber>
+          <LineNumber>19</LineNumber>
           <EnabledFlag>1</EnabledFlag>
+<<<<<<< HEAD
           <Address>134235890</Address>
+=======
+<<<<<<< HEAD
+          <Address>134233418</Address>
+=======
+          <Address>134231932</Address>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c</Filename>
+          <Filename>E:\RC\RC鎺掔悆\RoboCon-VollyBall\USER\Src\pid_tim.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\DJ_A_wheel\../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c\3896</Expression>
+          <Expression>\\DJ_A_wheel\../USER/Src/pid_tim.c\19</Expression>
         </Bp>
+<<<<<<< HEAD
         <Bp>
           <Number>2</Number>
           <Type>0</Type>
           <LineNumber>232</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>134218786</Address>
+=======
+<<<<<<< HEAD
+=======
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>17</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134231924</Address>
+>>>>>>> origin/main
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
+<<<<<<< HEAD
           <Filename>..\Core\Src\stm32f4xx_it.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\DJ_A_wheel\../Core/Src/stm32f4xx_it.c\232</Expression>
@@ -211,72 +285,59 @@
           <ExecCommand></ExecCommand>
           <Expression>\\DJ_A_wheel\../Core/Src/stm32f4xx_it.c\275</Expression>
         </Bp>
+=======
+          <Filename>E:\RC\RC鎺掔悆\RoboCon-VollyBall\USER\Src\pid_tim.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\DJ_A_wheel\../USER/Src/pid_tim.c\17</Expression>
+        </Bp>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>C620[i]</ItemText>
+          <ItemText>hcan1</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>C620[i].Speed_pid</ItemText>
+          <ItemText>rc_ctrl</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>hcan1</ItemText>
+          <ItemText>car_x</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>voltages</ItemText>
+          <ItemText>car_y</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>C620[i].Rxmsg</ItemText>
+          <ItemText>car_w</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>motor_info_t C620[MotorCount]</ItemText>
+          <ItemText>damiao[1]</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>C6xx[MotorCount]</ItemText>
+          <ItemText>damiao[0]</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>C620[1]</ItemText>
+          <ItemText>can2TxData</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>C620[i].Speed_pid</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rc_ctrl</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>car_x</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>car_y</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>car_w</ItemText>
+          <ItemText>can2TxData</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
@@ -286,7 +347,11 @@
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
+<<<<<<< HEAD
           <ItemText>gyro_data</ItemText>
+=======
+          <ItemText>C6xx[1]</ItemText>
+>>>>>>> origin/main
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -339,6 +404,15 @@
       <pszMrulep></pszMrulep>
       <pSingCmdsp></pSingCmdsp>
       <pMultCmdsp></pMultCmdsp>
+<<<<<<< HEAD
+=======
+      <DebugDescription>
+        <Enable>1</Enable>
+        <EnableLog>0</EnableLog>
+        <Protocol>2</Protocol>
+        <DbgClock>10000000</DbgClock>
+      </DebugDescription>
+>>>>>>> origin/main
     </TargetOption>
   </Target>
 
@@ -444,6 +518,10 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/main
     <File>
       <GroupNumber>1</GroupNumber>
       <FileNumber>9</FileNumber>
@@ -451,6 +529,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+<<<<<<< HEAD
       <PathWithFileName>..\USER\Src\pid_3axis.c</PathWithFileName>
       <FilenameWithoutPath>pid_3axis.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -480,6 +559,15 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+=======
+      <PathWithFileName>..\USER\Src\debug_uart.c</PathWithFileName>
+      <FilenameWithoutPath>debug_uart.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+=======
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
   </Group>
 
   <Group>
@@ -490,7 +578,15 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>12</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>10</FileNumber>
+=======
+      <FileNumber>9</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -502,7 +598,15 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>13</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>11</FileNumber>
+=======
+      <FileNumber>10</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -514,7 +618,15 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>14</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>12</FileNumber>
+=======
+      <FileNumber>11</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -526,7 +638,15 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>15</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>13</FileNumber>
+=======
+      <FileNumber>12</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -538,7 +658,15 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>16</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>14</FileNumber>
+=======
+      <FileNumber>13</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -550,7 +678,15 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>17</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>15</FileNumber>
+=======
+      <FileNumber>14</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -562,7 +698,15 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>18</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>16</FileNumber>
+=======
+      <FileNumber>15</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -574,7 +718,15 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>19</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>17</FileNumber>
+=======
+      <FileNumber>16</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -586,7 +738,15 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>20</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>18</FileNumber>
+=======
+      <FileNumber>17</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -596,13 +756,21 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+<<<<<<< HEAD
     <File>
       <GroupNumber>2</GroupNumber>
       <FileNumber>21</FileNumber>
+=======
+<<<<<<< HEAD
+    <File>
+      <GroupNumber>2</GroupNumber>
+      <FileNumber>19</FileNumber>
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+<<<<<<< HEAD
       <PathWithFileName>..\USER\Inc\jy901p.h</PathWithFileName>
       <FilenameWithoutPath>jy901p.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -632,6 +800,15 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+=======
+      <PathWithFileName>..\USER\Inc\debug_uart.h</PathWithFileName>
+      <FilenameWithoutPath>debug_uart.h</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+=======
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
   </Group>
 
   <Group>
@@ -642,7 +819,15 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>3</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>24</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>20</FileNumber>
+=======
+      <FileNumber>18</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -654,7 +839,15 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>25</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>21</FileNumber>
+=======
+      <FileNumber>19</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -666,7 +859,15 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>26</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>22</FileNumber>
+=======
+      <FileNumber>20</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -678,7 +879,15 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>27</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>23</FileNumber>
+=======
+      <FileNumber>21</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -690,7 +899,15 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>28</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>24</FileNumber>
+=======
+      <FileNumber>22</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -702,7 +919,15 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>29</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>25</FileNumber>
+=======
+      <FileNumber>23</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -714,7 +939,15 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>30</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>26</FileNumber>
+=======
+      <FileNumber>24</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -726,7 +959,15 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>31</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>27</FileNumber>
+=======
+      <FileNumber>25</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -746,7 +987,15 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>32</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>28</FileNumber>
+=======
+      <FileNumber>26</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -758,7 +1007,15 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>33</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>29</FileNumber>
+=======
+      <FileNumber>27</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -770,7 +1027,15 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>34</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>30</FileNumber>
+=======
+      <FileNumber>28</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -782,7 +1047,15 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>35</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>31</FileNumber>
+=======
+      <FileNumber>29</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -794,7 +1067,15 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>36</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>32</FileNumber>
+=======
+      <FileNumber>30</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -806,7 +1087,15 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>37</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>33</FileNumber>
+=======
+      <FileNumber>31</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -818,7 +1107,15 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>38</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>34</FileNumber>
+=======
+      <FileNumber>32</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -830,7 +1127,15 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>39</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>35</FileNumber>
+=======
+      <FileNumber>33</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -842,7 +1147,15 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>40</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>36</FileNumber>
+=======
+      <FileNumber>34</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -862,7 +1175,15 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>5</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>41</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>37</FileNumber>
+=======
+      <FileNumber>35</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>2</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -882,7 +1203,15 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>42</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>38</FileNumber>
+=======
+      <FileNumber>36</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -894,7 +1223,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>43</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>39</FileNumber>
+=======
+      <FileNumber>37</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -906,7 +1243,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>44</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>40</FileNumber>
+=======
+      <FileNumber>38</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -918,7 +1263,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>45</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>41</FileNumber>
+=======
+      <FileNumber>39</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -930,7 +1283,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>46</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>42</FileNumber>
+=======
+      <FileNumber>40</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -942,7 +1303,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>47</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>43</FileNumber>
+=======
+      <FileNumber>41</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -954,7 +1323,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>48</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>44</FileNumber>
+=======
+      <FileNumber>42</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -966,7 +1343,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>49</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>45</FileNumber>
+=======
+      <FileNumber>43</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -978,7 +1363,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>50</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>46</FileNumber>
+=======
+      <FileNumber>44</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -990,7 +1383,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>51</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>47</FileNumber>
+=======
+      <FileNumber>45</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1002,7 +1403,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>52</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>48</FileNumber>
+=======
+      <FileNumber>46</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1014,7 +1423,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>53</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>49</FileNumber>
+=======
+      <FileNumber>47</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1026,7 +1443,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>54</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>50</FileNumber>
+=======
+      <FileNumber>48</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1038,7 +1463,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>55</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>51</FileNumber>
+=======
+      <FileNumber>49</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1050,7 +1483,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>56</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>52</FileNumber>
+=======
+      <FileNumber>50</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1062,7 +1503,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>57</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>53</FileNumber>
+=======
+      <FileNumber>51</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1074,7 +1523,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>58</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>54</FileNumber>
+=======
+      <FileNumber>52</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1086,7 +1543,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>59</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>55</FileNumber>
+=======
+      <FileNumber>53</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1098,7 +1563,15 @@
     </File>
     <File>
       <GroupNumber>6</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>60</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>56</FileNumber>
+=======
+      <FileNumber>54</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1118,7 +1591,15 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>7</GroupNumber>
+<<<<<<< HEAD
       <FileNumber>61</FileNumber>
+=======
+<<<<<<< HEAD
+      <FileNumber>57</FileNumber>
+=======
+      <FileNumber>55</FileNumber>
+>>>>>>> origin/dm_motor
+>>>>>>> origin/main
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

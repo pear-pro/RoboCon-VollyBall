@@ -11,11 +11,16 @@
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>6070000::V6.7::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6070000::V6.7::.\ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F427II</Device>
+          <Device>STM32F427II</Device>
           <Vendor>STMicroelectronics</Vendor>
+          <PackID>Keil.STM32F4xx_DFP.1.0.8</PackID>
+          <PackURL>http://www.keil.com/pack</PackURL>
+          <Cpu>IRAM(0x20000000,0x30000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x200000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <PackID>Keil.STM32F4xx_DFP.1.0.8</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IRAM(0x20000000,0x30000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x200000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
@@ -137,8 +142,8 @@
             <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
-          <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash2>BIN\UL2V8M.DLL</Flash2>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -420,6 +425,14 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Src\math_utils.c</FilePath>
             </File>
+<<<<<<< HEAD
+            <File>
+              <FileName>debug_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\debug_uart.c</FilePath>
+            </File>
+=======
+>>>>>>> origin/dm_motor
             <File>
               <FileName>pid_3axis.c</FileName>
               <FileType>1</FileType>
@@ -485,6 +498,14 @@
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\math_utils.h</FilePath>
             </File>
+<<<<<<< HEAD
+            <File>
+              <FileName>debug_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\debug_uart.h</FilePath>
+            </File>
+=======
+>>>>>>> origin/dm_motor
             <File>
               <FileName>jy901p.h</FileName>
               <FileType>5</FileType>

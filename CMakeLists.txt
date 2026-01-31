@@ -47,11 +47,14 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # USER sources
     ${CMAKE_SOURCE_DIR}/USER/Src/bsp_rc.c
     ${CMAKE_SOURCE_DIR}/USER/Src/car_ctrl.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/debug_uart.c
     ${CMAKE_SOURCE_DIR}/USER/Src/Initialize.c
     ${CMAKE_SOURCE_DIR}/USER/Src/motor_can.c
     ${CMAKE_SOURCE_DIR}/USER/Src/pid.c
     ${CMAKE_SOURCE_DIR}/USER/Src/pid_tim.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/pg_led.c
     ${CMAKE_SOURCE_DIR}/USER/Src/remote_control.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/math_utils.c
 )
 
 # Add include paths

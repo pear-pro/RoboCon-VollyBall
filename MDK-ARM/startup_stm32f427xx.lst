@@ -470,7 +470,9 @@ ARM Macro Assembler    Page 8
   178 00000000                 IMPORT           __main
   179 00000000         
   180 00000000 4806            LDR              R0, =SystemInit
+  180 00000000 4806            LDR              R0, =SystemInit
   181 00000002 4780            BLX              R0
+  182 00000004 4806            LDR              R0, =__main
   182 00000004 4806            LDR              R0, =__main
   183 00000006 4700            BX               R0
   184 00000008                 ENDP
@@ -860,12 +862,12 @@ ARM Macro Assembler    Page 14
   441 0000001C                 END
               00000000 
               00000000 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --depend=.
-\dj_a_wheel\startup_stm32f427xx.d -o.\dj_a_wheel\startup_stm32f427xx.o -I.\RTE\
-_DJ_A_wheel -IE:\Keil5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include -IE:\Keil5\ARM\PA
-CK\Keil\STM32F4xx_DFP\1.0.8\Device\Include --predefine="__MICROLIB SETA 1" --pr
-edefine="__UVISION_VERSION SETA 524" --predefine="_RTE_ SETA 1" --predefine="ST
-M32F427_437xx SETA 1" --list=startup_stm32f427xx.lst startup_stm32f427xx.s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --depend=d
+j_a_wheel\startup_stm32f427xx.d -odj_a_wheel\startup_stm32f427xx.o -I.\RTE\_DJ_
+A_wheel -ID:\keil\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include -ID:\keil\ARM\PACK\Kei
+l\STM32F4xx_DFP\1.0.8\Device\Include --predefine="__MICROLIB SETA 1" --predefin
+e="__UVISION_VERSION SETA 524" --predefine="_RTE_ SETA 1" --predefine="STM32F42
+7_437xx SETA 1" --list=startup_stm32f427xx.lst startup_stm32f427xx.s
 
 
 

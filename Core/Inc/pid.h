@@ -51,6 +51,8 @@ typedef struct pid
 
 float pid_calc(pid_t *pid, float get, float set);
 float fuzzy_pid_calc(pid_t *pid, float get, float set);
+int float_to_uint(float x_float, float x_min, float x_max, int bits);
+float uint_to_float(int x_int, float x_min, float x_max, int bits);
 
 void pid_reset(pid_t *pid, float p, float i, float d);
 
