@@ -40,9 +40,8 @@
 266	876	7915739983402408	CMakeFiles/DJ_A_wheel.dir/USER/Src/pid_tim.c.obj	7ad457b224892b3f
 1656	2407	7915529192520531	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.obj	ded0fb5680e89a97
 1804	2592	7915529193997824	cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.obj	b182d55f620d55c
-986	1210	7915739990543568	DJ_A_wheel.elf	1957f3dcde2580b0
+256	429	7915741504741385	DJ_A_wheel.elf	6ce6570c1a08baa4
 510	883	7915739985835715	CMakeFiles/DJ_A_wheel.dir/USER/Src/pg_led.c.obj	5dc9c65eed34a159
 581	938	7915739986557512	CMakeFiles/DJ_A_wheel.dir/USER/Src/jy901p.c.obj	447bb51283e42427
 30	220	7915741502477890	CMakeFiles/DJ_A_wheel.dir/USER/Src/JY901P_Calibrate.c.obj	76ce234436d2442b
 37	256	7915741502573753	CMakeFiles/DJ_A_wheel.dir/USER/Src/pid_3axis.c.obj	1a65605cbf0a3ad1
-256	429	7915741504741385	DJ_A_wheel.elf	6ce6570c1a08baa4
