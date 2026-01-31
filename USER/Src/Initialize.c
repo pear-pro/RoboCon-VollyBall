@@ -31,7 +31,7 @@ void All_Init(){
             INIT);
        damiao[i].ID=0X001+i;
 	   damiao[i].KP=normalize_to_range(55.0, 30.0, 55.0, 1.0, 10.0); 
-	   damiao[i].KD=1.0f;
+	   damiao[i].KD=1.0f; 
 	   damiao[i].tor=55.0f;
 	   
     }
