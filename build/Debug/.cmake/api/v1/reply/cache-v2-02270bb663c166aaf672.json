@@ -15,7 +15,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-addr2line.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-addr2line.exe"
 		},
 		{
 			"name" : "CMAKE_AR",
@@ -31,7 +31,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-ar.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-ar.exe"
 		},
 		{
 			"name" : "CMAKE_ASM_COMPILER_AR",
@@ -47,7 +47,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
 		},
 		{
 			"name" : "CMAKE_ASM_COMPILER_RANLIB",
@@ -63,7 +63,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_ASM_COMPILER_WORKS",
@@ -179,7 +179,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "e:/co_robocon/RoboCon-VollyBall/build/Debug"
+			"value" : "e:/Github/RoboCon-VollyBall/build/Debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -239,7 +239,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/cpack.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/cpack.exe"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -251,7 +251,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/ctest.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/ctest.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_AR",
@@ -267,7 +267,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_RANLIB",
@@ -283,7 +283,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS",
@@ -379,7 +379,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ar.exe"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_RANLIB",
@@ -395,7 +395,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-gcc-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -503,7 +503,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/cmake-gui.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/cmake-gui.exe"
 		},
 		{
 			"name" : "CMAKE_EXECUTABLE_FORMAT",
@@ -635,7 +635,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "E:/co_robocon/RoboCon-VollyBall/build/Debug/CMakeFiles/pkgRedirects"
+			"value" : "E:/Github/RoboCon-VollyBall/build/Debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -695,7 +695,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "E:/co_robocon/RoboCon-VollyBall"
+			"value" : "E:/Github/RoboCon-VollyBall"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -735,7 +735,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/ninja/1.13.1+st.1/bin/ninja.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/ninja/1.13.1+st.1/bin/ninja.exe"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -831,7 +831,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-nm.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-nm.exe"
 		},
 		{
 			"name" : "CMAKE_NUMBER_OF_MAKEFILES",
@@ -859,7 +859,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-objdump.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-objdump.exe"
 		},
 		{
 			"name" : "CMAKE_PLATFORM_INFO_INITIALIZED",
@@ -923,7 +923,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-ranlib.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_READELF",
@@ -939,7 +939,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-readelf.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-readelf.exe"
 		},
 		{
 			"name" : "CMAKE_ROOT",
@@ -951,7 +951,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/share/cmake-4.0"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/share/cmake-4.0"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1159,7 +1159,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/shyboy/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-strip.exe"
+			"value" : "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-strip.exe"
 		},
 		{
 			"name" : "CMAKE_TAPI",
@@ -1183,11 +1183,11 @@
 			[
 				{
 					"name" : "HELPSTRING",
-					"value" : "The CMake toolchain file"
+					"value" : "No help, variable specified on the command line."
 				}
 			],
-			"type" : "FILEPATH",
-			"value" : "E:/co_robocon/RoboCon-VollyBall/cmake/gcc-arm-none-eabi.cmake"
+			"type" : "UNINITIALIZED",
+			"value" : "E:/Github/RoboCon-VollyBall/cmake/gcc-arm-none-eabi.cmake"
 		},
 		{
 			"name" : "CMAKE_VERBOSE_MAKEFILE",
@@ -1215,7 +1215,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "E:/co_robocon/RoboCon-VollyBall/build/Debug"
+			"value" : "E:/Github/RoboCon-VollyBall/build/Debug"
 		},
 		{
 			"name" : "DJ_A_wheel_IS_TOP_LEVEL",
@@ -1239,7 +1239,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "E:/co_robocon/RoboCon-VollyBall"
+			"value" : "E:/Github/RoboCon-VollyBall"
 		}
 	],
 	"kind" : "cache",

@@ -83,19 +83,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 85,
+				"line" : 79,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 87,
+				"line" : 81,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 86,
+				"line" : 80,
 				"parent" : 0
 			}
 		]
@@ -106,7 +106,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : " -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11"
+					"fragment" : " -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -O0 -g3 -std=gnu11"
 				}
 			],
 			"defines" : 
@@ -128,23 +128,23 @@
 			[
 				{
 					"backtrace" : 2,
-					"path" : "E:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc"
+					"path" : "E:/Github/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "E:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc"
+					"path" : "E:/Github/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "E:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"
+					"path" : "E:/Github/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "E:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include"
+					"path" : "E:/Github/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include"
 				},
 				{
 					"backtrace" : 2,
-					"path" : "E:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include"
+					"path" : "E:/Github/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include"
 				}
 			],
 			"language" : "C",
