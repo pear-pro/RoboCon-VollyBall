@@ -173,8 +173,19 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     rc_ctrl->rc.ch[3] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[4] -= RC_CH_VALUE_OFFSET;
 
-    car_x=normalize_to_range(rc_ctrl->rc.ch[1], -1000.0f, 1000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-    car_y=-normalize_to_range(rc_ctrl->rc.ch[0], -1000.0f, 1000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-    car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -1000.0f, 1000.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+    if (rc_ctrl->rc.ch[1] < 100 && rc_ctrl->rc.ch[1] > -100) {
+        car_x = 0;
+    }
+    else {
+        car_x=normalize_to_range(rc_ctrl->rc.ch[1], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+    
+    }
+    if (rc_ctrl->rc.ch[0] < 100 && rc_ctrl->rc.ch[0] > -100) {
+          car_y = 0;
+    }
+    else {
+        car_y=-normalize_to_range(rc_ctrl->rc.ch[0], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+    }
+    car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
     MecanumWheel_Move(car_x,car_y,car_w);
 }
