@@ -55,6 +55,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/USER/Src/pg_led.c
     ${CMAKE_SOURCE_DIR}/USER/Src/remote_control.c
     ${CMAKE_SOURCE_DIR}/USER/Src/math_utils.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/jy901p.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/JY901P_Calibrate.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/pid_3axis.c
 )
 
 # Add include paths

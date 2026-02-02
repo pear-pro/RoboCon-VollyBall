@@ -1,8 +1,10 @@
 
 #include "includes.h"
 #include "can.h"
+#include "jy901p.h"
 #include "motor_can.h"
 #include <stdint.h>
+#include "debug_uart.h"
 uint16_t PID_Calc_Flag = 0;
 
 
@@ -18,11 +20,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     static int16_t voltages[4];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
+        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
         for(int i=0;i<MotorCount;i++)
         {
             voltages[i]=(int16_t)C620[i].Speed_pid.out;
             
         }
+//        float num[]={//gyro_data.Gyro_X,
+//            gyro_data.Gyro_Y,
+//            gyro_data.Gyro_Z,
+//            gyro_data.Acc_X,
+//            gyro_data.Acc_Y,
+//            gyro_data.Acc_Z,
+//            gyro_data.Angle_X,
+//            gyro_data.Angle_Y,
+//            gyro_data.Angle_Z
+//        };
+//        Vofa_JustFloat(num, 3);
         Set_voltagec1(&hcan1,voltages);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机

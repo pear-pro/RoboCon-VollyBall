@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+# Install script for directory: E:/Github/RoboCon-VollyBall/cmake/stm32cubemx
+=======
 # Install script for directory: C:/Users/pear/Desktop/RoboCon-VollyBall - main/cmake/stm32cubemx
+>>>>>>> origin/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,12 +38,16 @@ endif()
 
 # Set path to fallback-tool for dependency-resolution.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/Users/pear/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-objdump.exe")
+  set(CMAKE_OBJDUMP "C:/Users/asus/AppData/Local/stm32cube/bundles/gnu-tools-for-stm32/13.3.1+st.9/bin/arm-none-eabi-objdump.exe")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
+<<<<<<< HEAD
+  file(WRITE "E:/Github/RoboCon-VollyBall/build/Debug/cmake/stm32cubemx/install_local_manifest.txt"
+=======
   file(WRITE "C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/install_local_manifest.txt"
+>>>>>>> origin/main
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
