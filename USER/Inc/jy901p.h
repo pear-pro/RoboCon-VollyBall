@@ -41,7 +41,7 @@ void JY901P_ReadAllData(JY901P_DataStruct *pData);
 // 声明DMA接收缓冲区和读取函数
 extern uint8_t jy901p_i2c2_dma_rx_buf[18];
 uint32_t JY901P_ReadI2C2_DMA_Data(uint8_t *pRxData, uint32_t max_len);
-void JY901P_StartI2C2_DMA_Read(void);
+//void JY901P_StartI2C2_DMA_Read(void);
 
 #endif
 
