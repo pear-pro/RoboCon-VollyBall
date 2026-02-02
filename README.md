@@ -29,7 +29,7 @@ https://marketplace.visualstudio.com/items?itemName=MS-CEINTL.vscode-language-pa
 6.can1控制底盘电机
 7.can2控制机械臂等,有一个陀螺仪也用can
 (五)DT7遥控器各通道对应
-1.右摇杆,左右对应ch[0].上下对应ch2[1]
+1.右摇杆,左右对应ch[0].上下对应ch[1]
 2.左摇杆,左右对应ch[2].上下对应ch[3],最下有限位可做为击球
 3.左上角滚轮对应ch[4]
 4.右上拨杆对应s[0],上中下值分别为1,3,2

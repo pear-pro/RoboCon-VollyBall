@@ -16,10 +16,14 @@
 #define JY901P_CAL_SETREF     0x0008  // 16位设置参考指令
 
 // 函数声明
-void JY901P_Unlock(void);
+
 void JY901P_Calibrate_SetRef(void);
 void JY901P_Calibrate_Level(void);
+
+//初始化要调用的函数
+void JY901P_Unlock(void);
 void JY901P_Calibrate_Full(void);  // 先归零再校准的完整流程
+
 
 #endif
 

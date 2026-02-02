@@ -18,6 +18,7 @@
 #include "math_utils.h"
 #include "jy901p.h"
 #include "debug_uart.h"
+#include "JY901P_Calibrate.h"
 
 extern motor_info_t C620[MotorCount];
 extern motor_info_t C6xx[MotorCount];

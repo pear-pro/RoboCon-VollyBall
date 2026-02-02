@@ -32,8 +32,8 @@ typedef struct {
     int16_t Acc_Z;     // 加速度Z
 } JY901P_DataStruct;
 
-// 外部声明I2C句柄（对应PB8/PB9的I2C1）
-extern I2C_HandleTypeDef hi2c1;
+
+extern I2C_HandleTypeDef hi2c2;
 
 // 核心函数：逐个读取寄存器数据到结构体
 void JY901P_ReadAllData(JY901P_DataStruct *pData);

@@ -19,17 +19,17 @@ static int16_t JY901P_Read16BitReg(uint8_t reg_addr)
 
 void JY901P_ReadAllData(JY901P_DataStruct *pData)
 {
-    pData->Acc_X   = JY901P_Read16BitReg(JY901P_REG_AX);
-    pData->Acc_Y   = JY901P_Read16BitReg(JY901P_REG_AY);
-    pData->Acc_Z   = JY901P_Read16BitReg(JY901P_REG_AZ);
+    pData->Acc_X   = JY901P_Read16BitReg(JY901P_REG_AX)*16/32768;
+    pData->Acc_Y   = JY901P_Read16BitReg(JY901P_REG_AY)*16/32768;
+    pData->Acc_Z   = JY901P_Read16BitReg(JY901P_REG_AZ)*16/32768;
     
-    pData->Gyro_X  = JY901P_Read16BitReg(JY901P_REG_GX);
-    pData->Gyro_Y  = JY901P_Read16BitReg(JY901P_REG_GY);
-    pData->Gyro_Z  = JY901P_Read16BitReg(JY901P_REG_GZ);
+    pData->Gyro_X  = JY901P_Read16BitReg(JY901P_REG_GX)*2000/32768;
+    pData->Gyro_Y  = JY901P_Read16BitReg(JY901P_REG_GY)*2000/32768;
+    pData->Gyro_Z  = JY901P_Read16BitReg(JY901P_REG_GZ)*2000/32768;
     
-    pData->Angle_X = JY901P_Read16BitReg(JY901P_REG_ROLL);
-    pData->Angle_Y = JY901P_Read16BitReg(JY901P_REG_PITCH);
-    pData->Angle_Z = JY901P_Read16BitReg(JY901P_REG_YAW);
+    pData->Angle_X = JY901P_Read16BitReg(JY901P_REG_ROLL)*180/32768;
+    pData->Angle_Y = -JY901P_Read16BitReg(JY901P_REG_PITCH)*180/32768;
+    pData->Angle_Z = JY901P_Read16BitReg(JY901P_REG_YAW)*180/32768;
 }
 
 // 全局DMA接收缓冲区，用于批量接收9个16位寄存器（共18字节）
