@@ -188,4 +188,10 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     }
     car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
     MecanumWheel_Move(car_x,car_y,car_w);
+    if(rc_ctrl->rc.s[1]==1){
+        PID_Calc_Flag=1;
+    }
+    else{
+        PID_Calc_Flag=0;
+    }
 }

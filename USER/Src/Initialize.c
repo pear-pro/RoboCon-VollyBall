@@ -1,4 +1,6 @@
+#include "can.h"
 #include "includes.h"
+#include "motor_can.h"
 #include "pid.h"
 extern motor_info_t damiao[MotorCount];
 void All_Init(){
@@ -8,6 +10,15 @@ void All_Init(){
 	remote_control_init();
     JY901P_Unlock();
     JY901P_Calibrate_Full();
+    Set_dm_enable(&hcan2,0X00);
+    Set_dm_enable(&hcan2,0X01);
+    Set_dm_enable(&hcan2,0X02);
+    Set_dm_enable(&hcan2,0X03);
+    Set_dm_zeropoint(&hcan2,0X00);
+    Set_dm_zeropoint(&hcan2,0X01);
+    Set_dm_zeropoint(&hcan2,0X02);
+    Set_dm_zeropoint(&hcan2,0X03);
+    
 
     for(int i=0;i<MotorCount;i++){
         PID_Struct_Init(&C620[i].Speed_pid, 

@@ -151,13 +151,13 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t g)
  			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
-void Set_dm_enable(CAN_HandleTypeDef* hcan)
+void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
 
 
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
-  can2TxMsg.StdId = 0x1;
+  can2TxMsg.StdId = 0x0+ID;
   can2TxMsg.IDE   = CAN_ID_STD;//标准ID
   can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can2TxMsg.DLC   = 8;//数据长度

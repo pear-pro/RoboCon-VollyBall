@@ -443,11 +443,6 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Src\pg_led.c</FilePath>
             </File>
-            <File>
-              <FileName>pid_3axis.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\pid_3axis.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -507,11 +502,6 @@
               <FileName>pid.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\pid.h</FilePath>
-            </File>
-            <File>
-              <FileName>pid_3axis.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\pid_3axis.h</FilePath>
             </File>
             <File>
               <FileName>pid_tim.h</FileName>
