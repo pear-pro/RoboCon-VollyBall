@@ -104,34 +104,34 @@ void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 
 /**************达妙电机******** */
 
-void Set_dm(CAN_HandleTypeDef* hcan,int16_t g)
+void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
 {
 	uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
-  if (g==1){
+  if (ID==0){
   can2TxMsg.StdId =  damiao[0].ID +0x000;
   }
-  else if(g==2)
+  else if(ID==1)
   {
   can2TxMsg.StdId =  damiao[1].ID +0x000;
 	  
   }
-   else if(g==3)
+   else if(ID==2)
   {
   can2TxMsg.StdId =  damiao[2].ID+0x000 ;
 	  
   }
-  else if(g==4)
+  else if(ID==3)
   {
   can2TxMsg.StdId =  damiao[3].ID +0x000;
 	  
   }
-    pos_tmp = float_to_uint(damiao[g].angle, -12.5, 12.5, 16);
-    vel_tmp = float_to_uint(damiao[g].speed, -30, 30, 12);
-    tor_tmp = float_to_uint(damiao[g].tor, -10,10, 12);
-    kp_tmp  = float_to_uint(damiao[g].KP, 0.0, 500.0, 12);
-    kd_tmp  = float_to_uint(damiao[g].KD,  0.0, 5.0, 12);  
+    pos_tmp = float_to_uint(damiao[ID].angle, -12.5, 12.5, 16);
+    vel_tmp = float_to_uint(damiao[ID].speed, -30, 30, 12);
+    tor_tmp = float_to_uint(damiao[ID].tor, -10,10, 12);
+    kp_tmp  = float_to_uint(damiao[ID].KP, 0.0, 500.0, 12);
+    kd_tmp  = float_to_uint(damiao[ID].KD,  0.0, 5.0, 12);  
   can2TxMsg.IDE   = CAN_ID_STD;//标准ID
   can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can2TxMsg.DLC   = 8;//数据长度
@@ -182,14 +182,19 @@ void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 {
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
-  can2TxMsg.StdId = 0x7FF;
+  can2TxMsg.StdId = CAN_ID;
   can2TxMsg.IDE   = CAN_ID_STD;//标准ID
   can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  can2TxMsg.DLC   = 4;//数据长度
-  can2TxData[0]=(CAN_ID>>8)&0xff;
-  can2TxData[1]=(CAN_ID)&0xff;
-  can2TxData[2]=0x55;
-  can2TxData[3]=0x50;
+  can2TxMsg.DLC   = 8;//数据长度
+  can2TxData[0]=0xff;
+  can2TxData[1]=0xff;
+  can2TxData[2]=0xff;
+  can2TxData[3]=0xff;
+  can2TxData[4]=0xff;
+  can2TxData[5]=0xff;
+  can2TxData[6]=0xff;
+  can2TxData[7]=0xfe;
+
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{

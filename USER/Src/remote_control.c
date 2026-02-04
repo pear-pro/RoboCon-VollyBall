@@ -1,6 +1,8 @@
 #include "remote_control.h"
+#include "can.h"
 #include "includes.h"
 #include "main.h"
+#include "motor_can.h"
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
@@ -188,10 +190,12 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     }
     car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
     MecanumWheel_Move(car_x,car_y,car_w);
-    if(rc_ctrl->rc.s[1]==1){
-        PID_Calc_Flag=1;
+    if(rc_ctrl->rc.ch[4]>100||rc_ctrl->rc.ch[4]<-100){
+	   damiao[0].angle=-1.0f;
+        Set_dm(&hcan1, 0);
     }
-    else{
-        PID_Calc_Flag=0;
+    else{	   
+        damiao[0].angle=0.0f;
+        Set_dm(&hcan1, 0);
     }
 }

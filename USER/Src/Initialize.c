@@ -10,14 +10,9 @@ void All_Init(){
 	remote_control_init();
     JY901P_Unlock();
     JY901P_Calibrate_Full();
-    Set_dm_enable(&hcan2,0X00);
-    Set_dm_enable(&hcan2,0X01);
-    Set_dm_enable(&hcan2,0X02);
-    Set_dm_enable(&hcan2,0X03);
-    Set_dm_zeropoint(&hcan2,0X00);
-    Set_dm_zeropoint(&hcan2,0X01);
-    Set_dm_zeropoint(&hcan2,0X02);
-    Set_dm_zeropoint(&hcan2,0X03);
+    Set_dm_enable(&hcan1,0X00);
+    Set_dm_zeropoint(&hcan1,0X00);
+
     
 
     for(int i=0;i<MotorCount;i++){
@@ -42,11 +37,11 @@ void All_Init(){
             16000, 
             16000,
             INIT);
-       damiao[i].ID=0X001+i;
+       damiao[i].ID=0X000+i;
 	   damiao[i].KP=normalize_to_range(55.0, 30.0, 55.0, 1.0, 10.0); 
 	   damiao[i].KD=1.0f; 
 	   damiao[i].tor=55.0f;
-	   
+       damiao[i].angle=-1.0f;
     }
         
 }
