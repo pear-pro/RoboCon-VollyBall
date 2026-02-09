@@ -1,3 +1,4 @@
+#include "JY901P_Calibrate.h"
 #include "can.h"
 #include "includes.h"
 #include "motor_can.h"
@@ -9,6 +10,7 @@ void All_Init(){
     can2_fliter_init();
 	remote_control_init();
     JY901P_Unlock();
+    JY901P_Calibrate_SetRef();
     JY901P_Calibrate_Full();
     Set_dm_enable(&hcan1,0X00);
     Set_dm_zeropoint(&hcan1,0X00);
