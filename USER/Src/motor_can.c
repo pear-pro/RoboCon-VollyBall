@@ -110,21 +110,21 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
   CAN_TxHeaderTypeDef can2TxMsg;
   uint8_t             can2TxData[8] = {0};
   if (ID==0){
-  can2TxMsg.StdId =  damiao[0].ID +0x000;
+  can2TxMsg.StdId =0x00;
   }
   else if(ID==1)
   {
-  can2TxMsg.StdId =  damiao[1].ID +0x000;
+  can2TxMsg.StdId =0x01;
 	  
   }
    else if(ID==2)
   {
-  can2TxMsg.StdId =  damiao[2].ID+0x000 ;
+  can2TxMsg.StdId =0x02 ;
 	  
   }
   else if(ID==3)
   {
-  can2TxMsg.StdId =  damiao[3].ID +0x000;
+  can2TxMsg.StdId =0x03;
 	  
   }
     pos_tmp = float_to_uint(damiao[ID].angle, -12.5, 12.5, 16);

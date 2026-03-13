@@ -26,6 +26,7 @@ extern motor_info_t damiao[MotorCount];
 extern uint16_t PID_Calc_Flag;
 extern int16_t car_x,car_y,car_w;
 extern JY901P_DataStruct gyro_data;
+extern int16_t Z_zeropoint;
 
 enum State{
     faqiuzhunbei=0,

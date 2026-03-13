@@ -409,16 +409,6 @@
               <FilePath>..\USER\Src\remote_control.c</FilePath>
             </File>
             <File>
-              <FileName>Initialize.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\RoboCon-VollyBall\USER\Src\Initialize.c</FilePath>
-            </File>
-            <File>
-              <FileName>car_ctrl.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\RoboCon-VollyBall\USER\Src\car_ctrl.c</FilePath>
-            </File>
-            <File>
               <FileName>math_utils.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\math_utils.c</FilePath>
@@ -442,6 +432,21 @@
               <FileName>pg_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\pg_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>car_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\car_ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Initialize.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\Initialize.c</FilePath>
+            </File>
+            <File>
+              <FileName>N630.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\N630.c</FilePath>
             </File>
           </Files>
         </Group>

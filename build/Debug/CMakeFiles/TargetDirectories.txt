@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-E:/Github/RoboCon-VollyBall/build/Debug/CMakeFiles/DJ_A_wheel.dir
-E:/Github/RoboCon-VollyBall/build/Debug/CMakeFiles/edit_cache.dir
-E:/Github/RoboCon-VollyBall/build/Debug/CMakeFiles/rebuild_cache.dir
-E:/Github/RoboCon-VollyBall/build/Debug/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
-E:/Github/RoboCon-VollyBall/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
-E:/Github/RoboCon-VollyBall/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
-=======
-C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/CMakeFiles/DJ_A_wheel.dir
-C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/CMakeFiles/edit_cache.dir
-C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/CMakeFiles/rebuild_cache.dir
-C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
-C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
-C:/Users/pear/Desktop/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
->>>>>>> origin/main
+C:/Users/pear/Desktop/RoboCon/RoboCon-VollyBall - main/build/Debug/CMakeFiles/DJ_A_wheel.dir
+C:/Users/pear/Desktop/RoboCon/RoboCon-VollyBall - main/build/Debug/CMakeFiles/edit_cache.dir
+C:/Users/pear/Desktop/RoboCon/RoboCon-VollyBall - main/build/Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/pear/Desktop/RoboCon/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
+C:/Users/pear/Desktop/RoboCon/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+C:/Users/pear/Desktop/RoboCon/RoboCon-VollyBall - main/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir

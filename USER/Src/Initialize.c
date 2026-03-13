@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "motor_can.h"
 #include "pid.h"
+#include <stdint.h>
 extern motor_info_t damiao[MotorCount];
 void All_Init(){
 
@@ -11,7 +12,9 @@ void All_Init(){
     JY901P_Unlock();
     JY901P_Calibrate_Full();
     Set_dm_enable(&hcan1,0X00);
+    Set_dm_enable(&hcan1, 0X01);
     Set_dm_zeropoint(&hcan1,0X00);
+    Set_dm_zeropoint(&hcan1, 0X01);
 
     
 
@@ -37,11 +40,19 @@ void All_Init(){
             16000, 
             16000,
             INIT);
-       damiao[i].ID=0X000+i;
-	   damiao[i].KP=normalize_to_range(55.0, 30.0, 55.0, 1.0, 10.0); 
-	   damiao[i].KD=1.0f; 
-	   damiao[i].tor=55.0f;
-       damiao[i].angle=-1.0f;
+	   damiao[i].KP=60.0f;
+	   damiao[i].KD=2.0f; 
+	   damiao[i].tor=-1.7f;
+       damiao[i].angle=0.0f;
     }
-        
+	damiao[0].KP = 135.0f;
+	damiao[0].KD = 2.0f;
+	damiao[0].tor = -4.0f;
+	
+
+    PID_Struct_Init(&car_pid,
+                    10.0f,0.0f, 0.0f,
+                    1000, 1000, INIT);
+
+    int16_t Z_zeropoint=gyro_data.Angle_Z;    
 }

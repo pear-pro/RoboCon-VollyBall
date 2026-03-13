@@ -1,10 +1,13 @@
 
+#include "N630.h"
+#include "car_ctrl.h"
 #include "includes.h"
 #include "can.h"
 #include "jy901p.h"
 #include "motor_can.h"
 #include <stdint.h>
 #include "debug_uart.h"
+#include "pid.h"
 uint16_t PID_Calc_Flag = 0;
 
 
@@ -20,12 +23,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     static int16_t voltages[4];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
-        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
-        for(int i=0;i<MotorCount;i++)
-        {
-            voltages[i]=(int16_t)C620[i].Speed_pid.out;
-            
-        }
+		Set_dm(&hcan1,0);
+		Set_dm(&hcan1,1);
+//        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
+//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
+//        car_w=car_pid.out;
+//        for(int i=0;i<MotorCount;i++)
+//        {
+//            voltages[i]=(int16_t)C620[i].Speed_pid.out;
+//            
+//        }
 //        float num[]={//gyro_data.Gyro_X,
 //            gyro_data.Gyro_Y,
 //            gyro_data.Gyro_Z,
@@ -36,8 +43,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //            gyro_data.Angle_Y,
 //            gyro_data.Angle_Z
 //        };
-//        Vofa_JustFloat(num, 3);
-        Set_voltagec1(&hcan1,voltages);
+////        Vofa_JustFloat(num, 3);
+//        Set_voltagec1(&hcan1,voltages);
+//        comm_can_set_rpm(001, C620[0].Speed_pid.out);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 	{

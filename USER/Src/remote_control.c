@@ -191,11 +191,11 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
     MecanumWheel_Move(car_x,car_y,car_w);
     if(rc_ctrl->rc.ch[4]>100||rc_ctrl->rc.ch[4]<-100){
-	   damiao[0].angle=-1.0f;
-        Set_dm(&hcan1, 0);
-    }
+	   damiao[1].angle=-0.6f;
+        damiao[0].angle=-0.6f;
+	}
     else{	   
         damiao[0].angle=0.0f;
-        Set_dm(&hcan1, 0);
+        damiao[1].angle=-0.0f;
     }
 }
