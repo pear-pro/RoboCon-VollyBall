@@ -115,7 +115,7 @@ void chassis_task_creat(void)
 				(configSTACK_DEPTH_TYPE) CHASSIS_TASK_SIZE,     //堆栈大小（动态内存申请）
 				(void * ) NULL,                         		//传送任务函数的参数
 				(UBaseType_t) CHASSIS_TASK_PRIO,       			//优先级
-				(TaskHandle_t * ) &chassis_Task_Handle );		//任务句柄
+				(TaskHandle_t * ) &chassis_Task_Handle );		//任务句柄.
 	
 
 }
