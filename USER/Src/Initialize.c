@@ -6,7 +6,8 @@ void All_Init(){
     can1_filter_init();
 //    can2_fliter_init();
 	remote_control_init();
-
+	JY901P_Unlock();
+    JY901P_Calibrate_Full();
     for(int i=0;i<MotorCount;i++){
         PID_Struct_Init(&C620[i].Speed_pid, 
             2.0f, 

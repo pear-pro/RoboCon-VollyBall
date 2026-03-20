@@ -51,6 +51,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			
 			k=0;
 		}
+		
+		JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
