@@ -1,6 +1,8 @@
 #include "remote_control.h"
+#include "can.h"
 #include "includes.h"
 #include "main.h"
+#include "motor_can.h"
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
@@ -172,10 +174,28 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     rc_ctrl->rc.ch[2] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[3] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[4] -= RC_CH_VALUE_OFFSET;
-	
-	// 应用灵敏度系数
-	car_x = (int16_t)(rc_ctrl->rc.ch[0] * RC_CH_SCALE_X);
-	car_y = (int16_t)(rc_ctrl->rc.ch[1] * RC_CH_SCALE_Y);
-	car_w = (int16_t)(rc_ctrl->rc.ch[2] * RC_CH_SCALE_W);
-	MecanumWheel_Move(car_x,car_y,car_w);
+
+    if (rc_ctrl->rc.ch[1] < 100 && rc_ctrl->rc.ch[1] > -100) {
+        car_x = 0;
+    }
+    else {
+        car_x=normalize_to_range(rc_ctrl->rc.ch[1], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+    
+    }
+    if (rc_ctrl->rc.ch[0] < 100 && rc_ctrl->rc.ch[0] > -100) {
+          car_y = 0;
+    }
+    else {
+        car_y=-normalize_to_range(rc_ctrl->rc.ch[0], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+    }
+    car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+    MecanumWheel_Move(car_x,car_y,car_w);
+    if(rc_ctrl->rc.ch[4]>100||rc_ctrl->rc.ch[4]<-100){
+	   damiao[1].angle=-0.6f;
+        damiao[0].angle=-0.6f;
+	}
+    else{	   
+        damiao[0].angle=0.0f;
+        damiao[1].angle=-0.0f;
+    }
 }

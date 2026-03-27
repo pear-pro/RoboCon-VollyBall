@@ -29,6 +29,8 @@
 /* USER CODE BEGIN Includes */
 #include "PID_TIM.h"
 #include "includes.h"
+#include "JY901P_Calibrate.h"
+#include "pg_led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +51,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+// 存储陀螺仪9轴数据
+JY901P_DataStruct gyro_data;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,47 +96,31 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_CAN1_Init();
-  MX_I2C1_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   MX_CAN2_Init();
-  MX_TIM14_Init();
+//  MX_TIM14_Init();
+  MX_USART6_UART_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   
   
- 
-	
+ HAL_TIM_Base_Start_IT(&htim14);
+	 HAL_TIM_Base_Start_IT(&htim3);
   All_Init();
   
-
-
-	uint8_t can_retry = 0;
-	while (can_retry < 5) { // ����5��
-    if (HAL_CAN_Start(&hcan1) == HAL_OK) {
-        break;
-    }
-    HAL_Delay(20); // ÿ�����Լ��20ms
-    can_retry++;
-}
 	
-	HAL_TIM_Base_Start_IT(&htim3);
+HAL_TIM_Base_Start_IT(&htim3);
   HAL_TIM_Base_Start_IT(&htim14);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	HAL_Delay(5000);
+  HAL_Delay(2000);
+
   while (1)
   {
-//	  static int16_t voltages[4]={0};
-//      for(int i=0;i<MotorCount;i++)
-//        {
-//            pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
-//            voltages[i]=(int16_t)C620[i].Speed_pid.out;
-//            
-//        }
-//        Set_voltagec1(&hcan1,voltages);
-//		HAL_Delay(10);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -184,10 +171,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
-  /** Enables the Clock Security System
-  */
-  HAL_RCC_EnableCSS();
 }
 
 /* USER CODE BEGIN 4 */

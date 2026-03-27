@@ -17,6 +17,8 @@
 *.htm
 *.lnp
 *.sct
+*.idx
+*.json
 
 *.uvgui.*
 *.uvguix.*
@@ -61,4 +63,7 @@ Thumbs.db
 # Other user/runtime artifacts
 *.user
 *.lnk
+
+# Allow firmware binaries
+!达妙电机固件/*.bin
 
