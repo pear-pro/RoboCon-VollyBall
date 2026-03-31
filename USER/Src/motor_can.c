@@ -81,24 +81,44 @@ void can2_fliter_init(void)
     isRcan2Started=1;
 }
 /*设置电机电压*/
-void Set_voltagec1(CAN_HandleTypeDef* hcan,int16_t voltage[])
+void Set_voltage(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
 	uint32_t tx_mailbox;
-  CAN_TxHeaderTypeDef can1TxMsg;
-  uint8_t             can1TxData[8] = {0};
-  can1TxMsg.StdId = 0x200;
-  can1TxMsg.IDE   = CAN_ID_STD;//标准ID
-  can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  can1TxMsg.DLC   = 8;//数据长度
+  CAN_TxHeaderTypeDef canTxMsg;
+  uint8_t             canTxData[8] = {0};
+  canTxMsg.StdId = 0x200;
+  canTxMsg.IDE   = CAN_ID_STD;//标准ID
+  canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  canTxMsg.DLC   = 8;//数据长度
   for(int8_t i=0;i<4;i++)
   {
-   can1TxData[2*i]=(voltage[i]>>8)&0xff;
-   can1TxData[2*i+1]=(voltage[i])&0xff;
+   canTxData[2*i]=(voltage[i]>>8)&0xff;
+   canTxData[2*i+1]=(voltage[i])&0xff;
   }
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//发送报文
+			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
+	}
+}
+void Set_voltage2(CAN_HandleTypeDef* hcan,int16_t voltage[])
+{
+	uint32_t tx_mailbox;
+  CAN_TxHeaderTypeDef canTxMsg;
+  uint8_t             canTxData[8] = {0};
+  canTxMsg.StdId = 0x1FF;
+  canTxMsg.IDE   = CAN_ID_STD;//标准ID
+  canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  canTxMsg.DLC   = 8;//数据长度
+  for(int8_t i=0;i<4;i++)
+  {
+   canTxData[2*i]=(voltage[i]>>8)&0xff;
+   canTxData[2*i+1]=(voltage[i])&0xff;
+  }
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
 	}
 }
 
@@ -240,27 +260,21 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			flag=1;
 		}
 	}
-  }
-    if(hcan==&hcan1)
-		{
-			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-			for(int i=0;i<MotorCount;i++)
-			{
-				if(can2RxMsg.StdId==0x201+i){
-					C6xx[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-					C6xx[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-					C6xx[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-					C6xx[i].Rxmsg.Temp=can2RxData[6];
-					C6xx[i].currentRead=C6xx[i].Rxmsg.Angle;
+	if(can2RxMsg.StdId==0x205){
+					C6xx[0].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C6xx[0].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+					C6xx[0].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
+					C6xx[0].Rxmsg.Temp=can2RxData[6];
+					C6xx[0].currentRead=C6xx[0].Rxmsg.Angle;
 					//计算相对零点转了多少度
-					if(C6xx[i].FirstEntre==0)
+					if(C6xx[0].FirstEntre==0)
 					{
-						C6xx[i].Zero=C6xx[i].currentRead;
-						C6xx[i].FirstEntre=1;
-						C6xx[i].lastRead=C6xx[i].currentRead;
-						C6xx[i].totalAngle=0;
+						C6xx[0].Zero=C6xx[0].currentRead;
+						C6xx[0].FirstEntre=1;
+						C6xx[0].lastRead=C6xx[0].currentRead;
+						C6xx[0].totalAngle=0;
 					}
-					int16_t delta=C6xx[i].currentRead-C6xx[i].lastRead;
+					int16_t delta=C6xx[0].currentRead-C6xx[0].lastRead;
 					if(delta>180)
 					{
 						delta=delta-360;
@@ -273,12 +287,47 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					{
 						delta=delta+0;
 					}
-					C6xx[i].totalAngle+=delta;
-					C6xx[i].lastRead=C6xx[i].currentRead;
-					Vofa_JustFloat((float*)C6xx[i].totalAngle, 1);
+					C6xx[0].totalAngle+=delta;
+					C6xx[0].lastRead=C6xx[0].currentRead;
 				}
-			}
-		}
+  }
+//    if(hcan==&hcan1)
+//		{
+//			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+//			for(int i=0;i<MotorCount;i++)
+//			{
+//				if(can2RxMsg.StdId==0x201+i){
+//					C6xx[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+//					C6xx[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+//					C6xx[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
+//					C6xx[i].Rxmsg.Temp=can2RxData[6];
+//					C6xx[i].currentRead=C6xx[i].Rxmsg.Angle;
+//					//计算相对零点转了多少度
+//					if(C6xx[i].FirstEntre==0)
+//					{
+//						C6xx[i].Zero=C6xx[i].currentRead;
+//						C6xx[i].FirstEntre=1;
+//						C6xx[i].lastRead=C6xx[i].currentRead;
+//						C6xx[i].totalAngle=0;
+//					}
+//					int16_t delta=C6xx[i].currentRead-C6xx[i].lastRead;
+//					if(delta>180)
+//					{
+//						delta=delta-360;
+//					}
+//					else if(delta<-180)
+//					{
+//						delta=delta+360;
+//					}
+//					else
+//					{
+//						delta=delta+0;
+//					}
+//					C6xx[i].totalAngle+=delta;
+//					C6xx[i].lastRead=C6xx[i].currentRead;
+//				}
+//			}
+//		}
 }
 
 

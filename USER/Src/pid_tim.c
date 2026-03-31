@@ -24,7 +24,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
 		Set_dm(&hcan1,0);
-		Set_dm(&hcan1,1);
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
@@ -44,7 +43,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //            gyro_data.Angle_Z
 //        };
 ////        Vofa_JustFloat(num, 3);
-        Set_voltagec1(&hcan2,voltages);
+        Set_voltage(&hcan2,voltages);
 //        comm_can_set_rpm(001, C620[0].Speed_pid.out);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
@@ -66,15 +65,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-        for(int i=0;i<MotorCount;i++)
-        {
-			MIT_Calc(&C6xx[i],100,C6xx[i].Target,0);  
-        } 
-		voltages[0]=C6xx[0].out;
-		voltages[1]=C6xx[1].out;
-		voltages[2]=C6xx[2].out;
-		voltages[3]=C6xx[3].out;
-        Set_voltagec1(&hcan1,voltages);
+//		MIT_Calc(&C6xx[0],100,C6xx[0].Target,0);  
+//		voltages[0]=C6xx[0].out;
+//        Set_voltage2(&hcan2,voltages);
 		
     }
 }

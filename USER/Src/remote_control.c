@@ -202,30 +202,11 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
 
         if(rc_ctrl->rc.s[0] == 3)
         {
-           STATE=1;
+           damiao[0].angle=rc_ctrl->rc.ch[4]*(-0.6/660.0f);
         }
         else if(rc_ctrl->rc.s[0] == 1)
         {
-            STATE=0;
+            C6xx[0].Target+=0.1*rc_ctrl->rc.ch[4];
         }
-		
-		switch(STATE)
-		{
-			case 0:
-				C6xx[0].Target+=0.05*rc_ctrl->rc.ch[4];
-				C6xx[1].Target+=rc_ctrl->rc.ch[4];
-				C6xx[2].Target+=rc_ctrl->rc.ch[4];
-				C6xx[3].Target+=rc_ctrl->rc.ch[4];
-				break;
-			case 1:
-				if(rc_ctrl->rc.ch[4]>100||rc_ctrl->rc.ch[4]<-100){
-				damiao[1].angle=-0.6f;
-				damiao[0].angle=-0.6f;
-				}
-				else{	   
-					damiao[0].angle=0.0f;
-					damiao[1].angle=0.0f;
-				}
-				break;
-		}
+
 }
