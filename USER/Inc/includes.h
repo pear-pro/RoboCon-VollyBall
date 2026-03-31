@@ -28,11 +28,7 @@ extern int16_t car_x,car_y,car_w;
 extern JY901P_DataStruct gyro_data;
 extern int16_t Z_zeropoint;
 
-enum State{
-    faqiuzhunbei=0,
-    faqiu=1,
-    jiqiu=2,
-};
+
 
 #define MAX_CAR_SPEED 1000.0f
 

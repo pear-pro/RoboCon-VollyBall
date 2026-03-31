@@ -3,9 +3,13 @@
 #include "includes.h"
 #include "main.h"
 #include "motor_can.h"
+#include <stdint.h>
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
+uint8_t STATE;
+
+
 
 uint8_t   dbus_buf[DBUS_BUFLEN];
 
@@ -29,6 +33,9 @@ RC_ctrl_t rc_ctrl;
 uint16_t RC_CH_VALUE_OFFS111;//receive data, 18 bytes one frame, but set 36 bytes 
 //接收原始数据，为18个字节，给了36个字节长度，防止DMA传输越界
 static uint8_t sbus_rx_buf[2][SBUS_RX_BUF_NUM];
+
+// s[0] 状态管理：用于开关切换边沿检测，避免同档位持续重复触发
+static uint8_t s0_last = 0xFF;      // 上一帧 s[0] 值，0xFF 表示未初始化
 
 /**
   * @brief          remote control init
@@ -190,12 +197,35 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     }
     car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
     MecanumWheel_Move(car_x,car_y,car_w);
-    if(rc_ctrl->rc.ch[4]>100||rc_ctrl->rc.ch[4]<-100){
-	   damiao[1].angle=-0.6f;
-        damiao[0].angle=-0.6f;
-	}
-    else{	   
-        damiao[0].angle=0.0f;
-        damiao[1].angle=-0.0f;
-    }
+
+
+
+        if(rc_ctrl->rc.s[0] == 3)
+        {
+           STATE=1;
+        }
+        else if(rc_ctrl->rc.s[0] == 1)
+        {
+            STATE=0;
+        }
+		
+		switch(STATE)
+		{
+			case 0:
+				C6xx[0].Target+=0.05*rc_ctrl->rc.ch[4];
+				C6xx[1].Target+=rc_ctrl->rc.ch[4];
+				C6xx[2].Target+=rc_ctrl->rc.ch[4];
+				C6xx[3].Target+=rc_ctrl->rc.ch[4];
+				break;
+			case 1:
+				if(rc_ctrl->rc.ch[4]>100||rc_ctrl->rc.ch[4]<-100){
+				damiao[1].angle=-0.6f;
+				damiao[0].angle=-0.6f;
+				}
+				else{	   
+					damiao[0].angle=0.0f;
+					damiao[1].angle=0.0f;
+				}
+				break;
+		}
 }

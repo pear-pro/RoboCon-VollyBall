@@ -9,8 +9,8 @@ void All_Init(){
     can1_filter_init();
     can2_fliter_init();
 	remote_control_init();
-    JY901P_Unlock();
-    JY901P_Calibrate_Full();
+//    JY901P_Unlock();
+//    JY901P_Calibrate_Full();
     Set_dm_enable(&hcan1,0X00);
     Set_dm_enable(&hcan1, 0X01);
     Set_dm_zeropoint(&hcan1,0X00);

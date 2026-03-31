@@ -12,7 +12,7 @@
 
 */
 #define NORMALIZE_ANGLE180(angle) angle = ((angle) > 180) ? ((angle) - 360) : (((angle) < -180) ? (angle) + 360 : angle)
-#define MotorCount 4
+#define MotorCount 5
 #define DM_MIT_ID_BASE 0x140U
 #define DM_MIT_FIRST_ID 1U
 #define DM_MIT_DEFAULT_KP 20.0f
@@ -34,7 +34,7 @@ typedef struct{
 	
 	//控制角度的参数
 	uint16_t			FirstEntre;
-	uint16_t			Target;//目标角度
+	double			Target;//目标角度
 	uint16_t 			lastRead;//上一次读取值
 	uint16_t 			currentRead;//当前读取值
 	uint16_t 			Zero;//上电后的第一个位置做为零点
