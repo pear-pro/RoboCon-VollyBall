@@ -40,16 +40,12 @@ void All_Init(){
             16000, 
             16000,
             INIT);
-	   damiao[i].KP=60.0f;
-	   damiao[i].KD=2.0f; 
-	   damiao[i].tor=-1.7f;
-       damiao[i].angle=0.0f;
-    }
-	damiao[0].KP = 135.0f;
-	damiao[0].KD = 2.0f;
-	damiao[0].tor = -4.0f;
-	
 
+    }
+	damiao[0].KP = 20.0f;//150.0f;
+	damiao[0].KD = 2.0f;
+	damiao[0].tor = -1.60f;//-1.65
+	damiao[0].angle=0.0f;
     PID_Struct_Init(&car_pid,
                     10.0f,0.0f, 0.0f,
                     1000, 1000, INIT);

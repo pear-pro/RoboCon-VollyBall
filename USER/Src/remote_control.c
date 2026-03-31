@@ -167,9 +167,9 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     rc_ctrl->mouse.press_l = sbus_buf[12];                                  //!< Mouse Left Is Press ?
     rc_ctrl->mouse.press_r = sbus_buf[13];                                  //!< Mouse Right Is Press ?
     rc_ctrl->key.v = sbus_buf[14] | (sbus_buf[15] << 8);                    //!< KeyBoard value
-    rc_ctrl->rc.ch[4] = sbus_buf[16] | (sbus_buf[17] << 8);                 //NULL
-
-    rc_ctrl->rc.ch[0] -= RC_CH_VALUE_OFFSET;//数据偏移
+    rc_ctrl->rc.ch[4] = sbus_buf[16] | (sbus_buf[17] << 8);    		//NULL
+		
+		rc_ctrl->rc.ch[0] -= RC_CH_VALUE_OFFSET;//数据偏移
     rc_ctrl->rc.ch[1] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[2] -= RC_CH_VALUE_OFFSET;
     rc_ctrl->rc.ch[3] -= RC_CH_VALUE_OFFSET;
@@ -190,12 +190,11 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     }
     car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
     MecanumWheel_Move(car_x,car_y,car_w);
-    if(rc_ctrl->rc.ch[4]>100||rc_ctrl->rc.ch[4]<-100){
-	   damiao[1].angle=-0.6f;
-        damiao[0].angle=-0.6f;
-	}
-    else{	   
-        damiao[0].angle=0.0f;
-        damiao[1].angle=-0.0f;
-    }
+		
+		if(rc_ctrl->rc.s[0]==1)
+		{
+ 			C620_angle.angle=0.05*rc_ctrl->rc.ch[4];
+		}else{
+			damiao[0].angle=rc_ctrl->rc.ch[4]*(-0.6/660.0f);
+		}
 }
