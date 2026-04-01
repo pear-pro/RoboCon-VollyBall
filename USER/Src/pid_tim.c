@@ -44,7 +44,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //            gyro_data.Angle_Z
 //        };
 ////        Vofa_JustFloat(num, 3);
-        Set_voltagec1(&hcan2,voltages);
+//        Set_voltagec1(&hcan2,voltages);
 //        comm_can_set_rpm(001, C620[0].Speed_pid.out);
     }
 	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
@@ -74,7 +74,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		voltages[1]=C6xx[1].out;
 		voltages[2]=C6xx[2].out;
 		voltages[3]=C6xx[3].out;
-        Set_voltagec1(&hcan1,voltages);
+        Set_voltagec1(&hcan2,voltages);
 		
     }
 }
