@@ -260,11 +260,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			flag=1;
 		}
 	}
-	if(can2RxMsg.StdId==0x205){
-					C6xx[0].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-					C6xx[0].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
-					C6xx[0].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
-					C6xx[0].Rxmsg.Temp=can2RxData[6];
+	if(can1RxMsg.StdId==0x205){
+					C6xx[0].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+					C6xx[0].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
+					C6xx[0].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
+					C6xx[0].Rxmsg.Temp=can1RxData[6];
 					C6xx[0].currentRead=C6xx[0].Rxmsg.Angle;
 					//计算相对零点转了多少度
 					if(C6xx[0].FirstEntre==0)

@@ -51,23 +51,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		HAL_CAN_DeInit(&hcan1);
 		HAL_CAN_Init(&hcan1);
 		HAL_CAN_Start(&hcan1);
-	
-	
 	}
     if(hcan2.ErrorCode!=0)//避免can总线错误导致死机
 	{
 		HAL_CAN_DeInit(&hcan2);
 		HAL_CAN_Init(&hcan2);
 		HAL_CAN_Start(&hcan2);
-	
-	
 	}	
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-//		MIT_Calc(&C6xx[0],100,C6xx[0].Target,0);  
-//		voltages[0]=C6xx[0].out;
-//        Set_voltage2(&hcan2,voltages);
+		MIT_Calc(&C6xx[0],100,C6xx[0].Target,0);  
+		voltages[0]=C6xx[0].out;
+        Set_voltage2(&hcan2,voltages);
 		
     }
 }
