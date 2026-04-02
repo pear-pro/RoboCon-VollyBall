@@ -34,7 +34,7 @@ typedef struct{
 	
 	//控制角度的参数
 	uint16_t			FirstEntre;
-	uint16_t			Target;//目标角度
+	double			Target;//目标角度
 	uint16_t 			lastRead;//上一次读取值
 	uint16_t 			currentRead;//当前读取值
 	uint16_t 			Zero;//上电后的第一个位置做为零点
@@ -61,9 +61,10 @@ void can2_fliter_init(void);
 
 
 void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
+void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_dm(CAN_HandleTypeDef* hcan,int16_t g);
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID);
-void SET_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
+void Set_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed);
 

@@ -43,6 +43,7 @@ void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 void can1_filter_init(void)
 { 	
 	CAN_FilterTypeDef can1_filter_structure;
+	can1_filter_structure.SlaveStartFilterBank=14;
 	can1_filter_structure.FilterActivation = ENABLE;//使能滤波器
 	can1_filter_structure.FilterMode = CAN_FILTERMODE_IDMASK;//掩码模式
 	can1_filter_structure.FilterScale = CAN_FILTERSCALE_32BIT;
@@ -70,13 +71,9 @@ void can2_fliter_init(void)
 	can2_filter_structure.FilterIdLow = 0x0000;
 	can2_filter_structure.FilterMaskIdHigh = 0x0000;
 	can2_filter_structure.FilterMaskIdLow = 0x0000;
-	can2_filter_structure.FilterBank = 0;
+	can2_filter_structure.FilterBank = 14;
 	can2_filter_structure.FilterFIFOAssignment = CAN_RX_FIFO0;//使用FIFO0
-	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
-	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);
-	
-	HAL_CAN_Start(&hcan2);
-	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
+	HAL_CAN_ConfigFilter(&hcan2, &can2_filter_structure);	
 	HAL_CAN_Start(&hcan2);
 	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//使能中断
     isRcan2Started=1;
@@ -103,29 +100,47 @@ void Set_voltage(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
+void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
+{
+	uint32_t tx_mailbox;
+  CAN_TxHeaderTypeDef canTxMsg;
+  uint8_t             canTxData[8] = {0};
+  canTxMsg.StdId = 0x1FF;
+  canTxMsg.IDE   = CAN_ID_STD;//标准ID
+  canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  canTxMsg.DLC   = 8;//数据长度
+   canTxData[0]=(voltage[0]>>8)&0xff;
+   canTxData[1]=(voltage[0])&0xff;
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
+	}
+}
+
 /**************达妙电机******** */
 
 void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
 {
 	uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
-  CAN_TxHeaderTypeDef can2TxMsg;
-  uint8_t             can2TxData[8] = {0};
-  if (ID==0){
-  can2TxMsg.StdId =0x00;
+  CAN_TxHeaderTypeDef can1TxMsg;
+  uint8_t             can1TxData[8] = {0};
+	if (ID==0){
+  can1TxMsg.StdId =0x00;
   }
   else if(ID==1)
   {
-  can2TxMsg.StdId =0x01;
+  can1TxMsg.StdId =0x01;
 	  
   }
    else if(ID==2)
   {
-  can2TxMsg.StdId =0x02 ;
+  can1TxMsg.StdId =0x02 ;
 	  
   }
   else if(ID==3)
   {
-  can2TxMsg.StdId =0x03;
+  can1TxMsg.StdId =0x03;
 	  
   }
     pos_tmp = float_to_uint(damiao[ID].angle, -12.5, 12.5, 16);
@@ -133,73 +148,71 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
     tor_tmp = float_to_uint(damiao[ID].tor, -10,10, 12);
     kp_tmp  = float_to_uint(damiao[ID].KP, 0.0, 500.0, 12);
     kd_tmp  = float_to_uint(damiao[ID].KD,  0.0, 5.0, 12);  
-  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
-  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  can2TxMsg.DLC   = 8;//数据长度
+  can1TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can1TxMsg.DLC   = 8;//数据长度
   
-    can2TxData[0] = (pos_tmp >> 8);
-    can2TxData[1] = pos_tmp;
-    can2TxData[2] = (vel_tmp >> 4);
-    can2TxData[3] = ((vel_tmp&0xF)<<4)|(kp_tmp>>8);
-    can2TxData[4] = kp_tmp;
-    can2TxData[5] = (kd_tmp >> 4);
-    can2TxData[6] = ((kd_tmp&0xF)<<4)|(tor_tmp>>8);
-    can2TxData[7] = tor_tmp;
+    can1TxData[0] = (pos_tmp >> 8);
+    can1TxData[1] = pos_tmp;
+    can1TxData[2] = (vel_tmp >> 4);
+    can1TxData[3] = ((vel_tmp&0xF)<<4)|(kp_tmp>>8);
+    can1TxData[4] = kp_tmp;
+    can1TxData[5] = (kd_tmp >> 4);
+    can1TxData[6] = ((kd_tmp&0xF)<<4)|(tor_tmp>>8);
+    can1TxData[7] = tor_tmp;
   
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
- 			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+ 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
-
-
-  CAN_TxHeaderTypeDef can2TxMsg;
-  uint8_t             can2TxData[8] = {0};
-  can2TxMsg.StdId = 0x0+ID;
-  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
-  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  can2TxMsg.DLC   = 8;//数据长度
+  CAN_TxHeaderTypeDef can1TxMsg;
+  uint8_t             can1TxData[8] = {0};
+  can1TxMsg.StdId = 0x00+ID;
+  can1TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can1TxMsg.DLC   = 8;//数据长度
   
-    can2TxData[0] = 0xFF;
-    can2TxData[1] = 0xFF;
-    can2TxData[2] = 0xFF;
-    can2TxData[3] = 0xFF;
-    can2TxData[4] = 0xFF;
-    can2TxData[5] = 0xFF;
-    can2TxData[6] = 0xFF;
-    can2TxData[7] = 0xFC;	
+    can1TxData[0] = 0xFF;
+    can1TxData[1] = 0xFF;
+    can1TxData[2] = 0xFF;
+    can1TxData[3] = 0xFF;
+    can1TxData[4] = 0xFF;
+    can1TxData[5] = 0xFF;
+    can1TxData[6] = 0xFF;
+    can1TxData[7] = 0xFC;	
 		
   
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//·￠?í±¨??
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//·￠?í±¨??
 	}
 }
 
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 {
-  CAN_TxHeaderTypeDef can2TxMsg;
-  uint8_t             can2TxData[8] = {0};
-  can2TxMsg.StdId = CAN_ID;
-  can2TxMsg.IDE   = CAN_ID_STD;//标准ID
-  can2TxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  can2TxMsg.DLC   = 8;//数据长度
-  can2TxData[0]=0xff;
-  can2TxData[1]=0xff;
-  can2TxData[2]=0xff;
-  can2TxData[3]=0xff;
-  can2TxData[4]=0xff;
-  can2TxData[5]=0xff;
-  can2TxData[6]=0xff;
-  can2TxData[7]=0xfe;
+  CAN_TxHeaderTypeDef can1TxMsg;
+  uint8_t             can1TxData[8] = {0};
+  can1TxMsg.StdId = CAN_ID;
+  can1TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can1TxMsg.DLC   = 8;//数据长度
+  can1TxData[0]=0xff;
+  can1TxData[1]=0xff;
+  can1TxData[2]=0xff;
+  can1TxData[3]=0xff;
+  can1TxData[4]=0xff;
+  can1TxData[5]=0xff;
+  can1TxData[6]=0xff;
+  can1TxData[7]=0xfe;
 
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can2TxMsg, can2TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
 void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed)
@@ -208,7 +221,7 @@ void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int
 	int32_t Angle_delta=target_Angle-motor->totalAngle;
 	int16_t speed_delta=target_speed-motor->Rxmsg.Speed;
 	float kp=10;
-	float kd=5;
+	float kd=3;
 	motor->out=clamp_max(target_torque+
 				kp*Angle_delta+
 				kd*speed_delta, 16000);
@@ -222,61 +235,36 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-  if(hcan==&hcan1)
-  {
-	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-	for(int i=0;i<MotorCount;i++)
-	{
-		if(can1RxMsg.StdId==0x201+i){
-			C620[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-			C620[i].Rxmsg.Speed= ((can1RxData[2] << 8) | can1RxData[3]);
-			C620[i].Rxmsg.Torque=((can1RxData[4] << 8) | can1RxData[5]);
-			C620[i].Rxmsg.Temp=can1RxData[6];
-			C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
-			pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
-			flag=1;
-		}
-	}
-  }
-    if(hcan==&hcan2)
+//  if(hcan==&hcan1)
+//  {
+//	  
+//  }
+    if(hcan==&hcan2) //底盘加角度3508
 		{
-			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);                          
+		
+			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+			for(int i=0;i<MotorCount;i++)
+			{
+				if(can2RxMsg.StdId==0x201+i){
+					C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C620[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
+					C620[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
+					C620[i].Rxmsg.Temp=can2RxData[6];
+					C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+					flag=1;
+				}
+			}
 				if(can2RxMsg.StdId==0x205){
 					C620_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
 					C620_angle.Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
 					C620_angle.Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 					C620_angle.Rxmsg.Temp=can2RxData[6];
-					C620_angle.currentRead=C620_angle.Rxmsg.Angle;
-					//计算相对零点转了多少度
-					if(C620_angle.FirstEntre==0)
-					{
-						C620_angle.Zero=C620_angle.currentRead;
-						C620_angle.FirstEntre=1;
-						C620_angle.lastRead=C620_angle.currentRead;
-						C620_angle.totalAngle=0;
-					}
-					int16_t delta=C620_angle.currentRead-C620_angle.lastRead;
-					if(delta>180)
-					{
-						delta=delta-360;
-					}
-					else if(delta<-180)
-					{
-						delta=delta+360;
-					}
-					else
-					{
-						delta=delta+0;
-					}
-					C620_angle.totalAngle+=delta;
-					C620_angle.lastRead=C620_angle.currentRead;
-					Vofa_JustFloat((float*)C620_angle.totalAngle, 1);
+					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
+					
 				}
+				}
+			}	
 
-
-		}
-	
-}
 
 
 

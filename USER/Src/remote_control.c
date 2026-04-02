@@ -193,8 +193,8 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
 		
 		if(rc_ctrl->rc.s[0]==1)
 		{
- 			C620_angle.angle=0.05*rc_ctrl->rc.ch[4];
+ 			C620_angle.Speed_pid.set=2000*(rc_ctrl->rc.ch[4]/660.0f);
 		}else{
 			damiao[0].angle=rc_ctrl->rc.ch[4]*(-0.6/660.0f);
-		}
+		} 
 }
