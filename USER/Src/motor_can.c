@@ -192,6 +192,30 @@ void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 	}
 }
 
+void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID)
+{
+  CAN_TxHeaderTypeDef can1TxMsg;
+  uint8_t             can1TxData[8] = {0};
+  can1TxMsg.StdId = 0x00+ID;
+  can1TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can1TxMsg.DLC   = 8;//数据长度
+  
+	can1TxData[0] = 0xFF;
+	can1TxData[1] = 0xFF;
+	can1TxData[2] = 0xFF;
+	can1TxData[3] = 0xFF;
+	can1TxData[4] = 0xFF;
+	can1TxData[5] = 0xFF;
+	can1TxData[6] = 0xFF;
+	can1TxData[7] = 0xFD;	
+		
+  
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);
+	}
+}
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 {
   CAN_TxHeaderTypeDef can1TxMsg;
