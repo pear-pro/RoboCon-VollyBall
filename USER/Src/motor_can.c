@@ -99,28 +99,6 @@ void Set_voltage(CAN_HandleTypeDef* hcan,int16_t voltage[])
 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
 	}
 }
-void Set_voltage2(CAN_HandleTypeDef* hcan,int16_t voltage[])
-{
-	uint32_t tx_mailbox;
-  CAN_TxHeaderTypeDef canTxMsg;
-  uint8_t             canTxData[8] = {0};
-  canTxMsg.StdId = 0x1FF;
-  canTxMsg.IDE   = CAN_ID_STD;//标准ID
-  canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  canTxMsg.DLC   = 8;//数据长度
-  for(int8_t i=0;i<4;i++)
-  {
-   canTxData[2*i]=(voltage[i]>>8)&0xff;
-   canTxData[2*i+1]=(voltage[i])&0xff;
-   canTxData[2*i]=(voltage[i]>>8)&0xff;
-   canTxData[2*i+1]=(voltage[i])&0xff;
-  }
-	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
-	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
-	{
-			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
-	}
-}
 
 void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
