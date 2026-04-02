@@ -47,6 +47,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //        };
 ////        Vofa_JustFloat(num, 3);
         Set_voltage(&hcan2,voltages);
+        Set_voltage(&hcan2,voltages);
 //        comm_can_set_rpm(001, C620[0].Speed_pid.out);
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
