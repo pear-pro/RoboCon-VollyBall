@@ -12,7 +12,7 @@
 
 */
 #define NORMALIZE_ANGLE180(angle) angle = ((angle) > 180) ? ((angle) - 360) : (((angle) < -180) ? (angle) + 360 : angle)
-#define MotorCount 5
+#define MotorCount 4
 #define DM_MIT_ID_BASE 0x140U
 #define DM_MIT_FIRST_ID 1U
 #define DM_MIT_DEFAULT_KP 20.0f
@@ -61,10 +61,10 @@ void can2_fliter_init(void);
 
 
 void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
-void Set_voltage2(CAN_HandleTypeDef* hcan,int16_t voltage[]);
+void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_dm(CAN_HandleTypeDef* hcan,int16_t g);
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID);
-void SET_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
+void Set_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed);
 

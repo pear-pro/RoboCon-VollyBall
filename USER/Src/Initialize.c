@@ -46,11 +46,9 @@ void All_Init(){
 	damiao[0].KD = 2.0f;
 	damiao[0].tor = -1.60f;//-1.65
 	damiao[0].angle=0.0f;
-	
-
     PID_Struct_Init(&car_pid,
                     10.0f,0.0f, 0.0f,
                     1000, 1000, INIT);
-
+    PID_Struct_Init(&C620_angle.Speed_pid, 10.0f, 0.3f, 0.0f, 10000, 16000, INIT);
     int16_t Z_zeropoint=gyro_data.Angle_Z;    
 }

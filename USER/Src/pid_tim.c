@@ -9,8 +9,6 @@
 #include "debug_uart.h"
 #include "pid.h"
 uint16_t PID_Calc_Flag = 0;
-
-
 /************************ 定时器更新中断回调函数 ************************/
 /**
  * @brief  定时器更新中断回调函数（HAL库弱函数重写）
@@ -21,17 +19,22 @@ uint16_t PID_Calc_Flag = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
+	  static int16_t voltage_angle[1];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
-		Set_dm(&hcan1,0);
+		 Set_dm(&hcan1,0);
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
         for(int i=0;i<MotorCount;i++)
         {
+			pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
             voltages[i]=(int16_t)C620[i].Speed_pid.out;
             
         }
+//					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
+//          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
+//          Set_voltage_angle(&hcan2,voltage_angle);
 //        float num[]={//gyro_data.Gyro_X,
 //            gyro_data.Gyro_Y,
 //            gyro_data.Gyro_Z,
@@ -61,12 +64,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-		MIT_Calc(&C6xx[0],100,C6xx[0].Target,0);  
-		voltages[0]=C6xx[0].out;
-        Set_voltage2(&hcan2,voltages);
-		
+		pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
+        voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
+        Set_voltage_angle(&hcan2,voltage_angle);
+        } 
     }
-}
+
 
 /************************ 错误处理函数（可选） ************************/
 #ifdef USE_FULL_ASSERT
