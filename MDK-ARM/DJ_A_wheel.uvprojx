@@ -138,7 +138,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -420,14 +420,14 @@
               <FilePath>..\USER\Src\debug_uart.c</FilePath>
             </File>
             <File>
-              <FileName>jy901p.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\jy901p.c</FilePath>
-            </File>
-            <File>
               <FileName>JY901P_Calibrate.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\JY901P_Calibrate.c</FilePath>
+            </File>
+            <File>
+              <FileName>jy901p.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\jy901p.c</FilePath>
             </File>
             <File>
               <FileName>pg_led.c</FileName>

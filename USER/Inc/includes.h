@@ -25,12 +25,16 @@ extern motor_info_t C6xx[MotorCount];
 extern motor_info_t C620_angle;
 extern motor_info_t damiao[MotorCount];
 extern uint16_t PID_Calc_Flag;
-extern int16_t car_x,car_y,car_w;
+extern float car_x,car_y,car_w;
+extern float car_tarx,car_tary,car_tarw;
 extern JY901P_DataStruct gyro_data;
 extern int16_t Z_zeropoint;
 
 
 
 #define MAX_CAR_SPEED 1000.0f
+//底盘匀加/减速参数，T=10ms
+#define SPEED_UP_TICKS (60u) // 从静止加速到最大速度需要的控制周期数
+#define SPEED_DOWN_TICKS (70u) // 从最大速度减速到静止需要的控制周期数
 
 #endif

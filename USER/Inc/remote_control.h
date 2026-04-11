@@ -117,6 +117,6 @@ extern const RC_ctrl_t *get_remote_control_point(void);
 
 extern uint8_t   dbus_buf[DBUS_BUFLEN];
 void USART1_IRQHandlerCallBack(void);
-
+float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed);
 
 #endif

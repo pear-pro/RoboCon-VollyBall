@@ -3,7 +3,7 @@
 #include "includes.h"
 #include "main.h"
 #include "motor_can.h"
-
+#include "math_utils.h"
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
@@ -23,12 +23,36 @@ uint8_t   dbus_buf[DBUS_BUFLEN];
   */
 static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl);
 
-//remote control data 
+
+
+// 发球动作参数：角度单位沿用当前达妙电机 angle 标定，时间单位为 10ms 控制周期
+#define SERVE_LIFT_ANGLE      (-0.10f)
+#define SERVE_HIT_ANGLE       (-0.18f)
+#define SERVE_LIFT_TICKS      (15u)
+#define SERVE_RETURN_TICKS    (36u)
+#define SERVE_HIT_TICKS       (20u)
+#define SERVE_HIT_RETURN_TICKS (20u)
+// 发球状态机：抬球 -> 抬球回零 -> 击球 -> 击球回零
+typedef enum
+{
+    SERVE_STAGE_IDLE = 0,
+    SERVE_STAGE_LIFT,
+    SERVE_STAGE_LIFT_RETURN,
+    SERVE_STAGE_HIT,
+    SERVE_STAGE_HIT_RETURN,
+} serve_stage_t;
+
+
 //遥控器控制变量
 RC_ctrl_t rc_ctrl;
 uint16_t RC_CH_VALUE_OFFS111;//receive data, 18 bytes one frame, but set 36 bytes 
 //接收原始数据，为18个字节，给了36个字节长度，防止DMA传输越界
 static uint8_t sbus_rx_buf[2][SBUS_RX_BUF_NUM];
+// serve_armed 用于保证拨到下档时只触发一次发球流程
+static volatile uint8_t serve_active = 0;
+static volatile uint8_t serve_armed = 1;
+static volatile uint16_t serve_tick = 0;
+static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
 
 /**
   * @brief          remote control init
@@ -57,6 +81,87 @@ void remote_control_init(void)
 const RC_ctrl_t *get_remote_control_point(void)
 {
     return &rc_ctrl;
+}
+
+float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
+{
+    float delat = target - input;
+    if (fabsf(delat) < 20.0f) {
+        return target; // 已经非常接近目标值，直接返回目标值
+    }
+    if (delat > 0) {
+        // 需要加速
+        float step = max_speed / up_ticks; // 每个周期的加速步长
+        return input + fminf(step, delat); // 不要超过目标值
+    } else {
+        // 需要减速
+        float step = max_speed / down_ticks; // 每个周期的减速步长
+        return input + fmaxf(-step, delat); // 不要超过目标值
+    }
+}
+
+
+// 在 TIM3 的 10ms 周期中推进一次发球状态机
+void remote_control_serve_update(void)
+{
+	float progress;
+    if (!serve_active)
+    {
+        return;
+    }
+
+    switch (serve_stage)
+    {
+    case SERVE_STAGE_LIFT:
+        // damiao[0] 向上抬球，先把球垫起来
+        damiao[0].angle = -0.8f;
+        damiao[1].angle = -0.8f;
+        if (++serve_tick >= SERVE_LIFT_TICKS)
+        {
+            serve_stage = SERVE_STAGE_LIFT_RETURN;
+            serve_tick = 0;
+        }
+        break;
+
+    case SERVE_STAGE_LIFT_RETURN:
+        // 抬球机构回到零位，为后续击球让出位置
+        damiao[0].angle = -0.25f;
+        damiao[1].angle = -0.8f;
+        if (++serve_tick >= SERVE_RETURN_TICKS)
+        {
+            serve_stage = SERVE_STAGE_HIT;
+            serve_tick = 0;
+        }
+        break;
+
+    case SERVE_STAGE_HIT:
+        // damiao[1] 向前击球
+        damiao[0].angle = -0.25f;
+        damiao[1].angle = 1.8f;//1.8f;
+        if (++serve_tick >= SERVE_HIT_TICKS)
+        {
+            serve_stage = SERVE_STAGE_HIT_RETURN;
+            serve_tick = 0;
+        }
+        break;
+
+    case SERVE_STAGE_HIT_RETURN:
+    default:
+       // progress = (float)serve_tick / (float)SERVE_HIT_RETURN_TICKS;
+        //progress = clamp_max(progress, 1.0f);
+        damiao[0].angle = -0.25f; // 保持抬球机构位置不变
+        //damiao[1].angle = 1.0f - 2.6f * progress; // 从 1.8f 平滑过渡回 -0.8f
+		    damiao[1].angle=-0.5f;
+		    //serve_tick++;
+        //if(serve_tick >= SERVE_HIT_RETURN_TICKS)
+        //{
+         //   damiao[1].angle = -0.8f;
+            serve_stage = SERVE_STAGE_IDLE;
+        //    serve_tick = 0;
+            serve_active = 0;
+       // }
+		      break;
+    }
 }
 
 
@@ -176,31 +281,74 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     rc_ctrl->rc.ch[4] -= RC_CH_VALUE_OFFSET;
 
     if (rc_ctrl->rc.ch[1] < 100 && rc_ctrl->rc.ch[1] > -100) {
-        car_x = 0;
+        car_tarx = 0;
     }
     else {
-        car_x=normalize_to_range(rc_ctrl->rc.ch[1], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
-    
+        car_tarx=normalize_to_range(rc_ctrl->rc.ch[1], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+        //car_x=low_pass(car_tarx, car_x, 0.25);
+
     }
     if (rc_ctrl->rc.ch[0] < 100 && rc_ctrl->rc.ch[0] > -100) {
-          car_y = 0;
+          car_tary = 0;
     }
     else {
-        car_y=-normalize_to_range(rc_ctrl->rc.ch[0], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        car_tary=-normalize_to_range(rc_ctrl->rc.ch[0], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        //car_y=low_pass(car_tary, car_y, 0.32);
     }
-    car_w=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-    MecanumWheel_Move(car_x,car_y,car_w);
+    car_tarw=-normalize_to_range(rc_ctrl->rc.ch[2], -660.0f, 660.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+   // MecanumWheel_Move(car_x,car_y,car_w);
 		
-		if(rc_ctrl->rc.s[0]==1)
-		{
- 			C620_angle.Speed_pid.set=15000*(rc_ctrl->rc.ch[4]/660.0f);
-		}else{
-			damiao[0].angle=rc_ctrl->rc.ch[4]*(-0.6/660.0f);
-		} 
-    if(rc_ctrl->rc.s[1]==1)
+    // 离开下档后重新装填一次发球触发资格
+    if (rc_ctrl->rc.s[0] != 2)
     {
-      All_Clear();
-    }else{
-       All_Init();
+        serve_armed = 1;
     }
+
+    if (rc_ctrl->rc.s[0] == 1)
+    {
+        // 上档：保留原有 C620 角度电机控制
+        C620_angle.Speed_pid.set = 25000 * (rc_ctrl->rc.ch[4] / 660.0f);
+        //if (!serve_active)
+        //{
+          //  damiao[0].angle = 0.0f;
+            //damiao[1].angle = 0.0f;
+        //}
+    }
+    else if (rc_ctrl->rc.s[0] == 3)
+    {
+        // 中档：手动调试 damiao[0] 角度
+        //C620_angle.Speed_pid.set = 0.0f;
+        //if (!serve_active)
+        //{
+            damiao[0].angle = rc_ctrl->rc.ch[4] * (-1.2f / 660.0f);
+          //  damiao[1].angle = 0.0f;
+        //}
+    }
+    else
+    {
+        // 下档：触发一次自动发球流程
+        if (serve_armed && !serve_active)
+        {
+            serve_active = 1;
+            serve_armed = 0;
+            serve_tick = 0;
+            serve_stage = SERVE_STAGE_LIFT;
+        }
+
+        if (!serve_active)
+        {
+            damiao[0].angle = 0.0f;
+            damiao[1].angle = 0.0f;
+        }
+    }
+   if(rc_ctrl->rc.s[1]==1)
+    {
+     damiao[0].KP = 40.0f;//150.0f;
+	   damiao[0].KD = 1.5f;
+	   damiao[0].tor = -1.15f;//-1.65
+	   damiao[0].angle=0.0f;
+    }
+		//else if(rc_ctrl->rc.s[1]==3){
+       
+    //}
 }

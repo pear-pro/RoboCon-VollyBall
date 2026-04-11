@@ -9,7 +9,8 @@
 #define WHEEL_TRACK_HALF 0.385f   // 轴距半宽（米），示例：15cm
 #define MAX_WHEEL_SPEED 10000     // 轮子最大转速（如PWM占空比最大值、编码器脉冲/秒）
 
-int16_t car_x,car_y,car_w;
+float car_x,car_y,car_w;
+float car_tarx,car_tary,car_tarw;
 
 // 轮子转速结构体（存储四个轮子的目标转速）
 typedef struct {

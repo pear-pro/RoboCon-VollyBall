@@ -8,6 +8,10 @@
 #include <stdint.h>
 #include "debug_uart.h"
 #include "pid.h"
+
+// 发球状态机在遥控器模块中推进，这里按固定周期调用
+extern void remote_control_serve_update(void);
+
 uint16_t PID_Calc_Flag = 0;
 /************************ 定时器更新中断回调函数 ************************/
 /**
@@ -22,7 +26,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  static int16_t voltage_angle[1];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
+		 // 每 10ms 更新一次发球动作阶段
+		 remote_control_serve_update();
+         // 每10ms让速度加/减
+         car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
+         car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
+        car_w=remote_control_meanum_update(car_w,car_tarw, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
+        MecanumWheel_Move(car_x, car_y, car_w);
 		 Set_dm(&hcan1,0);
+		 Set_dm(&hcan1,1);
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
