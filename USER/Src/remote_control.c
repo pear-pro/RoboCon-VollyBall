@@ -114,8 +114,8 @@ void remote_control_serve_update(void)
     {
     case SERVE_STAGE_LIFT:
         // damiao[0] 向上抬球，先把球垫起来
-        damiao[0].angle = -0.8f;
-        damiao[1].angle = -0.8f;
+        damiao[0].angle = -0.35f;
+        damiao[1].angle = -1.9f;
         if (++serve_tick >= SERVE_LIFT_TICKS)
         {
             serve_stage = SERVE_STAGE_LIFT_RETURN;
@@ -126,7 +126,7 @@ void remote_control_serve_update(void)
     case SERVE_STAGE_LIFT_RETURN:
         // 抬球机构回到零位，为后续击球让出位置
         damiao[0].angle = -0.25f;
-        damiao[1].angle = -0.8f;
+        damiao[1].angle = -1.9f;
         if (++serve_tick >= SERVE_RETURN_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT;
@@ -151,7 +151,7 @@ void remote_control_serve_update(void)
         //progress = clamp_max(progress, 1.0f);
         damiao[0].angle = -0.25f; // 保持抬球机构位置不变
         //damiao[1].angle = 1.0f - 2.6f * progress; // 从 1.8f 平滑过渡回 -0.8f
-		    damiao[1].angle=-0.5f;
+		    damiao[1].angle=-1.9f;
 		    //serve_tick++;
         //if(serve_tick >= SERVE_HIT_RETURN_TICKS)
         //{
@@ -337,8 +337,8 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
 
         if (!serve_active)
         {
-            damiao[0].angle = 0.0f;
-            damiao[1].angle = 0.0f;
+            damiao[0].angle = -0.0f;
+            damiao[1].angle = -1.9f;
         }
     }
    if(rc_ctrl->rc.s[1]==1)
