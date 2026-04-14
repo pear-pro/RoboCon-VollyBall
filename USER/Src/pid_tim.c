@@ -27,7 +27,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
 		 // 每 10ms 更新一次发球动作阶段
-		 remote_control_serve_update();
+		 //remote_control_serve_update();
          // 每10ms让速度加/减
          car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
          car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
