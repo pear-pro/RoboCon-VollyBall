@@ -23,11 +23,10 @@ uint8_t   dbus_buf[DBUS_BUFLEN];
   */
 static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl);
 
-
+// 遥控看门狗参数，TIM3 周期为 10ms，15 个周期即 150ms
+#define RC_WATCHDOG_TIMEOUT_TICKS (10u)
 
 // 发球动作参数：角度单位沿用当前达妙电机 angle 标定，时间单位为 10ms 控制周期
-#define SERVE_LIFT_ANGLE      (-0.10f)
-#define SERVE_HIT_ANGLE       (-0.18f)
 #define SERVE_LIFT_TICKS      (15u)
 #define SERVE_RETURN_TICKS    (36u)
 #define SERVE_HIT_TICKS       (20u)
@@ -41,7 +40,7 @@ typedef enum
     SERVE_STAGE_HIT,
     SERVE_STAGE_HIT_RETURN,
 } serve_stage_t;
-
+  
 
 //遥控器控制变量
 RC_ctrl_t rc_ctrl;
@@ -53,6 +52,8 @@ static volatile uint8_t serve_active = 0;
 static volatile uint8_t serve_armed = 1;
 static volatile uint16_t serve_tick = 0;
 static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
+static volatile uint16_t rc_watchdog_tick = 0;
+static volatile uint8_t rc_watchdog_timeout = 0;
 
 /**
   * @brief          remote control init
@@ -81,6 +82,46 @@ void remote_control_init(void)
 const RC_ctrl_t *get_remote_control_point(void)
 {
     return &rc_ctrl;
+}
+
+void remote_control_watchdog_feed(void)
+{
+    rc_watchdog_tick = 0;
+    rc_watchdog_timeout = 0;
+}
+
+void remote_control_watchdog_update(void)
+{
+    if (rc_watchdog_tick < RC_WATCHDOG_TIMEOUT_TICKS)
+    {
+        rc_watchdog_tick++;
+    }
+
+    if (rc_watchdog_tick >= RC_WATCHDOG_TIMEOUT_TICKS)
+    {
+        rc_watchdog_timeout = 1;
+    }
+}
+
+uint8_t remote_control_is_timeout(void)
+{
+    return rc_watchdog_timeout;
+}
+
+void remote_control_enter_safe_state(void)
+{
+    car_x = 0.0f;
+    car_y = 0.0f;
+    car_w = 0.0f;
+    C620_angle.Speed_pid.set = 0.0f;
+
+    serve_active = 0;
+    serve_armed = 1;
+    serve_tick = 0;
+    serve_stage = SERVE_STAGE_IDLE;
+
+    damiao[0].angle = 0.0f;
+    damiao[1].angle = -0.5f;
 }
 
 float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
@@ -125,7 +166,7 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_LIFT_RETURN:
         // 抬球机构回到零位，为后续击球让出位置
-        damiao[0].angle = -0.25f;
+        damiao[0].angle = 0.0f;
         damiao[1].angle = -1.9f;
         if (++serve_tick >= SERVE_RETURN_TICKS)
         {
@@ -136,7 +177,7 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_HIT:
         // damiao[1] 向前击球
-        damiao[0].angle = -0.25f;
+        damiao[0].angle = 0.0f;
         damiao[1].angle = 1.8f;//1.8f;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
@@ -149,7 +190,7 @@ void remote_control_serve_update(void)
     default:
        // progress = (float)serve_tick / (float)SERVE_HIT_RETURN_TICKS;
         //progress = clamp_max(progress, 1.0f);
-        damiao[0].angle = -0.25f; // 保持抬球机构位置不变
+        damiao[0].angle = 0.0f; // 保持抬球机构位置不变
         //damiao[1].angle = 1.0f - 2.6f * progress; // 从 1.8f 平滑过渡回 -0.8f
 		    damiao[1].angle=-1.9f;
 		    //serve_tick++;
@@ -205,6 +246,7 @@ void USART1_IRQHandlerCallBack(void)
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
                 sbus_to_rc(sbus_rx_buf[0], &rc_ctrl);
+                remote_control_watchdog_feed();
             }
         }
         else
@@ -234,6 +276,7 @@ void USART1_IRQHandlerCallBack(void)
             {
                 //处理遥控器数据
                 sbus_to_rc(sbus_rx_buf[1], &rc_ctrl);
+                remote_control_watchdog_feed();
             }
         }
     }
@@ -320,7 +363,7 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
         //C620_angle.Speed_pid.set = 0.0f;
         //if (!serve_active)
         //{
-            damiao[0].angle = rc_ctrl->rc.ch[4] * (-1.2f / 660.0f);
+            damiao[0].angle = rc_ctrl->rc.ch[4] * (-0.6f / 660.0f); //亚克力板是-1.2f
           //  damiao[1].angle = 0.0f;
         //}
     }
@@ -337,7 +380,7 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
 
         if (!serve_active)
         {
-            damiao[0].angle = -0.0f;
+            damiao[0].angle = 0.0f;
             damiao[1].angle = -1.9f;
         }
     }

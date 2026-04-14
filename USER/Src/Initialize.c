@@ -29,17 +29,10 @@ void All_Init(){
             300,
             300,
             INIT);
-        PID_Struct_Init(&damiao[i].Speed_pid, 
-            0.004f, 
-            0.000001f,
-            0.0f, 
-            16000, 
-            16000,
-            INIT);
     }
-	damiao[0].KP = 50.0f;//150.0f;
+	damiao[0].KP = 120.0f;//150.0f;
 	damiao[0].KD = 6.0f;
-	damiao[0].tor = -1.60f;//-1.65
+	damiao[0].tor = 0.0f;//-1.65
 	damiao[0].angle=0.0f;
     damiao[1].KP = 130.0f;//150.0f;
 	damiao[1].KD = 6.0f;

@@ -11,6 +11,9 @@
 
 // 发球状态机在遥控器模块中推进，这里按固定周期调用
 extern void remote_control_serve_update(void);
+extern void remote_control_watchdog_update(void);
+extern uint8_t remote_control_is_timeout(void);
+extern void remote_control_enter_safe_state(void);
 
 uint16_t PID_Calc_Flag = 0;
 /************************ 定时器更新中断回调函数 ************************/
@@ -26,6 +29,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  static int16_t voltage_angle[1];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
+		 // 遥控超过 150ms 未更新时，进入底盘与发球机构安全态
+		 remote_control_watchdog_update();
+		 if (remote_control_is_timeout())
+		 {
+		     remote_control_enter_safe_state();
+		 }
+
 		 // 每 10ms 更新一次发球动作阶段
 		 remote_control_serve_update();
          // 每10ms让速度加/减
