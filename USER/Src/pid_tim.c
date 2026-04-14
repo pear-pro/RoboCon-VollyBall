@@ -31,6 +31,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
 		 // 遥控超过 150ms 未更新时，进入底盘与发球机构安全态
 		 remote_control_watchdog_update();
+         // 达妙电机角度回零
+         damiao0_angle_update();
 		 if (remote_control_is_timeout())
 		 {
 		     remote_control_enter_safe_state();
