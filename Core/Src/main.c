@@ -82,6 +82,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -106,6 +107,9 @@ int main(void)
 
   All_Init();
   
+	
+	HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_Base_Start_IT(&htim14);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -116,7 +120,7 @@ int main(void)
   {
 
     /* USER CODE END WHILE */
-
+     Set_dm(&hcan1,1);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -182,7 +186,6 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
-		
   }
   /* USER CODE END Error_Handler_Debug */
 }

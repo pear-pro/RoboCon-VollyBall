@@ -118,5 +118,10 @@
 // extern uint8_t   dbus_buf[DBUS_BUFLEN];
 // void USART1_IRQHandlerCallBack(void);
 // float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed);
+// void remote_control_watchdog_feed(void);
+// void remote_control_watchdog_update(void);
+// uint8_t remote_control_is_timeout(void);
+// void remote_control_enter_safe_state(void);
+// void damiao0_angle_update(void);
 
 // #endif
