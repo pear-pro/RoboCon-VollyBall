@@ -36,8 +36,8 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl);
 
 // 发球动作参数：角度单位沿用当前达妙电机 angle 标定，时间单位为 10ms 控制周期
 #define SERVE_LIFT_TICKS      (13u)
-#define SERVE_RETURN_TICKS    (20u)
-#define SERVE_HIT_TICKS       (20u)
+#define SERVE_RETURN_TICKS    (18u)
+#define SERVE_HIT_TICKS       (25u)
 #define SERVE_HIT_RETURN_TICKS (20u)
 // 发球状态机：抬球 -> 抬球回零 -> 击球 -> 击球回零
 typedef enum
@@ -203,7 +203,7 @@ void remote_control_serve_update(void)
     case SERVE_STAGE_HIT:
         // damiao[1] 向前击球
         damiao[0].angle = 0.0f;
-        damiao[1].angle =damiao_1_front;// -0.8f;
+        damiao[1].angle =-1.1f  ;// -0.8f;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -271,7 +271,7 @@ void USART1_IRQHandlerCallBack(void)
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
                 sbus_to_rc(sbus_rx_buf[0], &rc_ctrl);
-                remote_control_watchdog_feed();
+//                remote_control_watchdog_feed();
             }
         }
         else
@@ -301,7 +301,7 @@ void USART1_IRQHandlerCallBack(void)
             {
                 //处理遥控器数据
                 sbus_to_rc(sbus_rx_buf[1], &rc_ctrl);
-                remote_control_watchdog_feed();
+//                remote_control_watchdog_feed();
             }
         }
     }
