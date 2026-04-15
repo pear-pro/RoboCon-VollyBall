@@ -192,15 +192,15 @@ void remote_control_serve_update(void)
         //progress = clamp_max(progress, 1.0f);
         damiao[0].angle = 0.0f; // 保持抬球机构位置不变
         //damiao[1].angle = 1.0f - 2.6f * progress; // 从 1.8f 平滑过渡回 -0.8f
-		    damiao[1].angle=2.2f;
-		    //serve_tick++;
-        //if(serve_tick >= SERVE_HIT_RETURN_TICKS)
-        //{
+		damiao[1].angle=2.2f;
+		  
+        if(++serve_tick >= SERVE_HIT_RETURN_TICKS)
+        {
          //   damiao[1].angle = -0.8f;
             serve_stage = SERVE_STAGE_IDLE;
-        //    serve_tick = 0;
+            serve_tick = 0;
             serve_active = 0;
-       // }
+        }
 		      break;
     }
 }
@@ -384,13 +384,13 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
             damiao[1].angle = 2.2f;
         }
     }
-   if(rc_ctrl->rc.s[1]==1)
-    {
-     damiao[0].KP = 40.0f;//150.0f;
-	   damiao[0].KD = 1.5f;
-	   damiao[0].tor = -1.15f;//-1.65
-	   damiao[0].angle=0.0f;
-    }
+//    if(rc_ctrl->rc.s[1]==1)
+//     {
+//      damiao[0].KP = 40.0f;//150.0f;
+// 	   damiao[0].KD = 1.5f;
+// 	   damiao[0].tor = -1.15f;//-1.65
+// 	   damiao[0].angle=0.0f;
+//     }
 		//else if(rc_ctrl->rc.s[1]==3){
        
     //}
