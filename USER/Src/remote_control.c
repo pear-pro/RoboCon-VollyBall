@@ -28,12 +28,12 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl);
 
 // 发球动作参数：角度单位沿用当前达妙电机 angle 标定，时间单位为 10ms 控制周期
 #define SERVE_LIFT_TICKS      (15u)
-#define SERVE_RETURN_TICKS    (36u)
-#define SERVE_HIT_TICKS       (20u)
+#define SERVE_RETURN_TICKS    (20u)
+#define SERVE_HIT_TICKS       (25u)
 #define SERVE_HIT_RETURN_TICKS (20u)
 
 //击球回零参数
-#define RETURN_TICKS (40u) // 达妙电机回零时间
+#define RETURN_TICKS (100u) // 达妙电机回零时间
 #define SET_LIMIT (40.0f)  //滚轮判定松手范围
 
 #define DM0_Angle_Scale (-0.6f / 660.0f) // 遥控器输入范围 -660~660 映射到达妙电机 -0.6~0.6 的比例系数
@@ -64,7 +64,7 @@ static volatile uint8_t return_tick = 0;
 static volatile float damiao0_tarangle=0.0f;//达妙电机0目标角度
 static volatile uint8_t count=0; //达妙电机回零计数
 static volatile uint8_t returning = 0;
-static volatile float return_start_angle = 0.0f
+static volatile float return_start_angle = 0.0f;
 /**
   * @brief          remote control init
   * @param[in]      none
@@ -135,8 +135,8 @@ void remote_control_enter_safe_state(void)
     serve_stage = SERVE_STAGE_IDLE;
 
     // 达妙电机回零
-    damiao[0].angle = 0.0f;
-    damiao[1].angle = -0.5f;
+    //damiao[0].angle = 0.0f;
+    //damiao[1].angle = -0.5f;
 
     // 回零相关参数复位
     count = 0;
@@ -177,8 +177,8 @@ void remote_control_serve_update(void)
     {
     case SERVE_STAGE_LIFT:
         // damiao[0] 向上抬球，先把球垫起来
-       // damiao[0].angle = -0.8f;
-        damiao[1].angle = -1.0f;
+        damiao[0].angle = -0.35f;
+        damiao[1].angle = 2.2f;
         if (++serve_tick >= SERVE_LIFT_TICKS)
         {
             serve_stage = SERVE_STAGE_LIFT_RETURN;
@@ -188,8 +188,8 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_LIFT_RETURN:
         // 抬球机构回到零位，为后续击球让出位置
-       // damiao[0].angle = 0.0f;
-        damiao[1].angle = -1.0f;
+        damiao[0].angle = 0.0f;
+        damiao[1].angle = 2.2f;
         if (++serve_tick >= SERVE_RETURN_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT;
@@ -199,8 +199,8 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_HIT:
         // damiao[1] 向前击球
-       // damiao[0].angle = 0.0f;
-        damiao[1].angle = 2.35f;;
+        damiao[0].angle = 0.0f;
+        damiao[1].angle =-1.0f;// -0.8f;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -212,63 +212,20 @@ void remote_control_serve_update(void)
     default:
        // progress = (float)serve_tick / (float)SERVE_HIT_RETURN_TICKS;
         //progress = clamp_max(progress, 1.0f);
-       // damiao[0].angle = 0.0f; // 保持抬球机构位置不变
+        damiao[0].angle = 0.0f; // 保持抬球机构位置不变
         //damiao[1].angle = 1.0f - 2.6f * progress; // 从 1.8f 平滑过渡回 -0.8f
-		    damiao[1].angle=-1.0f;
-		    //serve_tick++;
-        //if(serve_tick >= SERVE_HIT_RETURN_TICKS)
-        //{
-         //   damiao[1].angle = -0.8f;
-            serve_stage = SERVE_STAGE_IDLE;
-        //    serve_tick = 0;
-            serve_active = 0;
-       // }
+		    damiao[1].angle=  0.0f;
+		
+    if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
+    {
+        serve_stage = SERVE_STAGE_IDLE;
+        serve_tick = 0;
+        serve_active = 0;
+    }
 		      break;
     }
 }
 
-void daimao0_angle_update(void)
-{
-    float ch4_abs = fabsf((float)rc_ctrl.rc.ch[4]);
-     // 中档处理手动角度回零
-    if (rc_ctrl.rc.s[0] != 3)
-    {
-        count = 0;
-        returning = 0;
-        return_tick = 0;
-        return_start_angle = 0.0f;
-        return;
-    }
-    if(ch4_abs > SET_LIMIT){
-        count = 0;
-        returning = 0;
-        return_tick = 0;
-        damiao[0].angle=damiao0_tarangle;
-        return;
-    }else if(ch4_abs<=SET_LIMIT){
-        if(count<=3){count++;}
-        if(count>3 && !returning){
-            returning=1;
-            return_tick = 0;
-            return_start_angle=damiao[0].angle; // 记录开始回零时的角度
-        }
-    }
-    if(returning){
-        float progress = (float)return_tick / (float)RETURN_TICKS;
-        progress = clamp_max(progress, 1.0f);
-        float s = progress * progress * (3.0f - 2.0f * progress);
-        damiao[0].angle = return_start_angle * (1.0f - s);
-        //float s = sinf(progress * 1.5707963f);   // pi/2
-        //damiao[0].angle = return_start_angle * (1.0f - s);
-        if(++return_tick >= RETURN_TICKS)   
-        {
-            damiao[0].angle=0.0f;
-            returning=0;
-            return_tick=0;
-            count = 0;
-        }
-    }
-}
 
 
 
@@ -314,7 +271,7 @@ void USART1_IRQHandlerCallBack(void)
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
                 sbus_to_rc(sbus_rx_buf[0], &rc_ctrl);
-                remote_control_watchdog_feed();
+               // remote_control_watchdog_feed();
             }
         }
         else
@@ -344,7 +301,7 @@ void USART1_IRQHandlerCallBack(void)
             {
                 //处理遥控器数据
                 sbus_to_rc(sbus_rx_buf[1], &rc_ctrl);
-                remote_control_watchdog_feed();
+               // remote_control_watchdog_feed();
             }
         }
     }
@@ -450,4 +407,39 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
 		//else if(rc_ctrl->rc.s[1]==3){
        
     //}
+}
+
+void damiao0_angle_update(void)
+{
+    float ch4_abs = fabsf((float)rc_ctrl.rc.ch[4]);
+        return_start_angle = 0.0f;
+    if(ch4_abs > SET_LIMIT){
+        count = 0;
+        returning = 0;
+        return_tick = 0;
+        damiao[0].angle=damiao0_tarangle;
+        return;
+    }else if(ch4_abs<=SET_LIMIT){
+        if(count<=3){count++;}
+        if(count>3 && !returning){
+            returning=1;
+            return_tick = 0;
+            return_start_angle=damiao[0].angle; // 记录开始回零时的角度
+        }
+    }
+    if(returning){
+        float progress = (float)return_tick / (float)RETURN_TICKS;
+        progress = clamp_max(progress, 1.0f);
+        float s = progress * progress * (3.0f - 2.0f * progress);
+        damiao[0].angle = return_start_angle * (1.0f - s);
+        //float s = sinf(progress * 1.5707963f);   // pi/2
+        //damiao[0].angle = return_start_angle * (1.0f - s);
+        if(++return_tick >= RETURN_TICKS)   
+        {
+            damiao[0].angle=0.0f;
+            returning=0;
+            return_tick=0;
+            count = 0;
+        }
+    }
 }
