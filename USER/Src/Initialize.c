@@ -41,8 +41,7 @@ void All_Init(){
     damiao[1].KP = 35.0f;//150.0f;
 	damiao[1].KD = 2.0f;
 	damiao[1].tor = -0.5f;//-1.65
-	damiao[1].angle=2.2f;
-	damiao[1].angle=0.0f;  
+	damiao[1].angle=damiao_1_back;
 	
 
     PID_Struct_Init(&car_pid,
