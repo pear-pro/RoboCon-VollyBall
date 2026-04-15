@@ -12,6 +12,9 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 #define SERVE_RETURN_TICKS    (36u)
 #define SERVE_HIT_TICKS       (20u)
 #define SERVE_HIT_RETURN_TICKS (20u)
+
+#define RETURN_TICKS (500u)
+#define SET_LIMIT (0.05f)  //滚轮判定松手范围
 // 发球状态机：抬球 -> 抬球回零 -> 击球 -> 击球回零
 typedef enum
 {
@@ -34,7 +37,14 @@ SBUS_ctrl_t sbus_ctrl;
 static volatile uint8_t serve_active = 0;
 static volatile uint8_t serve_armed = 1;
 static volatile uint16_t serve_tick = 0;
-static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
+static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE; 
+static volatile uint16_t rc_watchdog_tick = 0;
+static volatile uint8_t rc_watchdog_timeout = 0;
+static volatile uint16_t return_tick = 0;
+static volatile float damiao0_tarangle=0.0f;//达妙电机0目标角度
+static volatile uint16_t count=0; //达妙电机回零计数
+static volatile uint8_t returning = 0;
+static volatile float return_start_angle = 0.0f;
 
 void sbus_remote_control_init(void)//SBUS遥控器初始化
 {
@@ -133,6 +143,41 @@ float remote_control_meanum_update(float input,float target,float up_ticks,float
 //		      break;
 //    }
 //}
+
+void damiao0_angle_update(void)
+{
+    float ch3_abs = fabsf((float)sbus_ctrl.ch[3]);
+     // 中档处理手动角度回零
+    if(ch3_abs > SET_LIMIT){
+        count = 0;
+        returning = 0;
+        return_tick = 0;
+        damiao[0].angle=damiao0_tarangle;
+        return;
+    }else if(ch3_abs<=SET_LIMIT){
+        if(count<=3){count++;}
+        if(count>3 && !returning){
+            returning=1;
+            return_tick = 0;
+            return_start_angle=damiao[0].angle; // 记录开始回零时的角度
+        }
+    }
+    if(returning){
+        float progress = (float)return_tick / (float)RETURN_TICKS;
+        progress = clamp_max(progress, 1.0f);
+        float s = progress * progress * (3.0f - 2.0f * progress);
+        damiao[0].angle = return_start_angle * (1.0f - s);
+        //float s = sinf(progress * 1.5707963f);   // pi/2
+        //damiao[0].angle = return_start_angle * (1.0f - s);
+        if(++return_tick >= RETURN_TICKS)   
+        {
+            damiao[0].angle=-0.0f;
+            returning=0;
+            return_tick=0;
+            count = 0;
+        }
+    }
+}
 
 //串口中断
 void USART1_IRQHandlerCallBack(void)
@@ -471,12 +516,21 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
             //C620_angle.Speed_pid.set = 0.0f;
             //if (!serve_active)
             //{  
-            damiao[0].angle = sbus_ctrl->ch[3] * (-0.6f / 800.0f);
-            if(damiao[0].angle > 0.05f || damiao[0].angle < -0.05f)
+           damiao[0].angle = sbus_ctrl->ch[3] * (-0.6f / 800.0f);
+            if (damiao[0].angle > 0)
+            {
+                damiao[0].angle = -damiao[0].angle;
+            }
+            if(damiao[0].angle > -0.05f)
             {
                 damiao[0].angle = 0.0f;
-            }            //  damiao[1].angle = 0.0f;
+            }           //  damiao[1].angle = 0.0f;
             //}
+					
+//					if(KEY_SWC_MID & sbus_ctrl -> key_flag)
+//					{
+//						 damiao[0].angle = -0.6f;
+//					}
         }
         else
         {
@@ -489,19 +543,19 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
                 serve_stage = SERVE_STAGE_LIFT;
             }
 
-            if (!serve_active)
-            {
-                damiao[0].angle = 0.0f;
-                damiao[1].angle = 0.0f;
-            }
+//            if (!serve_active)
+//            {
+//                damiao[0].angle = 0.0f;
+//                damiao[1].angle = 0.0f;
+//            }
         }
-        if(KEY_SWA_UP)
-        {
-        damiao[0].KP = 40.0f;//150.0f;
-        damiao[0].KD = 1.5f;
-        damiao[0].tor = -1.15f;//-1.65
-        damiao[0].angle=0.0f;
-        }
+//        if(KEY_SWA_UP)
+//        {
+//        damiao[0].KP = 40.0f;//150.0f;
+//        damiao[0].KD = 1.5f;
+//        damiao[0].tor = -1.15f;//-1.65
+//        damiao[0].angle=0.0f;
+//        }
             //else if(sbus_ctrl->ch[4]==3){
         
         //}
