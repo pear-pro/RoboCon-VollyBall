@@ -35,8 +35,8 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl);
 #define RC_WATCHDOG_TIMEOUT_TICKS (10u)
 
 // 发球动作参数：角度单位沿用当前达妙电机 angle 标定，时间单位为 10ms 控制周期
-#define SERVE_LIFT_TICKS      (15u)
-#define SERVE_RETURN_TICKS    (36u)
+#define SERVE_LIFT_TICKS      (13u)
+#define SERVE_RETURN_TICKS    (20u)
 #define SERVE_HIT_TICKS       (20u)
 #define SERVE_HIT_RETURN_TICKS (20u)
 // 发球状态机：抬球 -> 抬球回零 -> 击球 -> 击球回零

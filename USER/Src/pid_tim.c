@@ -29,7 +29,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  static int16_t voltage_angle[1];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
-			 damiao0_angle_update();
+//			 damiao0_angle_update();
 		 // 遥控超过 150ms 未更新时，进入底盘与发球机构安全态
 //		 remote_control_watchdog_update();
 //         // 达妙电机角度回零
