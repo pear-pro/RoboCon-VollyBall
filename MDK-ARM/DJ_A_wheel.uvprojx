@@ -389,14 +389,14 @@
               <FilePath>..\USER\Src\bsp_rc.c</FilePath>
             </File>
             <File>
-              <FileName>motor_can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\motor_can.c</FilePath>
-            </File>
-            <File>
               <FileName>pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\motor_can.c</FilePath>
             </File>
             <File>
               <FileName>pid_tim.c</FileName>

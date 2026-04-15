@@ -11,9 +11,13 @@ void All_Init(){
 	remote_control_init();
 //    JY901P_Unlock();
 //    JY901P_Calibrate_Full();
-    Set_dm_zeropoint(&hcan1,0X00);
-//    Set_dm_enable(&hcan1,0X00);
-    Set_dm_enable(&hcan1,0X01);
+	   
+    Set_dm_enable(&hcan1,0X00);
+	 Set_dm_zeropoint(&hcan1,0X00);
+ 
+   		 Set_dm_enable(&hcan1,0X01);
+	 Set_dm_zeropoint(&hcan1,0X01);
+    
     for(int i=0;i<MotorCount;i++){
         PID_Struct_Init(&C620[i].Speed_pid, 
             2.0f, 
@@ -34,10 +38,13 @@ void All_Init(){
 	damiao[0].KD = 6.0f;
 	damiao[0].tor = 0.0f;//-1.65
 	damiao[0].angle=0.0f;
-    damiao[1].KP = 130.0f;//150.0f;
-	damiao[1].KD = 6.0f;
+    damiao[1].KP = 35.0f;//150.0f;
+	damiao[1].KD = 2.0f;
 	damiao[1].tor = -0.5f;//-1.65
 	damiao[1].angle=2.2f;
+	damiao[1].angle=0.0f;  
+	
+
     PID_Struct_Init(&car_pid,
                     10.0f,0.0f, 0.0f,
                     1000, 1000, INIT);

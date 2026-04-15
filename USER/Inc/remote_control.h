@@ -122,5 +122,6 @@ void remote_control_watchdog_feed(void);
 void remote_control_watchdog_update(void);
 uint8_t remote_control_is_timeout(void);
 void remote_control_enter_safe_state(void);
+void damiao0_angle_update(void);
 
 #endif
