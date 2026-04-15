@@ -28,15 +28,9 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl);
 
 // 发球动作参数：角度单位沿用当前达妙电机 angle 标定，时间单位为 10ms 控制周期
 #define SERVE_LIFT_TICKS      (15u)
-#define SERVE_RETURN_TICKS    (20u)
-#define SERVE_HIT_TICKS       (25u)
+#define SERVE_RETURN_TICKS    (36u)
+#define SERVE_HIT_TICKS       (20u)
 #define SERVE_HIT_RETURN_TICKS (20u)
-
-//击球回零参数
-#define RETURN_TICKS (100u) // 达妙电机回零时间
-#define SET_LIMIT (40.0f)  //滚轮判定松手范围
-
-#define DM0_Angle_Scale (-0.6f / 660.0f) // 遥控器输入范围 -660~660 映射到达妙电机 -0.6~0.6 的比例系数
 // 发球状态机：抬球 -> 抬球回零 -> 击球 -> 击球回零
 typedef enum
 {
@@ -57,14 +51,10 @@ static uint8_t sbus_rx_buf[2][SBUS_RX_BUF_NUM];
 static volatile uint8_t serve_active = 0;
 static volatile uint8_t serve_armed = 1;
 static volatile uint16_t serve_tick = 0;
-static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE; 
+static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
 static volatile uint16_t rc_watchdog_tick = 0;
 static volatile uint8_t rc_watchdog_timeout = 0;
-static volatile uint8_t return_tick = 0;
-static volatile float damiao0_tarangle=0.0f;//达妙电机0目标角度
-static volatile uint8_t count=0; //达妙电机回零计数
-static volatile uint8_t returning = 0;
-static volatile float return_start_angle = 0.0f;
+
 /**
   * @brief          remote control init
   * @param[in]      none
@@ -102,13 +92,11 @@ void remote_control_watchdog_feed(void)
 
 void remote_control_watchdog_update(void)
 {
-    // 看门狗计数，超过阈值则认为遥控器失联
     if (rc_watchdog_tick < RC_WATCHDOG_TIMEOUT_TICKS)
     {
         rc_watchdog_tick++;
     }
 
-    // 超过阈值，进入失联状态
     if (rc_watchdog_tick >= RC_WATCHDOG_TIMEOUT_TICKS)
     {
         rc_watchdog_timeout = 1;
@@ -122,28 +110,18 @@ uint8_t remote_control_is_timeout(void)
 
 void remote_control_enter_safe_state(void)
 {
-    // 底盘停止
     car_x = 0.0f;
     car_y = 0.0f;
     car_w = 0.0f;
     C620_angle.Speed_pid.set = 0.0f;
 
-    // 发球机构回零
     serve_active = 0;
     serve_armed = 1;
     serve_tick = 0;
     serve_stage = SERVE_STAGE_IDLE;
 
-    // 达妙电机回零
-    //damiao[0].angle = 0.0f;
-    //damiao[1].angle = -0.5f;
-
-    // 回零相关参数复位
-    count = 0;
-    returning = 0;
-    return_tick = 0;
-    return_start_angle = 0.0f;
-    damiao0_tarangle = 0.0f;
+    damiao[0].angle = 0.0f;
+    damiao[1].angle = 0.5f;
 }
 
 float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
@@ -200,7 +178,7 @@ void remote_control_serve_update(void)
     case SERVE_STAGE_HIT:
         // damiao[1] 向前击球
         damiao[0].angle = 0.0f;
-        damiao[1].angle =-1.0f;// -0.8f;
+        damiao[1].angle = -1.1f;//1.8f;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -214,21 +192,18 @@ void remote_control_serve_update(void)
         //progress = clamp_max(progress, 1.0f);
         damiao[0].angle = 0.0f; // 保持抬球机构位置不变
         //damiao[1].angle = 1.0f - 2.6f * progress; // 从 1.8f 平滑过渡回 -0.8f
-		    damiao[1].angle=  0.0f;
-		
-    if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
-    {
-        serve_stage = SERVE_STAGE_IDLE;
-        serve_tick = 0;
-        serve_active = 0;
-    }
+		damiao[1].angle=2.2f;
+		  
+        if(++serve_tick >= SERVE_HIT_RETURN_TICKS)
+        {
+         //   damiao[1].angle = -0.8f;
+            serve_stage = SERVE_STAGE_IDLE;
+            serve_tick = 0;
+            serve_active = 0;
+        }
 		      break;
     }
 }
-
-
-
-
 
 
 //串口中断
@@ -271,7 +246,7 @@ void USART1_IRQHandlerCallBack(void)
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
                 sbus_to_rc(sbus_rx_buf[0], &rc_ctrl);
-               // remote_control_watchdog_feed();
+                remote_control_watchdog_feed();
             }
         }
         else
@@ -301,7 +276,7 @@ void USART1_IRQHandlerCallBack(void)
             {
                 //处理遥控器数据
                 sbus_to_rc(sbus_rx_buf[1], &rc_ctrl);
-               // remote_control_watchdog_feed();
+                remote_control_watchdog_feed();
             }
         }
     }
@@ -376,12 +351,21 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
     {
         // 上档：保留原有 C620 角度电机控制
         C620_angle.Speed_pid.set = 25000 * (rc_ctrl->rc.ch[4] / 660.0f);
-
+        //if (!serve_active)
+        //{
+          //  damiao[0].angle = 0.0f;
+            //damiao[1].angle = 0.0f;
+        //}
     }
     else if (rc_ctrl->rc.s[0] == 3)
     {
         // 中档：手动调试 damiao[0] 角度
-        damiao0_tarangle = rc_ctrl->rc.ch[4] * DM0_Angle_Scale; //亚克力板是-1.2f
+        //C620_angle.Speed_pid.set = 0.0f;
+        //if (!serve_active)
+        //{
+            damiao[0].angle = rc_ctrl->rc.ch[4] * (-0.6f / 660.0f); //亚克力板是-1.2f
+          //  damiao[1].angle = 0.0f;
+        //}
     }
     else
     {
@@ -397,13 +381,16 @@ static void sbus_to_rc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl)
         if (!serve_active)
         {
             damiao[0].angle = 0.0f;
-            damiao[1].angle = 0.0f;
+            damiao[1].angle = 2.2f;
         }
     }
-   if(rc_ctrl->rc.s[1]==1)
-    {
-    //
-    }
+//    if(rc_ctrl->rc.s[1]==1)
+//     {
+//      damiao[0].KP = 40.0f;//150.0f;
+// 	   damiao[0].KD = 1.5f;
+// 	   damiao[0].tor = -1.15f;//-1.65
+// 	   damiao[0].angle=0.0f;
+//     }
 		//else if(rc_ctrl->rc.s[1]==3){
        
     //}
