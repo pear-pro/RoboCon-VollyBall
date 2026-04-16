@@ -306,6 +306,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	  HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
 	  	  
 		  if(can1RxMsg.StdId==0X03){
+			  damiao[1].err=(can1RxData[0]>>4)&0xF;
+			  damiao[1].ID=can1RxData[0]&0xF;
 			  damiao[1].Rxmsg.Angle= ((can1RxData[1] << 8) | can1RxData[2]);
 			  damiao[1].Rxmsg.Speed= ((can1RxData[3] << 4) | can1RxData[4]>>4);
 			  damiao[1].Rxmsg.Torque=(((can1RxData[4]&0xF) << 8) | can1RxData[5]);

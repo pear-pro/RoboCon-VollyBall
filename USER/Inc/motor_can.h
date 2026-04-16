@@ -28,7 +28,26 @@ typedef struct{
 	uint8_t Temp;//温度
 }RxMsg_t;
 
-
+typedef enum {
+    /* 基础状态 */
+    ERR_STATE_DISABLE      = 0,  // 失能
+    ERR_STATE_ENABLE       = 1,  // 使能
+    
+    /* 电源类故障 */
+    ERR_STATE_OVER_VOLT    = 8,  // 超压
+    ERR_STATE_UNDER_VOLT   = 9,  // 欠压
+    
+    /* 电流/负载类故障 */
+    ERR_STATE_OVER_CURRENT = 0xA, // 过电流
+    ERR_STATE_OVER_LOAD    = 0xE, // 过载
+    
+    /* 温度类故障 */
+    ERR_STATE_MOS_OVER_TEMP  = 0xB, // MOS管过温
+    ERR_STATE_MOTOR_OVER_TEMP = 0xC, // 电机线圈过温
+    
+    /* 通讯类故障 */
+    ERR_STATE_COMM_LOST    = 0xD  // 通讯丢失
+} ErrorCode;
 
 typedef struct{
 	pid_t 				Speed_pid;
@@ -53,6 +72,7 @@ typedef struct{
 	uint32_t         	ID;//电机id
 	
 	RxMsg_t 			Rxmsg;
+	ErrorCode			err;
 }motor_info_t;
 
 
