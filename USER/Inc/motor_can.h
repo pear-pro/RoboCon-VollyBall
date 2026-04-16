@@ -4,6 +4,7 @@
 #include "main.h"
 #include "can.h"
 #include "pid.h"
+#include "stm32f427xx.h"
 #include "stm32f4xx.h"
 #include <stdint.h>
 /*
@@ -25,8 +26,9 @@ typedef struct{
 	int16_t Speed;//转速
 	int16_t Torque;//实际扭矩
 	uint8_t Temp;//温度
-	
 }RxMsg_t;
+
+
 
 typedef struct{
 	pid_t 				Speed_pid;
@@ -48,7 +50,7 @@ typedef struct{
 	float            	KP;
 	float            	KD;
 	float            	tor;
-	uint32_t         	ID     ;//电机id
+	uint32_t         	ID;//电机id
 	
 	RxMsg_t 			Rxmsg;
 }motor_info_t;

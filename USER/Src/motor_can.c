@@ -167,6 +167,48 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
  			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
+
+void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID)
+{		
+	uint16_t vel_tmp;
+  CAN_TxHeaderTypeDef can1TxMsg;
+  uint8_t             can1TxData[8] = {0};
+	if (ID==0){
+  can1TxMsg.StdId =0x200;
+  }
+  else if(ID==1)
+  {
+  can1TxMsg.StdId =0x201 ;
+	  
+  }
+   else if(ID==2)
+  {
+  can1TxMsg.StdId =0x202 ;
+	  
+  }
+  else if(ID==3)
+  {
+  can1TxMsg.StdId =0x203 ;
+	  
+  }
+	vel_tmp = float_to_uint(damiao[ID].speed, -30, 30, 32);
+  
+  can1TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can1TxMsg.DLC   = 4;//数据长度
+  
+	can1TxData[0] = vel_tmp>>24;
+	can1TxData[1] = vel_tmp>>16;
+	can1TxData[2] = vel_tmp>>8;
+	can1TxData[3] = vel_tmp;
+
+  
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+ 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+	}
+}
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
   CAN_TxHeaderTypeDef can1TxMsg;
@@ -259,10 +301,18 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-//  if(hcan==&hcan1)
-//  {
-//	  
-//  }
+  if(hcan==&hcan1)
+  {
+	  HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+	  	  
+		  if(can1RxMsg.StdId==0X03){
+			  damiao[1].Rxmsg.Angle= ((can1RxData[1] << 8) | can1RxData[2]);
+			  damiao[1].Rxmsg.Speed= ((can1RxData[3] << 4) | can1RxData[4]>>4);
+			  damiao[1].Rxmsg.Torque=(((can1RxData[4]&0xF) << 8) | can1RxData[5]);
+			  damiao[1].Rxmsg.Temp=can1RxData[6];
+		  }
+	  
+  }
     if(hcan==&hcan2) //底盘加角度3508
 		{
 		
