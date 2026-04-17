@@ -1,9 +1,0 @@
--xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -c
--fno-rtti -funsigned-char -fshort-enums -fshort-wchar
--D__MICROLIB -gdwarf-3 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../USER/Inc -I ../USER/Src
--I./RTE/_DJ_A_wheel
--IC:/keil5/ARM/PACK/Keil/STM32F4xx_DFP/2.14.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include
--IC:/keil5/ARM/CMSIS/Include
--IC:/keil5/ARM/PACK/Keil/STM32F4xx_DFP/2.14.0/Device/Include
--D__UVISION_VERSION="524" -DSTM32F427xx -DUSE_HAL_DRIVER -DSTM32F427xx
--o ./dj_a_wheel/remote_control.o -MD "../USER/Src/remote_control.c"
