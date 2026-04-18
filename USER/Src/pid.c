@@ -1,5 +1,6 @@
 #include "includes.h"
 #include <stdint.h>
+#include "math_utils.h"
 #define POSITION_PID 1 // 位置式
 #define DELTA_PID 2	   // 增量式
 #define PID_MODE 1
@@ -115,11 +116,31 @@ float pid_calc(pid_t *pid, float get, float set)
 		return pid->out;
 }
 
+float logpid_calc(pid_t *pid,float get,float set,float kpmin,float k1,float k2)
+{
+	pid->get=get;
+	pid->set=set;
+	pid->error[NOW_ERR]=set-get;
+	pid->kp=kpmin+k1*(logf(1+k2*abs_float(pid->error[NOW_ERR])));
+	pid->pout=pid->kp*abs_float(pid->error[NOW_ERR]);
+	pid->iout += pid->ki * pid->error[NOW_ERR];							// 积分项累加计算
+	pid->dout = pid->kd * (pid->error[NOW_ERR] - pid->error[LAST_ERR]); // 微分项计算
+
+	abs_limit(&(pid->iout), pid->integral_limit); // 积分项限幅
+	pid->out = pid->pout + pid->iout + pid->dout; // PID输出合成
+	abs_limit(&(pid->out), pid->maxout);		  // 输出值限幅
+	// 更新历史误差值，用于下次计算
+	pid->error[LLAST_ERR] = pid->error[LAST_ERR];
+	pid->error[LAST_ERR] = pid->error[NOW_ERR];
+
+	// 死区处理：如果输出值在死区范围内则返回0
+	if ((pid->output_deadband != 0) && (fabs(pid->out) < pid->output_deadband))
+		return 0;
+	else
+		return pid->out;
+}
 
 
-//  if ((pid->output_deadband != 0) && (fabs(pid->out) < pid->output_deadband))
-//    return 0;
-//  else
 
 /**
  * @brief PID结构体初始化函数

@@ -2,7 +2,7 @@
 
 void Leds_On(void)
 {
-    HAL_GPIO_WritePin(GPIOG, PG_LED_PINS, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOF,GPIO_PIN_14, GPIO_PIN_RESET);
 }
 
 void Leds_Off(void)
