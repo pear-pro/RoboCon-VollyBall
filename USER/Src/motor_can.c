@@ -170,7 +170,7 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
 
 void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID)
 {		
-	uint16_t vel_tmp;
+	uint32_t vel_tmp;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
 	if (ID==0){
@@ -192,7 +192,7 @@ void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID)
 	  
   }
 	vel_tmp = float_to_uint(damiao[ID].speed, -30, 30, 32);
-  
+  vel_tmp = 0x00F041;
   can1TxMsg.IDE   = CAN_ID_STD;//标准ID
   can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can1TxMsg.DLC   = 4;//数据长度
@@ -322,7 +322,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			for(int i=0;i<MotorCount;i++)
 			{
 				if(can2RxMsg.StdId==0x201+i){
-					C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1]);
 					C620[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
 					C620[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 					C620[i].Rxmsg.Temp=can2RxData[6];

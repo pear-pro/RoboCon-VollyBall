@@ -48,6 +48,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         MecanumWheel_Move(car_x, car_y, car_w);
 		 Set_dm(&hcan1,0);
 		 Set_dm(&hcan1,1);
+//		Set_dm_vel(&hcan1,0);
+//		Set_dm_vel(&hcan1,1);
 		 
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0

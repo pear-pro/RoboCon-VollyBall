@@ -38,9 +38,9 @@ void All_Init(){
 	damiao[0].KD = 6.0f;
 	damiao[0].tor = 0.0f;//-1.65
 	damiao[0].angle=0.0f;
-    damiao[1].KP = 300.0f;//150.0f;
-	damiao[1].KD = 6.0f;
-	damiao[1].tor = -0.05  ;//-1.65
+    damiao[1].KP = 500.0f;//150.0f;
+	damiao[1].KD = 5.0f;
+	damiao[1].tor = 2.3;//-1.65
 	damiao[1].angle=damiao_1_back;
 	
 
