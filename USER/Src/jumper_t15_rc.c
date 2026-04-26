@@ -495,10 +495,10 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         // MecanumWheel_Move(car_x,car_y,car_w);
 
         // 离开下档后重新装填一次发球触发资格
-        if (KEY_SWB_UP & sbus_ctrl -> key_flag)
-        {
-            serve_armed = 1;
-        }
+//        if (KEY_SWB_UP & sbus_ctrl -> key_flag)
+//        {
+//            serve_armed = 1;
+//        }
 
         if (KEY_SWB_UP & sbus_ctrl -> key_flag)
         {
@@ -510,21 +510,21 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
                 //damiao[1].angle = 0.0f;
             //}
         }
-        else if (KEY_SWB_MID & sbus_ctrl -> key_flag)
-        {
-            // 中档：手动调试 damiao[0] 角度
-            //C620_angle.Speed_pid.set = 0.0f;
-            //if (!serve_active)
-            //{  
-           damiao[0].angle = sbus_ctrl->ch[3] * (-0.6f / 800.0f);
-            if (damiao[0].angle > 0)
-            {
-                damiao[0].angle = -damiao[0].angle;
-            }
-            if(damiao[0].angle > -0.05f)
-            {
-                damiao[0].angle = 0.0f;
-            }           //  damiao[1].angle = 0.0f;
+//        else if (KEY_SWB_MID & sbus_ctrl -> key_flag)
+//        {
+//            // 中档：手动调试 damiao[0] 角度
+//            //C620_angle.Speed_pid.set = 0.0f;
+//            //if (!serve_active)
+//            //{  
+//           damiao[0].angle = sbus_ctrl->ch[2] * (-1.2f / 800.0f);
+//            if (damiao[0].angle > 0)
+//            {
+//                damiao[0].angle = -damiao[0].angle;
+//            }
+//            if(damiao[0].angle > -0.05f)
+//            {
+//                damiao[0].angle = 0.0f;
+//            }           //  damiao[1].angle = 0.0f;
             //}
 					
 //					if(KEY_SWC_MID & sbus_ctrl -> key_flag)
@@ -549,19 +549,18 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 //                damiao[1].angle = 0.0f;
 //            }
         }
-//        if(KEY_SWA_UP)
-//        {
-//        damiao[0].KP = 40.0f;//150.0f;
-//        damiao[0].KD = 1.5f;
-//        damiao[0].tor = -1.15f;//-1.65
-//        damiao[0].angle=0.0f;
-//        }
-            //else if(sbus_ctrl->ch[4]==3){
+        if(detect_switch_position(sbus_ctrl -> ch[9]) ==POS_DOWN  & sbus_ctrl -> key_flag)
+        {
+       
+          damiao[0].angle=-1.2f;
+        }
+         else{
         
-        //}
+        damiao[0].angle=-0.5f;
 
     }
 }
+	
  
 
 

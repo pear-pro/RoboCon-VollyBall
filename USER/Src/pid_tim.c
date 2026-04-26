@@ -29,7 +29,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  static int16_t voltage_angle[1];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
-			 damiao0_angle_update();
+//			 damiao0_angle_update();
 		 // 遥控超过 150ms 未更新时，进入底盘与发球机构安全态
 //		 remote_control_watchdog_update();
 //         // 达妙电机角度回零
@@ -47,14 +47,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         car_w=remote_control_meanum_update(car_w,car_tarw, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         MecanumWheel_Move(car_x, car_y, car_w);
 		 Set_dm(&hcan1,0);
-		 Set_dm(&hcan1,1);
+//		 Set_dm(&hcan1,1);
 		 
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
         for(int i=0;i<MotorCount;i++)
         {
-			      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+			pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
             voltages[i]=(int16_t)C620[i].Speed_pid.out;
             
         }
