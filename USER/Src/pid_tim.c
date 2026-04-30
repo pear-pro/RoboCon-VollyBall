@@ -14,6 +14,7 @@ extern void remote_control_serve_update(void);
 extern void remote_control_watchdog_update(void);
 extern uint8_t remote_control_is_timeout(void);
 extern void remote_control_enter_safe_state(void);
+float speed=30;
 
 uint16_t PID_Calc_Flag = 0;
 /************************ 定时器更新中断回调函数 ************************/
@@ -46,10 +47,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
          car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         car_w=remote_control_meanum_update(car_w,car_tarw, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         MecanumWheel_Move(car_x, car_y, car_w);
-		 Set_dm(&hcan1,0);
-		 Set_dm(&hcan1,1);
-//		Set_dm_vel(&hcan1,0);
-//		Set_dm_vel(&hcan1,1);
+		//  Set_dm(&hcan1,0);
+		//  Set_dm(&hcan1,1);
+//		Set_dm_vel(&hcan1,0,30);
+//		Set_dm_vel(&hcan1,1,30);
+        if(damiao[1].angle>=5.0)
+			speed=-30;
+		if(damiao[1].angle<=-5.0)
+			speed=30;
+		Set_dm_vel(&hcan1,0,speed);
 		 
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
@@ -59,6 +65,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
             voltages[i]=(int16_t)C620[i].Speed_pid.out;
             
+			
         }
 //					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
 //          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;

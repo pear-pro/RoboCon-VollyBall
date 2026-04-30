@@ -168,9 +168,10 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
 	}
 }
 
-void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID)
+void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID,float speed)
 {		
-	uint32_t vel_tmp;
+	uint8_t *data;
+	data=(uint8_t*)&speed;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
 	if (ID==0){
@@ -191,16 +192,14 @@ void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID)
   can1TxMsg.StdId =0x203 ;
 	  
   }
-	vel_tmp = float_to_uint(damiao[ID].speed, -30, 30, 32);
-  vel_tmp = 0x00F041;
   can1TxMsg.IDE   = CAN_ID_STD;//标准ID
   can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can1TxMsg.DLC   = 4;//数据长度
   
-	can1TxData[0] = vel_tmp>>24;
-	can1TxData[1] = vel_tmp>>16;
-	can1TxData[2] = vel_tmp>>8;
-	can1TxData[3] = vel_tmp;
+	can1TxData[0] = *data;
+	can1TxData[1] = *(data+1);
+	can1TxData[2] = *(data+2);
+	can1TxData[3] = *(data+3);
 
   
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
@@ -305,15 +304,14 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   {
 	  HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
 	  	  
-		  if(can1RxMsg.StdId==0X03){
+		  if(can1RxMsg.StdId==0X3){
 			  damiao[1].err=(can1RxData[0]>>4)&0xF;
 			  damiao[1].ID=can1RxData[0]&0xF;
-			  damiao[1].Rxmsg.Angle= ((can1RxData[1] << 8) | can1RxData[2]);
-			  damiao[1].Rxmsg.Speed= ((can1RxData[3] << 4) | can1RxData[4]>>4);
-			  damiao[1].Rxmsg.Torque=(((can1RxData[4]&0xF) << 8) | can1RxData[5]);
+			  damiao[1].angle= uint_to_float(((can1RxData[1] << 8) | can1RxData[2]),-12.5, 12.5, 16);
+			  damiao[1].speed= uint_to_float(((can1RxData[3] << 4) | can1RxData[4]>>4), -30, 30, 12);
+			  damiao[1].Rxmsg.Torque=uint_to_float(((can1RxData[4]&0xF) << 8) | can1RxData[5], -10, 10, 12);
 			  damiao[1].Rxmsg.Temp=can1RxData[6];
 		  }
-	  
   }
     if(hcan==&hcan2) //底盘加角度3508
 		{
@@ -336,7 +334,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					C620_angle.Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 					C620_angle.Rxmsg.Temp=can2RxData[6];
 					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
-					
 				}
 				}
 			}	
