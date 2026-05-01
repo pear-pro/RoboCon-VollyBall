@@ -143,8 +143,8 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
   can1TxMsg.StdId =0x03;
 	  
   }
-    pos_tmp = float_to_uint(damiao[ID].angle, -12.5, 12.5, 16);
-    vel_tmp = float_to_uint(damiao[ID].speed, -30, 30, 12);
+    pos_tmp = float_to_uint(damiao[ID].angle_target, -12.5, 12.5, 16);
+    vel_tmp = float_to_uint(damiao[ID].speed_target, -30, 30, 12);
     tor_tmp = float_to_uint(damiao[ID].tor, -10,10, 12);
     kp_tmp  = float_to_uint(damiao[ID].KP, 0.0, 500.0, 12);
     kd_tmp  = float_to_uint(damiao[ID].KD,  0.0, 5.0, 12);  
@@ -207,6 +207,20 @@ void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID,float speed)
 	{
  			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
+}
+void Set_dm_Angle(CAN_HandleTypeDef *hcan,float angel)
+{
+  if (damiao[1].angle>angel) {
+    Set_dm_vel(CAN_HandleTypeDef *hcan, 0, -30);
+    if (damiao[1].angle==angel) {
+    Set_dm_vel(CAN_HandleTypeDef *hcan, 0, 0);
+    }
+  }
+  else if (damiao[1].angle<angel) {
+    Set_dm_vel(CAN_HandleTypeDef *hcan, 0, 30);
+    if (damiao[1].angle==angel) {
+    Set_dm_vel(CAN_HandleTypeDef *hcan, 0, 0);
+    }
 }
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
@@ -303,14 +317,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   if(hcan==&hcan1)
   {
 	  HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-	  	  
-		  if(can1RxMsg.StdId==0X3){
-			  damiao[1].err=(can1RxData[0]>>4)&0xF;
-			  damiao[1].ID=can1RxData[0]&0xF;
-			  damiao[1].angle= uint_to_float(((can1RxData[1] << 8) | can1RxData[2]),-12.5, 12.5, 16);
-			  damiao[1].speed= uint_to_float(((can1RxData[3] << 4) | can1RxData[4]>>4), -30, 30, 12);
-			  damiao[1].Rxmsg.Torque=uint_to_float(((can1RxData[4]&0xF) << 8) | can1RxData[5], -10, 10, 12);
-			  damiao[1].Rxmsg.Temp=can1RxData[6];
+	  	  for(int i=0;i<MotorCount;i++)
+        {
+		  if(can1RxMsg.StdId==0x1+i){
+			  damiao[i].err=(can1RxData[0]>>4)&0xF;
+			  damiao[i].ID=can1RxData[0]&0xF;
+			  damiao[i].angle= uint_to_float(((can1RxData[1] << 8) | can1RxData[2]),-12.5, 12.5, 16);
+			  damiao[i].speed= uint_to_float(((can1RxData[3] << 4) | can1RxData[4]>>4), -30, 30, 12);
+			  damiao[i].Rxmsg.Torque=uint_to_float(((can1RxData[4]&0xF) << 8) | can1RxData[5], -10, 10, 12);
+			  damiao[i].Rxmsg.Temp=can1RxData[6];
 		  }
   }
     if(hcan==&hcan2) //底盘加角度3508

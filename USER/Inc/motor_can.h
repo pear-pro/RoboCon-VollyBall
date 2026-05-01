@@ -64,8 +64,10 @@ typedef struct{
 	int16_t				Current;//输出电流
 	float				out;//输出电压
 
-	float				angle;//目标角度
-	float				speed;//目标速度
+	float				angle_target;//目标角度
+	float				speed_target;//目标速度
+	float				angle;
+	float				speed;
 	float            	KP;
 	float            	KD;
 	float            	tor;
@@ -86,11 +88,11 @@ void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_dm(CAN_HandleTypeDef* hcan,int16_t g);
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID);
-void Set_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
+//void Set_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed);
 void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID,float speed);
-
+void Set_dm_Angle(CAN_HandleTypeDef *hcan,float angel);
 
 #endif
