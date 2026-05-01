@@ -56,7 +56,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		// if(damiao[1].angle<=-5.0)
 		// 	speed=30;
 		// Set_dm_vel(&hcan1,0,speed);
-        Set_dm_Angle(&hcan1, damiao[0].TargetAngle);
+        Set_dm_Angle(&hcan1, damiao[0].angle_target);
         
         
 		 
