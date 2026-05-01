@@ -12,14 +12,7 @@ https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools
 3.vscode中文插件
 https://marketplace.visualstudio.com/items?itemName=MS-CEINTL.vscode-language-pack-zh-hans
 (三)控制逻辑
-(1)已实现
-1.在tim3中断回调函数里计算pid和发送can报文
-2.遥控器串口在uart1,接收中断里调用了一个自己写的接收回调函数将uart1对应的dma数据接收并传到几个全局变量里
-(2)未实现,中期考核前必须实现的功能
-1.将遥控器的拨杆改成功能按键,至少4个
-2.3508电机串级pid控角度的多圈转动
-3.发球准备,发球,击球
-4.舵机对球的限位
+
 (四)资源分配
 1.tim3中断作速度环的更新处理
 2.tim14中断作角度环的更新处理
@@ -36,3 +29,8 @@ https://marketplace.visualstudio.com/items?itemName=MS-CEINTL.vscode-language-pa
 5.左上拨杆对应s[1],上中下值分别为1,3,2
 
 2026.4.2 pid计算放回定时中断里了，定时中断的优先级都给成0，can的中断优先级是1，5号3508改为了速度环，具体的对应关系还要修改，然后4310的参数需要修改
+
+## 现在击球结构的达妙电机需要改为速度模式在参数界面改加速度和减速度改为20,速度KP改为
+## 0.0076,速度KI改为0.03
+
+# 加了达妙调试助手的参数调整,还要注意电机的控制id和反馈id,在motor_can.c文件里的Set_damiao_angle函数里面可以改一下角度反馈id的目标或者直接改函数,在函数传入参数中加反馈id参数
