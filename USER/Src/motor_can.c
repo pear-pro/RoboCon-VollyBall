@@ -120,7 +120,7 @@ void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 
 /**************达妙电机******** */
 
-void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
+void Set_dm_mit(CAN_HandleTypeDef* hcan,int16_t ID)
 {
 	uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
   CAN_TxHeaderTypeDef can1TxMsg;
@@ -167,11 +167,66 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
  			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
+
+void Set_dm_speed(CAN_HandleTypeDef* hcan,int16_t ID,float  speed)
+{
+	uint32_t tx_mailbox;
+    CAN_TxHeaderTypeDef tx_msg;
+    uint8_t tx_data[8] = {0};
+
+    tx_msg.StdId = 0x200 + ID;  //报文ID 等于设定的 CAN ID 值 + 0x200
+    tx_msg.IDE = CAN_ID_STD;
+    tx_msg.RTR = CAN_RTR_DATA;
+    tx_msg.DLC = 4;   // 速度模式只需要发送4字节数据
+
+    uint8_t *p = (uint8_t *)&speed;
+
+    tx_data[0] = p[0];
+    tx_data[1] = p[1];
+    tx_data[2] = p[2];
+    tx_data[3] = p[3];
+
+    if (HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+    {
+        HAL_CAN_AddTxMessage(hcan, &tx_msg, tx_data, &tx_mailbox);
+    }
+}
+
+void Set_dm_pos(CAN_HandleTypeDef* hcan,uint16_t ID,float pos,float vel)
+{
+	uint32_t tx_mailbox;
+	CAN_TxHeaderTypeDef tx_msg;
+	uint8_t tx_data[8] = {0};
+
+	tx_msg.StdId = 0x100 + ID;  //报文ID 等于设定的 CAN ID 值 + 0x100
+	tx_msg.IDE = CAN_ID_STD;
+	tx_msg.RTR = CAN_RTR_DATA;
+	tx_msg.DLC = 8;   // 位置模式需要发送8字节数据
+
+	uint8_t *p_pos = (uint8_t *)&pos;
+	uint8_t *p_vel = (uint8_t *)&vel;
+
+	tx_data[0] = p_pos[0];
+	tx_data[1] = p_pos[1];
+	tx_data[2] = p_pos[2];
+	tx_data[3] = p_pos[3];
+	tx_data[4] = p_vel[0];
+	tx_data[5] = p_vel[1];
+	tx_data[6] = p_vel[2];
+	tx_data[7] = p_vel[3];
+
+	if (HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+		HAL_CAN_AddTxMessage(hcan, &tx_msg, tx_data, &tx_mailbox);
+	}
+}
+
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
-  can1TxMsg.StdId = 0x00+ID;
+
+  can1TxMsg.StdId = 0x200+ID;  //模式偏移ID：MIT模式偏移0x00，位置速度模式偏移0x100，速度模式偏移0x200，力位混控模式偏移0x300
   can1TxMsg.IDE   = CAN_ID_STD;//标准ID
   can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
   can1TxMsg.DLC   = 8;//数据长度
@@ -216,6 +271,7 @@ void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID)
 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);
 	}
 }
+
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 {
   CAN_TxHeaderTypeDef can1TxMsg;
@@ -239,6 +295,28 @@ void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
 }
+
+void dm_motor_fbdata(motor_info_t *motor, uint8_t *rx_data) //master_id默认为0(不影响解析)
+{
+//    // 解析电机ID和状态（一般用不到，但协议里有）
+//    motor->para.id = (rx_data[0]) & 0x0F;
+//    motor->para.state = (rx_data[0]) >> 4;
+
+    // 解析位置原始值（高字节+低字节）
+    uint16_t p_int = (uint16_t)((rx_data[1] << 8) | rx_data[2]);
+    // 解析速度原始值（跨字节拼接）
+    uint16_t v_int = (uint16_t)((rx_data[3] << 4) | (rx_data[4] >> 4));
+    // 解析转矩原始值（跨字节拼接）
+    uint16_t t_int = (uint16_t)(((rx_data[4] & 0x0F) << 8) | rx_data[5]);
+
+    // 把原始值转换成实际物理值
+    motor->Rxmsg.Angle = uint_to_float(p_int, -12.5,12.5,16);
+    motor->Rxmsg.Speed = uint_to_float(v_int, -30,30,12);
+    motor->Rxmsg.Torque = uint_to_float(t_int, -10,10,12);
+	  motor->Angle_pid.get = motor->Rxmsg.Angle;
+
+}
+
 void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed)
 {
 	target_Angle*=19;
@@ -259,10 +337,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-//  if(hcan==&hcan1)
-//  {
-//	  
-//  }
+	if(hcan==&hcan1)
+	{
+		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+         uint8_t motor_id=can1RxData[0] & 0x0F; //电机ID在第一个字节的低4位
+		if (motor_id>=0 && motor_id < MotorCount)
+		{
+			dm_motor_fbdata(&damiao[motor_id], can1RxData);
+		}
+	}
     if(hcan==&hcan2) //底盘加角度3508
 		{
 		
@@ -288,7 +371,3 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				}
 				}
 			}	
-
-
-
-

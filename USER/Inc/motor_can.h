@@ -30,8 +30,7 @@ typedef struct{
 
 typedef struct{
 	pid_t 				Speed_pid;
-	pid_t 				Angel_pid;
-	
+	pid_t 				Angle_pid;
 	//控制角度的参数
 	uint16_t			FirstEntre;
 	double			Target;//目标角度
@@ -43,6 +42,8 @@ typedef struct{
 	int16_t				Current;//输出电流
 	float				out;//输出电压
 
+	float               target_angle;
+	float               target_speed;
 	float				angle;//目标角度
 	float				speed;//目标速度
 	float            	KP;
@@ -62,12 +63,12 @@ void can2_fliter_init(void);
 
 void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
-void Set_dm(CAN_HandleTypeDef* hcan,int16_t g);
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID);
-void Set_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed);
-
+void Set_dm_speed(CAN_HandleTypeDef* hcan,int16_t ID,float speed);
+void Set_dm_pos(CAN_HandleTypeDef* hcan,uint16_t ID,float pos,float vel);
+void Set_dm_mit(CAN_HandleTypeDef* hcan,int16_t ID);
 
 #endif

@@ -471,8 +471,8 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
             //C620_angle.Speed_pid.set = 0.0f;
             //if (!serve_active)
             //{  
-            damiao[0].angle = sbus_ctrl->ch[3] * (-0.6f / 800.0f);
-            if(damiao[0].angle > 0.05f || damiao[0].angle < -0.05f)
+            damiao[0].Angle_pid.set = sbus_ctrl->ch[3] * (-0.6f / 800.0f);
+            if(damiao[0].angle < 0.05f || damiao[0].angle > -0.05f)
             {
                 damiao[0].angle = 0.0f;
             }            //  damiao[1].angle = 0.0f;

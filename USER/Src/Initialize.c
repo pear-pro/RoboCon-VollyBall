@@ -14,11 +14,8 @@ void All_Init(){
 //    JY901P_Unlock();
 //    JY901P_Calibrate_Full();
 	   
-    Set_dm_enable(&hcan1,0X00);
-	 Set_dm_zeropoint(&hcan1,0X00);
- 
+       Set_dm_enable(&hcan1,0X00);
    		 Set_dm_enable(&hcan1,0X01);
-	 Set_dm_zeropoint(&hcan1,0X01);
     
     for(int i=0;i<MotorCount;i++){
         PID_Struct_Init(&C620[i].Speed_pid, 
@@ -28,7 +25,7 @@ void All_Init(){
             10000, 
             16000,
             INIT);
-        PID_Struct_Init(&C620[i].Angel_pid,
+        PID_Struct_Init(&C620[i].Angle_pid,
             10.0f,
             0.0f,
             0.0f,
@@ -46,6 +43,22 @@ void All_Init(){
 	damiao[1].angle=damiao_1_back;
 	
 
+    PID_Struct_Init(&damiao[0].Speed_pid, 
+            80.0f, 
+            0.3f,
+            0.0f, 
+            10000, 
+            16000,
+            INIT);
+        PID_Struct_Init(&damiao[0].Angle_pid,
+            3.0f,
+            0.0f,
+            0.0f,
+            200,
+            0,
+            INIT);
+    damiao[0].Angle_pid.set = 0.0f;
+    damiao[0].target_speed=0.0f;
     PID_Struct_Init(&car_pid,
                     10.0f,0.0f, 0.0f,
                     1000, 1000, INIT);
@@ -61,7 +74,7 @@ void All_Clear(){
 	damiao[0].angle=0.0f;
     for(int i=0;i<MotorCount;i++){
         pid_reset(&C620[i].Speed_pid, 0.0f, 0.0f, 0.0f);
-        pid_reset(&C620[i].Angel_pid, 0.0f, 0.0f, 0.0f);
+        pid_reset(&C620[i].Angle_pid, 0.0f, 0.0f, 0.0f);
         pid_reset(&damiao[i].Speed_pid, 0.0f, 0.0f, 0.0f);
     }
     pid_reset(&car_pid, 0.0f, 0.0f, 0.0f);
