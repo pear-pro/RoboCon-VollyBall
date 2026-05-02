@@ -4,6 +4,7 @@
 #include "main.h"
 #include "can.h"
 #include "pid.h"
+#include "stm32f427xx.h"
 #include "stm32f4xx.h"
 #include <stdint.h>
 /*
@@ -25,8 +26,28 @@ typedef struct{
 	int16_t Speed;//转速
 	int16_t Torque;//实际扭矩
 	uint8_t Temp;//温度
-	
 }RxMsg_t;
+
+typedef enum {
+    /* 基础状态 */
+    ERR_STATE_DISABLE      = 0,  // 失能
+    ERR_STATE_ENABLE       = 1,  // 使能
+    
+    /* 电源类故障 */
+    ERR_STATE_OVER_VOLT    = 8,  // 超压
+    ERR_STATE_UNDER_VOLT   = 9,  // 欠压
+    
+    /* 电流/负载类故障 */
+    ERR_STATE_OVER_CURRENT = 0xA, // 过电流
+    ERR_STATE_OVER_LOAD    = 0xE, // 过载
+    
+    /* 温度类故障 */
+    ERR_STATE_MOS_OVER_TEMP  = 0xB, // MOS管过温
+    ERR_STATE_MOTOR_OVER_TEMP = 0xC, // 电机线圈过温
+    
+    /* 通讯类故障 */
+    ERR_STATE_COMM_LOST    = 0xD  // 通讯丢失
+} ErrorCode;
 
 typedef struct{
 	pid_t 				Speed_pid;
@@ -43,14 +64,17 @@ typedef struct{
 	int16_t				Current;//输出电流
 	float				out;//输出电压
 
-	float				angle;//目标角度
-	float				speed;//目标速度
+	float				angle_target;//目标角度
+	float				speed_target;//目标速度
+	float				angle;
+	float				speed;
 	float            	KP;
 	float            	KD;
 	float            	tor;
-	uint32_t         	ID     ;//电机id
+	uint32_t         	ID;//电机id
 	
 	RxMsg_t 			Rxmsg;
+	ErrorCode			err;
 }motor_info_t;
 
 
@@ -64,10 +88,11 @@ void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_dm(CAN_HandleTypeDef* hcan,int16_t g);
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID);
-void Set_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
+//void Set_dm_Angle(CAN_HandleTypeDef* hcan,float angle1,float angle2,float angle3,float angle4);
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void MIT_Calc(motor_info_t *motor,int16_t target_torque,int32_t target_Angle,int16_t target_speed);
-
+void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID,float speed);
+void Set_dm_Angle(CAN_HandleTypeDef *hcan,float angel);
 
 #endif

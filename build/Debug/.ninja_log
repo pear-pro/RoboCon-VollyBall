@@ -44,3 +44,29 @@
 432	2792	7966704785374209	CMakeFiles/DJ_A_wheel.dir/USER/Src/pid.c.obj	39eb51dd86e3b092
 2330	2774	7966704804356494	CMakeFiles/DJ_A_wheel.dir/USER/Src/math_utils.c.obj	35f2eb368f9fdd9c
 1006	2402	7966705187248136	DJ_A_wheel.elf	ba6f8d9e7f702fb1
+<<<<<<< HEAD
+=======
+2270	3346	7966704803753897	CMakeFiles/DJ_A_wheel.dir/USER/Src/pg_led.c.obj	6fd6d38b8d8ea0f1
+2392	3371	7966704804976579	CMakeFiles/DJ_A_wheel.dir/USER/Src/JY901P_Calibrate.c.obj	498ebdbadc85fdc2
+2348	3481	7966704804544263	CMakeFiles/DJ_A_wheel.dir/USER/Src/jy901p.c.obj	e09c8170cfdbef87
+65	1544	7992597958044063	CMakeFiles/DJ_A_wheel.dir/Core/Src/main.c.obj	91be0612de9a3f10
+149	1554	7992597958880542	CMakeFiles/DJ_A_wheel.dir/Core/Src/tim.c.obj	5ee454ff8a54d2d3
+131	1560	7992597958700251	CMakeFiles/DJ_A_wheel.dir/Core/Src/gpio.c.obj	60ab5f4b0ac1689
+194	1566	7992597959327374	CMakeFiles/DJ_A_wheel.dir/USER/Src/motor_can.c.obj	62bfbc1a5e33c840
+201	1579	7992597959403474	CMakeFiles/DJ_A_wheel.dir/USER/Src/pid.c.obj	39eb51dd86e3b092
+136	1600	7992597958750298	CMakeFiles/DJ_A_wheel.dir/Core/Src/can.c.obj	20c0a2b5ca516e5f
+230	1624	7992597959688051	CMakeFiles/DJ_A_wheel.dir/USER/Src/math_utils.c.obj	35f2eb368f9fdd9c
+208	1677	7992597959468830	CMakeFiles/DJ_A_wheel.dir/USER/Src/pid_tim.c.obj	e9597955abb5e4b6
+142	1709	7992597958810301	CMakeFiles/DJ_A_wheel.dir/Core/Src/i2c.c.obj	61c45c89f001852b
+167	1767	7992597959054756	CMakeFiles/DJ_A_wheel.dir/Core/Src/dma.c.obj	97a1f2b09658639
+154	1768	7992597958929613	CMakeFiles/DJ_A_wheel.dir/Core/Src/usart.c.obj	7030660e38166963
+222	1813	7992597959609894	CMakeFiles/DJ_A_wheel.dir/USER/Src/remote_control.c.obj	944c53d5fb05b22e
+238	1828	7992597959769830	CMakeFiles/DJ_A_wheel.dir/USER/Src/jy901p.c.obj	e09c8170cfdbef87
+173	1991	7992597959120274	CMakeFiles/DJ_A_wheel.dir/USER/Src/car_ctrl.c.obj	3f8072bf5b7e148d
+161	2023	7992597958991762	CMakeFiles/DJ_A_wheel.dir/Core/Src/stm32f4xx_it.c.obj	92c4f3d46799cc8d
+180	2026	7992597959190295	CMakeFiles/DJ_A_wheel.dir/USER/Src/debug_uart.c.obj	3fcfe133bb4322db
+187	2166	7992597959262203	CMakeFiles/DJ_A_wheel.dir/USER/Src/Initialize.c.obj	9e900c8a968bd07c
+215	2264	7992597959547319	CMakeFiles/DJ_A_wheel.dir/USER/Src/pg_led.c.obj	6fd6d38b8d8ea0f1
+1545	2586	7992597972843252	CMakeFiles/DJ_A_wheel.dir/USER/Src/JY901P_Calibrate.c.obj	498ebdbadc85fdc2
+2587	4286	7992597983259287	DJ_A_wheel.elf	ba6f8d9e7f702fb1
+>>>>>>> 达妙电机接收

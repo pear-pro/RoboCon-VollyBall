@@ -601,7 +601,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
-                <ClangAsOpt>1</ClangAsOpt>
+                <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -1179,7 +1179,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
-                <ClangAsOpt>1</ClangAsOpt>
+                <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -2317,7 +2317,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
-                <ClangAsOpt>1</ClangAsOpt>
+                <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>

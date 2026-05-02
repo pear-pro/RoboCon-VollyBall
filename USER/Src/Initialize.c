@@ -39,11 +39,11 @@ void All_Init(){
 	damiao[0].KP = 120.0f;//150.0f;
 	damiao[0].KD = 6.0f;
 	damiao[0].tor = -1.5f;//-1.65
-	damiao[0].angle=0.0f;
+	damiao[0].angle_target=0.0f;
     damiao[1].KP = 35.0f;//150.0f;
 	damiao[1].KD = 2.0f;
 	damiao[1].tor = -0.5f;//-1.65
-	damiao[1].angle=damiao_1_back;
+	damiao[1].angle_target=damiao_1_back;
 	
 
     PID_Struct_Init(&car_pid,
@@ -58,7 +58,7 @@ void All_Clear(){
     damiao[0].KP = 0.0f;//150.0f;
 	damiao[0].KD = 0.0f;
 	damiao[0].tor = 0.0f;//-1.65
-	damiao[0].angle=0.0f;
+	damiao[0].angle_target=0.0f;
     for(int i=0;i<MotorCount;i++){
         pid_reset(&C620[i].Speed_pid, 0.0f, 0.0f, 0.0f);
         pid_reset(&C620[i].Angel_pid, 0.0f, 0.0f, 0.0f);

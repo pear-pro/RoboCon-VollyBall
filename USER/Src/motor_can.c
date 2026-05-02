@@ -143,8 +143,8 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
   can1TxMsg.StdId =0x03;
 	  
   }
-    pos_tmp = float_to_uint(damiao[ID].angle, -12.5, 12.5, 16);
-    vel_tmp = float_to_uint(damiao[ID].speed, -30, 30, 12);
+    pos_tmp = float_to_uint(damiao[ID].angle_target, -12.5, 12.5, 16);
+    vel_tmp = float_to_uint(damiao[ID].speed_target, -30, 30, 12);
     tor_tmp = float_to_uint(damiao[ID].tor, -10,10, 12);
     kp_tmp  = float_to_uint(damiao[ID].KP, 0.0, 500.0, 12);
     kd_tmp  = float_to_uint(damiao[ID].KD,  0.0, 5.0, 12);  
@@ -166,6 +166,61 @@ void Set_dm(CAN_HandleTypeDef* hcan,int16_t ID)
 	{
  			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
 	}
+}
+
+void Set_dm_vel(CAN_HandleTypeDef *hcan, int16_t ID,float speed)
+{		
+	uint8_t *data;
+	data=(uint8_t*)&speed;
+  CAN_TxHeaderTypeDef can1TxMsg;
+  uint8_t             can1TxData[8] = {0};
+	if (ID==0){
+  can1TxMsg.StdId =0x200;
+  }
+  else if(ID==1)
+  {
+  can1TxMsg.StdId =0x201 ;
+	  
+  }
+   else if(ID==2)
+  {
+  can1TxMsg.StdId =0x202 ;
+	  
+  }
+  else if(ID==3)
+  {
+  can1TxMsg.StdId =0x203 ;
+	  
+  }
+  can1TxMsg.IDE   = CAN_ID_STD;//标准ID
+  can1TxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  can1TxMsg.DLC   = 4;//数据长度
+  
+	can1TxData[0] = *data;
+	can1TxData[1] = *(data+1);
+	can1TxData[2] = *(data+2);
+	can1TxData[3] = *(data+3);
+
+  
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+ 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+	}
+}
+void Set_dm_Angle(CAN_HandleTypeDef *hcan,float angel)
+{
+  if (damiao[1].angle>angel) {
+    Set_dm_vel(CAN_HandleTypeDef *hcan, 0, -30);
+    if (damiao[1].angle==angel) {
+    Set_dm_vel(CAN_HandleTypeDef *hcan, 0, 0);
+    }
+  }
+  else if (damiao[1].angle<angel) {
+    Set_dm_vel(CAN_HandleTypeDef *hcan, 0, 30);
+    if (damiao[1].angle==angel) {
+    Set_dm_vel(CAN_HandleTypeDef *hcan, 0, 0);
+    }
 }
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
@@ -259,10 +314,20 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-//  if(hcan==&hcan1)
-//  {
-//	  
-//  }
+  if(hcan==&hcan1)
+  {
+	  HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+	  	  for(int i=0;i<MotorCount;i++)
+        {
+		  if(can1RxMsg.StdId==0x1+i){
+			  damiao[i].err=(can1RxData[0]>>4)&0xF;
+			  damiao[i].ID=can1RxData[0]&0xF;
+			  damiao[i].angle= uint_to_float(((can1RxData[1] << 8) | can1RxData[2]),-12.5, 12.5, 16);
+			  damiao[i].speed= uint_to_float(((can1RxData[3] << 4) | can1RxData[4]>>4), -30, 30, 12);
+			  damiao[i].Rxmsg.Torque=uint_to_float(((can1RxData[4]&0xF) << 8) | can1RxData[5], -10, 10, 12);
+			  damiao[i].Rxmsg.Temp=can1RxData[6];
+		  }
+  }
     if(hcan==&hcan2) //底盘加角度3508
 		{
 		
@@ -270,7 +335,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			for(int i=0;i<MotorCount;i++)
 			{
 				if(can2RxMsg.StdId==0x201+i){
-					C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1]);
 					C620[i].Rxmsg.Speed= ((can2RxData[2] << 8) | can2RxData[3]);
 					C620[i].Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 					C620[i].Rxmsg.Temp=can2RxData[6];
@@ -284,7 +349,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					C620_angle.Rxmsg.Torque=((can2RxData[4] << 8) | can2RxData[5]);
 					C620_angle.Rxmsg.Temp=can2RxData[6];
 					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
-					
 				}
 				}
 			}	

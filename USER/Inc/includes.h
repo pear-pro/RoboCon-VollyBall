@@ -23,9 +23,9 @@
 #include "jumper_t15_rc.h"
 
 #define damiao_1_back 	2.20f
-#define damiao_1_front 	-1.0f
+#define damiao_1_front 	-1.1f
 #define damiao_1_safe	0.5f
-#define damiao_0_up 	0.35f
+#define damiao_0_up 	-0.35f
 
 extern motor_info_t C620[MotorCount];
 extern motor_info_t C6xx[MotorCount];
