@@ -7,7 +7,8 @@
 
 extern motor_info_t C620_up_angle;
 extern motor_info_t C620_angle;
-
+extern motor_info_t C620_hit_angle[3];
+extern motor_info_t C620[MotorCount];
 static void ops_set_up_output(int16_t output)
 {
     int16_t cmd[1] = {output};
@@ -22,10 +23,11 @@ static void ops_set_pitch_output(int16_t output)
 
 static void ops_set_hit_output(int16_t output)
 {
-    int16_t cmd[3] = {0};
+    int16_t cmd[4] = {0};
     cmd[0] = output;
     cmd[1] = output;
     cmd[2] = output;
+    cmd[3] = output;
     Set_voltage_angle(&hcan2, cmd);
 }
 
@@ -49,11 +51,11 @@ static ops_control_t ops_targets[OPS_TARGET_MAX] =
     },
     {
         .name = "hit",
-        .motor = &C620_hit_angle,
+        .motor = C620,
         .mode = ops_mode_position,
         .ratio = 19.0f,
         .set_output = ops_set_hit_output,
-        .max_output = 20000,
+        .max_output = 2000,
     }
 };
 

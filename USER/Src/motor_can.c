@@ -19,7 +19,7 @@
 #include "pid_tim.h"
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
-motor_info_t C6xx[MotorCount];
+motor_info_t C620[MotorCount];
 motor_info_t C620_angle;
 motor_info_t C620_up_angle;
 motor_info_t C620_hit_angle[3];
