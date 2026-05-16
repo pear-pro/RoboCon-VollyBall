@@ -22,6 +22,7 @@
 motor_info_t C6xx[MotorCount];
 motor_info_t C620_angle;
 motor_info_t C620_up_angle;
+motor_info_t C620_hit_angle[3];
 motor_info_t damiao[MotorCount];
 CAN_RxHeaderTypeDef can1RxMsg,can2RxMsg; //接受消息结构体
 uint8_t can1RxData[8],can2RxData[8];     //接受数据缓存

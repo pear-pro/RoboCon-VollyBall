@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-Serial auto-tuner for C620_up_angle.
+Serial auto-tuner for firmware debug PID targets.
 
 Firmware protocol on USART6, 115200:
+  LIST
+  SELECT name|idx
+  MODE SPEED|POSITION
   PID akp aki akd skp ski skd [amax smax]
   GOTO output_deg
+  SPEED rpm
   TARGET motor_deg
   ZERO
   STOP
@@ -180,8 +184,10 @@ class Link:
 
 
 class VofaForwarder:
-    def __init__(self, port: str | None, baud: int):
+    def __init__(self, port: str | None, baud: int, mode: str, ratio: float):
         self.ser = None
+        self.mode = mode
+        self.ratio = ratio
         if port:
             self.ser = serial.Serial(port, baudrate=baud, timeout=0)
 
@@ -192,10 +198,11 @@ class VofaForwarder:
     def send(self, sample: Sample) -> None:
         if self.ser is None:
             return
+        scale = self.ratio if self.mode == "position" else 1.0
         values = [
-            sample.target / GEAR_RATIO,
-            sample.angle / GEAR_RATIO,
-            sample.error / GEAR_RATIO,
+            sample.target / scale,
+            sample.angle / scale,
+            sample.error / scale,
             sample.rpm,
             float(sample.torque),
             float(sample.out),
@@ -216,15 +223,15 @@ def apply_pid(link: Link, pid: Pid) -> None:
     )
 
 
-def score_step(samples: list[Sample], output_target_deg: float, settle_deg: float) -> dict[str, float]:
+def score_position_step(samples: list[Sample], output_target_deg: float, settle_deg: float, ratio: float) -> dict[str, float]:
     if len(samples) < 5:
         return {"score": 1e9, "settle_ms": 1e9, "overshoot_deg": 1e9, "steady_deg": 1e9}
 
-    target_motor = output_target_deg * GEAR_RATIO
+    target_motor = output_target_deg * ratio
     direction = 1.0 if target_motor >= samples[0].angle else -1.0
-    target_output = target_motor / GEAR_RATIO
-    angles_output = [s.angle / GEAR_RATIO for s in samples]
-    errors_output = [(target_motor - s.angle) / GEAR_RATIO for s in samples]
+    target_output = target_motor / ratio
+    angles_output = [s.angle / ratio for s in samples]
+    errors_output = [(target_motor - s.angle) / ratio for s in samples]
 
     if direction > 0:
         overshoot = max(0.0, max(angles_output) - target_output)
@@ -240,12 +247,12 @@ def score_step(samples: list[Sample], output_target_deg: float, settle_deg: floa
             break
 
     last = samples[-max(3, len(samples) // 5) :]
-    steady = sum(abs((target_motor - s.angle) / GEAR_RATIO) for s in last) / len(last)
+    steady = sum(abs((target_motor - s.angle) / ratio) for s in last) / len(last)
     sat_ratio = sum(1 for s in samples if abs(s.out) >= 0.95 * max(1, s.smax)) / len(samples)
     ripple = 0.0
     if len(last) > 2:
-        mean_angle = sum(s.angle / GEAR_RATIO for s in last) / len(last)
-        ripple = math.sqrt(sum((s.angle / GEAR_RATIO - mean_angle) ** 2 for s in last) / len(last))
+        mean_angle = sum(s.angle / ratio for s in last) / len(last)
+        ripple = math.sqrt(sum((s.angle / ratio - mean_angle) ** 2 for s in last) / len(last))
 
     score = (
         0.004 * settle_ms
@@ -264,28 +271,85 @@ def score_step(samples: list[Sample], output_target_deg: float, settle_deg: floa
     }
 
 
+def score_speed_step(samples: list[Sample], target_rpm: float, settle_rpm: float) -> dict[str, float]:
+    if len(samples) < 5:
+        return {"score": 1e9, "settle_ms": 1e9, "overshoot_deg": 1e9, "steady_deg": 1e9}
+
+    direction = 1.0 if target_rpm >= samples[0].angle else -1.0
+    speeds = [s.angle for s in samples]
+    errors = [target_rpm - s.angle for s in samples]
+
+    if direction > 0:
+        overshoot = max(0.0, max(speeds) - target_rpm)
+    else:
+        overshoot = max(0.0, target_rpm - min(speeds))
+
+    settle_ms = 1e9
+    threshold = abs(settle_rpm)
+    for idx, sample in enumerate(samples):
+        tail = errors[idx:]
+        if tail and max(abs(e) for e in tail) <= threshold:
+            settle_ms = sample.ms - samples[0].ms
+            break
+
+    last = samples[-max(3, len(samples) // 5) :]
+    steady = sum(abs(target_rpm - s.angle) for s in last) / len(last)
+    sat_ratio = sum(1 for s in samples if abs(s.out) >= 0.95 * max(1, s.smax)) / len(samples)
+    ripple = 0.0
+    if len(last) > 2:
+        mean_speed = sum(s.angle for s in last) / len(last)
+        ripple = math.sqrt(sum((s.angle - mean_speed) ** 2 for s in last) / len(last))
+
+    score = (
+        0.004 * settle_ms
+        + 0.015 * overshoot
+        + 0.05 * steady
+        + 0.06 * ripple
+        + 30.0 * sat_ratio
+    )
+    return {
+        "score": score,
+        "settle_ms": settle_ms,
+        "overshoot_deg": overshoot,
+        "steady_deg": steady,
+        "ripple_deg": ripple,
+        "sat_ratio": sat_ratio,
+    }
+
+
 def run_trial(
     link: Link,
     vofa: VofaForwarder | None,
     pid: Pid,
-    angle_deg: float,
+    mode: str,
+    target_value: float,
+    ratio: float,
     duration: float,
-    settle_deg: float,
+    settle_threshold: float,
     csv_writer: csv.DictWriter | None,
     trial_index: int,
 ) -> dict[str, float]:
     link.command_expect("LOG 0", "OK LOG", wait=0.5)
     apply_pid(link, pid)
-    link.command_expect("GOTO 0", "OKG", wait=0.5)
+    if mode == "speed":
+        link.command_expect("SPEED 0", "OKV", wait=0.5)
+    else:
+        link.command_expect("GOTO 0", "OKG", wait=0.5)
     time.sleep(0.25)
     link.ser.reset_input_buffer()
 
-    link.command_expect(f"GOTO {angle_deg:.5g}", "OKG", wait=0.5)
+    if mode == "speed":
+        link.command_expect(f"SPEED {target_value:.5g}", "OKV", wait=0.5)
+    else:
+        link.command_expect(f"GOTO {target_value:.5g}", "OKG", wait=0.5)
     link.ser.reset_input_buffer()
     link.command_expect("LOG 1 1", "OK LOG", wait=0.5)
     link.ser.reset_input_buffer()
     samples = link.collect(duration, vofa)
-    metric = score_step(samples, angle_deg, settle_deg)
+    if mode == "speed":
+        metric = score_speed_step(samples, target_value, settle_threshold)
+    else:
+        metric = score_position_step(samples, target_value, settle_threshold, ratio)
 
     if csv_writer is not None:
         for s in samples:
@@ -295,7 +359,10 @@ def run_trial(
             csv_writer.writerow(row)
 
     link.command_expect("LOG 0", "OK LOG", wait=0.5)
-    link.command_expect("GOTO 0", "OKG", wait=0.5)
+    if mode == "speed":
+        link.command_expect("SPEED 0", "OKV", wait=0.5)
+    else:
+        link.command_expect("GOTO 0", "OKG", wait=0.5)
     link.collect(max(0.35, duration * 0.35), vofa)
     return metric
 
@@ -325,15 +392,19 @@ def candidate_grid(base: Pid, rounds: int) -> Iterable[Pid]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Tune C620_up_angle double-loop PID over USART6.")
+    parser = argparse.ArgumentParser(description="Tune selected firmware PID target over USART6.")
     parser.add_argument("port", help="Serial port, for example COM8 or /dev/ttyUSB0")
     parser.add_argument("--baud", type=int, default=115200)
     parser.add_argument("--char-delay", type=float, default=0.001, help="Delay between command bytes for polling UART firmware")
     parser.add_argument("--boot-delay", type=float, default=2.8, help="Delay after opening the port before sending commands")
     parser.add_argument("--verbose", action="store_true", help="Print command acknowledgements")
-    parser.add_argument("--angle", type=float, default=30.0, help="Output shaft test angle in degrees")
+    parser.add_argument("--select", help="Firmware tune target name or index, for example up or pitch_speed")
+    parser.add_argument("--mode", choices=("position", "speed"), default="position", help="Tune position double-loop or speed loop")
+    parser.add_argument("--target", type=float, help="Position mode: output shaft degrees. Speed mode: rpm")
+    parser.add_argument("--angle", type=float, default=30.0, help="Backward-compatible position target in output shaft degrees")
     parser.add_argument("--duration", type=float, default=1.3, help="Seconds to record each step")
-    parser.add_argument("--settle-deg", type=float, default=1.0, help="Output shaft settle threshold")
+    parser.add_argument("--settle-deg", type=float, default=1.0, help="Settle threshold: degrees in position mode, rpm in speed mode")
+    parser.add_argument("--ratio", type=float, default=GEAR_RATIO, help="Output-to-motor ratio used for position scoring and VOFA display")
     parser.add_argument("--rounds", type=int, default=1)
     parser.add_argument("--max-trials", type=int, default=0, help="0 means all generated candidates")
     parser.add_argument("--zero", action="store_true", help="Send ZERO before tuning")
@@ -343,6 +414,7 @@ def main() -> int:
     parser.add_argument("--vofa-baud", type=int, default=115200)
     parser.add_argument("--base", nargs=8, type=float, metavar=("AKP", "AKI", "AKD", "SKP", "SKI", "SKD", "AMAX", "SMAX"), default=[10, 0, 0, 15, 0, 0.3, 5000, 5000])
     args = parser.parse_args()
+    target_value = args.target if args.target is not None else args.angle
 
     base = Pid(args.base[0], args.base[1], args.base[2], args.base[3], args.base[4], args.base[5], int(args.base[6]), int(args.base[7]))
     candidates = list(candidate_grid(base, args.rounds))
@@ -350,13 +422,16 @@ def main() -> int:
         candidates = candidates[: args.max_trials]
 
     link = Link(args.port, args.baud, char_delay=args.char_delay, boot_delay=args.boot_delay, verbose=args.verbose)
-    vofa = VofaForwarder(args.vofa_port, args.vofa_baud)
+    vofa = VofaForwarder(args.vofa_port, args.vofa_baud, args.mode, args.ratio)
     best_pid = base
     best_metric = {"score": 1e9}
 
     fieldnames = ["trial", *Sample.__dataclass_fields__.keys(), "score"]
     try:
         link.command_expect("STOP", "OKS", wait=0.5)
+        if args.select:
+            link.command_expect(f"SELECT {args.select}", "OKSEL", wait=0.5)
+        link.command_expect(f"MODE {args.mode.upper()}", "OKMODE", wait=0.5)
         if args.zero:
             link.command_expect("ZERO", "OKZ", wait=0.5)
 
@@ -364,7 +439,7 @@ def main() -> int:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)
             writer.writeheader()
             for idx, pid in enumerate(candidates, start=1):
-                metric = run_trial(link, vofa, pid, args.angle, args.duration, args.settle_deg, writer, idx)
+                metric = run_trial(link, vofa, pid, args.mode, target_value, args.ratio, args.duration, args.settle_deg, writer, idx)
                 print(f"{idx:03d} score={metric['score']:.3f} settle={metric['settle_ms']:.0f}ms "
                       f"overshoot={metric['overshoot_deg']:.2f} steady={metric['steady_deg']:.2f} pid={pid}")
                 if metric["score"] < best_metric["score"]:
@@ -378,7 +453,13 @@ def main() -> int:
         vofa.close()
         link.close()
 
-    result = {"pid": asdict(best_pid), "metric": best_metric, "test_angle_deg": args.angle}
+    result = {
+        "pid": asdict(best_pid),
+        "metric": best_metric,
+        "mode": args.mode,
+        "target": args.select,
+        "test_value": target_value,
+    }
     args.json.write_text(json.dumps(result, indent=2), encoding="utf-8")
     print("BEST", json.dumps(result, indent=2))
     return 0

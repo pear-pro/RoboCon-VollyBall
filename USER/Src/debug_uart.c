@@ -1,30 +1,8 @@
 #include "debug_uart.h"
+#include "ops.h"
 #include "usart.h"
-#include "motor_can.h"
 #include <stdlib.h>
 
-extern motor_info_t C620_up_angle;
- 
-/*...........示例..............
-    float f3[3]={88.77,0.66,55.44};
-    Vofa_JustFloat(f3, 3);
-        ...........示例..............*/
-
-void Vofa_JustFloat(float *_data, uint8_t _num)
-{
-    uint8_t tempData[100];
-    uint8_t temp_end[4] = {0, 0, 0x80, 0x7F};
-    float temp_copy[_num];
-
-    memcpy(&temp_copy, _data, sizeof(float) * _num);
-
-    memcpy(tempData, (uint8_t *)&temp_copy, sizeof(temp_copy));
-    memcpy(&tempData[_num * 4], &temp_end[0], 4);
-
-    //....在此替换串口发送函�?..........
-    HAL_UART_Transmit_DMA(&huart6, tempData, (_num + 1) * 4);
-    //......................................
-}
 #define DEBUG_TUNE_LINE_MAX 128U
 #define DEBUG_TUNE_TX_MAX 192U
 
@@ -37,17 +15,10 @@ typedef struct
     float speed;
     int16_t torque;
     int16_t out;
-    float angle_kp;
-    float angle_ki;
-    float angle_kd;
-    float speed_kp;
-    float speed_ki;
-    float speed_kd;
     int32_t angle_maxout;
     int32_t speed_maxout;
 } debug_tune_snapshot_t;
 
-static uint8_t tune_rx_byte;
 static char tune_rx_line[DEBUG_TUNE_LINE_MAX];
 static char tune_cmd_line[DEBUG_TUNE_LINE_MAX];
 static volatile uint16_t tune_rx_len;
@@ -60,6 +31,18 @@ static volatile uint8_t tune_control_active;
 static volatile uint32_t tune_ms;
 static debug_tune_snapshot_t tune_snapshot;
 
+void Vofa_JustFloat(float *_data, uint8_t _num)
+{
+    uint8_t tempData[100];
+    uint8_t temp_end[4] = {0, 0, 0x80, 0x7F};
+    float temp_copy[_num];
+
+    memcpy(&temp_copy, _data, sizeof(float) * _num);
+    memcpy(tempData, (uint8_t *)&temp_copy, sizeof(temp_copy));
+    memcpy(&tempData[_num * 4], &temp_end[0], 4);
+    HAL_UART_Transmit_DMA(&huart6, tempData, (_num + 1U) * 4U);
+}
+
 static int32_t tune_scale_float(float value, float scale)
 {
     float scaled = value * scale;
@@ -70,7 +53,6 @@ static void tune_send_text(const char *text)
 {
     HAL_UART_Transmit(&huart6, (uint8_t *)text, (uint16_t)strlen(text), 50U);
 }
-
 
 static void tune_rx_feed_byte(uint8_t ch)
 {
@@ -101,16 +83,6 @@ static void tune_poll_uart_rx(void)
         tune_rx_feed_byte((uint8_t)(huart6.Instance->DR & 0xFFU));
     }
 }
-static void tune_pid_clear_state(pid_t *pid)
-{
-    pid->error[NOW_ERR] = 0.0f;
-    pid->error[LAST_ERR] = 0.0f;
-    pid->error[LLAST_ERR] = 0.0f;
-    pid->pout = 0.0f;
-    pid->iout = 0.0f;
-    pid->dout = 0.0f;
-    pid->out = 0.0f;
-}
 
 static char *tune_next_token(char **cursor)
 {
@@ -122,7 +94,7 @@ static char *tune_next_token(char **cursor)
     if (*start == '\0')
     {
         *cursor = start;
-        return NULL;
+        return 0;
     }
 
     char *end = start;
@@ -142,8 +114,8 @@ static char *tune_next_token(char **cursor)
 static uint8_t tune_parse_float(char **cursor, float *out)
 {
     char *token = tune_next_token(cursor);
-    char *end = NULL;
-    if (token == NULL)
+    char *end = 0;
+    if (token == 0)
     {
         return 0U;
     }
@@ -154,8 +126,8 @@ static uint8_t tune_parse_float(char **cursor, float *out)
 static uint8_t tune_parse_int(char **cursor, int32_t *out)
 {
     char *token = tune_next_token(cursor);
-    char *end = NULL;
-    if (token == NULL)
+    char *end = 0;
+    if (token == 0)
     {
         return 0U;
     }
@@ -163,28 +135,70 @@ static uint8_t tune_parse_int(char **cursor, int32_t *out)
     return (end != token) ? 1U : 0U;
 }
 
+static uint8_t tune_parse_mode(const char *text, ops_mode_t *mode)
+{
+    if (strcmp(text, "SPEED") == 0 || strcmp(text, "speed") == 0)
+    {
+        *mode = ops_mode_speed;
+        return 1U;
+    }
+    if (strcmp(text, "POSITION") == 0 || strcmp(text, "position") == 0 ||
+        strcmp(text, "ANGLE") == 0 || strcmp(text, "angle") == 0)
+    {
+        *mode = ops_mode_position;
+        return 1U;
+    }
+    return 0U;
+}
+
 static void tune_send_status(const char *prefix)
 {
+    ops_control_t *target = ops_get_current();
+    motor_info_t *motor = target->motor;
     char tx[DEBUG_TUNE_TX_MAX];
     int len = snprintf(tx, sizeof(tx),
-                       "%s,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\r\n",
+                       "%s,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%s,%s\r\n",
                        prefix,
-                       (long)tune_scale_float(C620_up_angle.target_angle, 100.0f),
-                       (long)tune_scale_float(C620_up_angle.Angle_pid.get, 100.0f),
-                       (long)tune_scale_float(C620_up_angle.target_angle - C620_up_angle.Angle_pid.get, 100.0f),
-                       (long)tune_scale_float(C620_up_angle.Speed_pid.get, 1.0f),
-                       (long)C620_up_angle.Rxmsg.Torque,
-                       (long)tune_scale_float(C620_up_angle.Angle_pid.kp, 1000.0f),
-                       (long)tune_scale_float(C620_up_angle.Angle_pid.ki, 1000.0f),
-                       (long)tune_scale_float(C620_up_angle.Angle_pid.kd, 1000.0f),
-                       (long)tune_scale_float(C620_up_angle.Speed_pid.kp, 1000.0f),
-                       (long)tune_scale_float(C620_up_angle.Speed_pid.ki, 1000.0f),
-                       (long)tune_scale_float(C620_up_angle.Speed_pid.kd, 1000.0f),
-                       (long)C620_up_angle.Angle_pid.maxout,
-                       (long)C620_up_angle.Speed_pid.maxout);
+                       (long)tune_scale_float(motor->target_angle, 100.0f),
+                       (long)tune_scale_float(motor->Angle_pid.get, 100.0f),
+                       (long)tune_scale_float(motor->target_angle - motor->Angle_pid.get, 100.0f),
+                       (long)tune_scale_float(motor->Speed_pid.get, 1.0f),
+                       (long)motor->Rxmsg.Torque,
+                       (long)tune_scale_float(motor->Angle_pid.kp, 1000.0f),
+                       (long)tune_scale_float(motor->Angle_pid.ki, 1000.0f),
+                       (long)tune_scale_float(motor->Angle_pid.kd, 1000.0f),
+                       (long)tune_scale_float(motor->Speed_pid.kp, 1000.0f),
+                       (long)tune_scale_float(motor->Speed_pid.ki, 1000.0f),
+                       (long)tune_scale_float(motor->Speed_pid.kd, 1000.0f),
+                       (long)motor->Angle_pid.maxout,
+                       (long)motor->Speed_pid.maxout,
+                       target->name,
+                       ops_mode_name(target->mode));
     if (len > 0)
     {
         tune_send_text(tx);
+    }
+}
+
+static void tune_send_list(void)
+{
+    char tx[DEBUG_TUNE_TX_MAX];
+    for (uint8_t i = 0U; i < ops_get_count(); i++)
+    {
+        ops_control_t *target = ops_get_target(i);
+        if (target == 0)
+        {
+            continue;
+        }
+        int len = snprintf(tx, sizeof(tx), "OKLIST,%u,%s,%s,%ld\r\n",
+                           (unsigned int)i,
+                           target->name,
+                           ops_mode_name(target->mode),
+                           (long)tune_scale_float(target->ratio, 1000.0f));
+        if (len > 0)
+        {
+            tune_send_text(tx);
+        }
     }
 }
 
@@ -195,7 +209,7 @@ static void tune_process_command(char *line)
     float f[8];
     int32_t i0;
 
-    if (cmd == NULL)
+    if (cmd == 0)
     {
         return;
     }
@@ -210,12 +224,10 @@ static void tune_process_command(char *line)
                 return;
             }
         }
-        pid_reset(&C620_up_angle.Angle_pid, f[0], f[1], f[2]);
-        pid_reset(&C620_up_angle.Speed_pid, f[3], f[4], f[5]);
+        ops_set_pid(f[0], f[1], f[2], f[3], f[4], f[5]);
         if (tune_parse_float(&cursor, &f[6]) && tune_parse_float(&cursor, &f[7]))
         {
-            C620_up_angle.Angle_pid.maxout = (int32_t)f[6];
-            C620_up_angle.Speed_pid.maxout = (int32_t)f[7];
+            ops_set_limit((int32_t)f[6], (int32_t)f[7]);
         }
         tune_send_status("OKP");
     }
@@ -226,8 +238,7 @@ static void tune_process_command(char *line)
             tune_send_text("ERR LIMIT needs: LIMIT amax smax\r\n");
             return;
         }
-        C620_up_angle.Angle_pid.maxout = (int32_t)f[0];
-        C620_up_angle.Speed_pid.maxout = (int32_t)f[1];
+        ops_set_limit((int32_t)f[0], (int32_t)f[1]);
         tune_send_status("OKL");
     }
     else if (strcmp(cmd, "TARGET") == 0)
@@ -238,9 +249,7 @@ static void tune_process_command(char *line)
             return;
         }
         tune_control_active = 1U;
-        C620_up_angle.target_angle = f[0];
-        tune_pid_clear_state(&C620_up_angle.Angle_pid);
-        tune_pid_clear_state(&C620_up_angle.Speed_pid);
+        ops_set_target_motor(f[0]);
         tune_send_status("OKT");
     }
     else if (strcmp(cmd, "GOTO") == 0)
@@ -251,29 +260,30 @@ static void tune_process_command(char *line)
             return;
         }
         tune_control_active = 1U;
-        C620_up_angle.target_angle = f[0] * C620_UP_REDUCTION_RATIO;
-        tune_pid_clear_state(&C620_up_angle.Angle_pid);
-        tune_pid_clear_state(&C620_up_angle.Speed_pid);
+        ops_set_target_output(f[0]);
         tune_send_status("OKG");
+    }
+    else if (strcmp(cmd, "SPEED") == 0)
+    {
+        if (!tune_parse_float(&cursor, &f[0]))
+        {
+            tune_send_text("ERR SPEED needs rpm\r\n");
+            return;
+        }
+        tune_control_active = 1U;
+        ops_set_speed(f[0]);
+        tune_send_status("OKV");
     }
     else if (strcmp(cmd, "ZERO") == 0)
     {
         tune_control_active = 1U;
-        C620_up_angle.Zero = C620_up_angle.currentRead;
-        C620_up_angle.lastRead = C620_up_angle.currentRead;
-        C620_up_angle.totalAngle = 0.0f;
-        C620_up_angle.Angle_pid.get = 0.0f;
-        C620_up_angle.target_angle = 0.0f;
-        tune_pid_clear_state(&C620_up_angle.Angle_pid);
-        tune_pid_clear_state(&C620_up_angle.Speed_pid);
+        ops_zero();
         tune_send_status("OKZ");
     }
     else if (strcmp(cmd, "STOP") == 0)
     {
         tune_control_active = 1U;
-        C620_up_angle.target_angle = C620_up_angle.Angle_pid.get;
-        tune_pid_clear_state(&C620_up_angle.Angle_pid);
-        tune_pid_clear_state(&C620_up_angle.Speed_pid);
+        ops_stop();
         tune_send_status("OKS");
     }
     else if (strcmp(cmd, "LOG") == 0)
@@ -302,9 +312,45 @@ static void tune_process_command(char *line)
     {
         tune_send_status("OKI");
     }
+    else if (strcmp(cmd, "LIST") == 0)
+    {
+        tune_send_list();
+    }
+    else if (strcmp(cmd, "SELECT") == 0)
+    {
+        char *arg = tune_next_token(&cursor);
+        if (arg == 0)
+        {
+            tune_send_text("ERR SELECT needs name_or_index\r\n");
+            return;
+        }
+        char *end = 0;
+        long index = strtol(arg, &end, 10);
+        uint8_t ok = (end != arg && *end == '\0') ? ops_select_by_index((uint8_t)index) : ops_select_by_name(arg);
+        if (!ok)
+        {
+            tune_send_text("ERR SELECT unknown target\r\n");
+            return;
+        }
+        tune_control_active = 1U;
+        tune_send_status("OKSEL");
+    }
+    else if (strcmp(cmd, "MODE") == 0)
+    {
+        char *arg = tune_next_token(&cursor);
+        ops_mode_t mode;
+        if (arg == 0 || !tune_parse_mode(arg, &mode))
+        {
+            tune_send_text("ERR MODE needs SPEED|POSITION\r\n");
+            return;
+        }
+        tune_control_active = 1U;
+        ops_set_mode(mode);
+        tune_send_status("OKMODE");
+    }
     else if (strcmp(cmd, "HELP") == 0)
     {
-        tune_send_text("OK CMDS: PID akp aki akd skp ski skd [amax smax]; LIMIT amax smax; TARGET motor_deg; GOTO output_deg; ZERO; STOP; LOG 0|1 [divider]; STATUS\r\n");
+        tune_send_text("OK CMDS: LIST; SELECT name|idx; MODE SPEED|POSITION; PID akp aki akd skp ski skd [amax smax]; LIMIT amax smax; TARGET motor_deg; GOTO output_deg; SPEED rpm; ZERO; STOP; LOG 0|1 [divider]; STATUS\r\n");
     }
     else
     {
@@ -381,6 +427,9 @@ uint8_t DebugTune_IsActive(void)
 
 void DebugTune_OnControlTick(int16_t control_out)
 {
+    ops_control_t *target = ops_get_current();
+    motor_info_t *motor = target->motor;
+
     tune_ms += 10U;
     if (!tune_log_enabled)
     {
@@ -395,20 +444,14 @@ void DebugTune_OnControlTick(int16_t control_out)
     tune_report_tick = 0U;
 
     tune_snapshot.ms = tune_ms;
-    tune_snapshot.target = C620_up_angle.target_angle;
-    tune_snapshot.angle = C620_up_angle.Angle_pid.get;
-    tune_snapshot.error = C620_up_angle.target_angle - C620_up_angle.Angle_pid.get;
-    tune_snapshot.speed = C620_up_angle.Speed_pid.get;
-    tune_snapshot.torque = C620_up_angle.Rxmsg.Torque;
+    tune_snapshot.target = (target->mode == ops_mode_position) ? motor->target_angle : motor->Speed_pid.set;
+    tune_snapshot.angle = (target->mode == ops_mode_position) ? motor->Angle_pid.get : motor->Speed_pid.get;
+    tune_snapshot.error = tune_snapshot.target - tune_snapshot.angle;
+    tune_snapshot.speed = motor->Speed_pid.get;
+    tune_snapshot.torque = motor->Rxmsg.Torque;
     tune_snapshot.out = control_out;
-    tune_snapshot.angle_kp = C620_up_angle.Angle_pid.kp;
-    tune_snapshot.angle_ki = C620_up_angle.Angle_pid.ki;
-    tune_snapshot.angle_kd = C620_up_angle.Angle_pid.kd;
-    tune_snapshot.speed_kp = C620_up_angle.Speed_pid.kp;
-    tune_snapshot.speed_ki = C620_up_angle.Speed_pid.ki;
-    tune_snapshot.speed_kd = C620_up_angle.Speed_pid.kd;
-    tune_snapshot.angle_maxout = C620_up_angle.Angle_pid.maxout;
-    tune_snapshot.speed_maxout = C620_up_angle.Speed_pid.maxout;
+    tune_snapshot.angle_maxout = motor->Angle_pid.maxout;
+    tune_snapshot.speed_maxout = motor->Speed_pid.maxout;
     tune_snapshot_pending = 1U;
 }
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "debug_uart.h"
 #include "pid.h"
+#include "ops.h"
 
 // 发球状态机在遥控器模块中推进，这里按固定周期调用
 extern void remote_control_serve_update(void);
@@ -26,7 +27,6 @@ uint16_t PID_Calc_Flag = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
-	  static int16_t voltage_angle[1];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
 			 //damiao0_angle_update();
@@ -39,11 +39,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //		     remote_control_enter_safe_state();
 //		 }
       
-//		 // 每 10ms 更新一次发球动作阶段
-//		 if (!DebugTune_IsActive())
-//         {
+		 // 每 10ms 更新一次发球动作阶段，串口调参接管时不推进遥控发球状态机
+		 if (!DebugTune_IsActive())
+         {
              remote_control_serve_update();
-//         }
+         }
          Set_dm_mit(&hcan1,0);
          // 每10ms让速度加/减
          car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
@@ -57,7 +57,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         for(int i=0;i<MotorCount;i++)
         {
 			      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
-            voltages[i]=(int16_t)C620[i].Speed_pid.out;
+                  voltages[i]=(int16_t)C620[i].Speed_pid.out;
 			
         }
 //					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
@@ -93,12 +93,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-		    int16_t double_out=PID_PROCESS_Double(&C620_up_angle.Angle_pid,&C620_up_angle.Speed_pid,
-			  C620_up_angle.target_angle,C620_up_angle.Angle_pid.get,C620_up_angle.Speed_pid.get);
-        voltage_angle[0]=double_out;
-        Set_voltage_up_angle(&hcan2,voltage_angle);
-        DebugTune_OnControlTick(double_out);
-        }	
+	   ops_control();
+    }	
 	
     }
 

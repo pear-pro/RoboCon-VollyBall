@@ -30,6 +30,7 @@
 extern motor_info_t C620[MotorCount];
 extern motor_info_t C6xx[MotorCount];
 extern motor_info_t C620_angle;
+extern motor_info_t C620_hit_angle[3];
 extern motor_info_t damiao[MotorCount];
 extern motor_info_t C620_up_angle;
 extern uint16_t PID_Calc_Flag;
@@ -42,7 +43,7 @@ extern int16_t Z_zeropoint;
 
 #define MAX_CAR_SPEED 1000.0f
 //�����ȼ�/���ٲ�����T=10ms
-#define SPEED_UP_TICKS (60u) // �Ӿ�ֹ���ٵ�����ٶ���Ҫ�Ŀ���������
-#define SPEED_DOWN_TICKS (70u) // ������ٶȼ��ٵ���ֹ��Ҫ�Ŀ���������
+#define SPEED_UP_TICKS (60u) // �Ӿ�ֹ���ٵ�����ٶ����?�Ŀ���������
+#define SPEED_DOWN_TICKS (70u) // ������ٶȼ��ٵ���ֹ���?�Ŀ���������
 
 #endif
