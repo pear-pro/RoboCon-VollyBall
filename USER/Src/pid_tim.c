@@ -38,16 +38,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //		 {
 //		     remote_control_enter_safe_state();
 //		 }
-
-		 // 每 10ms 更新一次发球动作阶段
-		 //remote_control_serve_update();
+      
+//		 // 每 10ms 更新一次发球动作阶段
+//		 if (!DebugTune_IsActive())
+//         {
+             remote_control_serve_update();
+//         }
+         Set_dm_mit(&hcan1,0);
          // 每10ms让速度加/减
          car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
          car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         car_w=remote_control_meanum_update(car_w,car_tarw, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         MecanumWheel_Move(car_x, car_y, car_w);
 		
-		 
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
@@ -55,7 +58,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         {
 			      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
             voltages[i]=(int16_t)C620[i].Speed_pid.out;
-            
+			
         }
 //					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
 //          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
@@ -72,7 +75,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //        };
 ////        Vofa_JustFloat(num, 3);
         Set_voltage(&hcan2,voltages);
-//        comm_can_set_rpm(001, C620[0].Speed_pid.out);
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 //	{
@@ -91,14 +93,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-		    pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
-        voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
-        Set_voltage_angle(&hcan2,voltage_angle);
-        damiao[0].target_speed= pid_calc(&damiao[0].Angle_pid,
-                     damiao[0].Angle_pid.get,
-                     20.0f);
-        Set_dm_speed(&hcan1,0,damiao[0].target_speed);
-        } 
+		    int16_t double_out=PID_PROCESS_Double(&C620_up_angle.Angle_pid,&C620_up_angle.Speed_pid,
+			  C620_up_angle.target_angle,C620_up_angle.Angle_pid.get,C620_up_angle.Speed_pid.get);
+        voltage_angle[0]=double_out;
+        Set_voltage_up_angle(&hcan2,voltage_angle);
+        DebugTune_OnControlTick(double_out);
+        }	
+	
     }
 
 

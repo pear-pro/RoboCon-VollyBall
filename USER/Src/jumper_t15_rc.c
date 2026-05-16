@@ -48,6 +48,7 @@ void sbus_remote_control_init(void)//SBUS遥控器初始化
     sbus_ctrl.last_se_state = POS_UP;  // SE初始化状态UP
     sbus_ctrl.last_sf_state = POS_UP;  // SF初始化状态UP
     sbus_ctrl.key_flag = KEY_NONE;       // 初始化标志位NONE
+	      serve_stage=SERVE_STAGE_LIFT;
 }
 
 const SBUS_ctrl_t *get_sbus_remote_control_point(void)//获取SBUS遥控器指针
@@ -72,67 +73,61 @@ float remote_control_meanum_update(float input,float target,float up_ticks,float
     }
 }
 
-////void remote_control_serve_update(void)
-//{
-//	float progress;
-//    if (!serve_active)
-//    {
-//        return;
-//    }
 
-//    switch (serve_stage)
-//    {
-//    case SERVE_STAGE_LIFT:
-//        // damiao[0] 向上抬球，先把球垫起来
-//        damiao[0].angle = -0.8f;
-//        damiao[1].angle = -0.8f;
-//        if (++serve_tick >= SERVE_LIFT_TICKS)
-//        {
-//            serve_stage = SERVE_STAGE_LIFT_RETURN;
-//            serve_tick = 0;
-//        }
-//        break;
+void remote_control_serve_update(void)
+{
+   if (!serve_active)
+   {
+       return;
+   }
 
-//    case SERVE_STAGE_LIFT_RETURN:
-//        // 抬球机构回到零位，为后续击球让出位置
-//        damiao[0].angle = -0.25f;
-//        damiao[1].angle = -0.8f;
-//        if (++serve_tick >= SERVE_RETURN_TICKS)
-//        {
-//            serve_stage = SERVE_STAGE_HIT;
-//            serve_tick = 0;
-//        }
-//        break;
+   switch (serve_stage)
+   {
+   case SERVE_STAGE_LIFT:
+       // damiao[0] 向上抬球，先把球垫起来
+     //  damiao[0].angle = -0.8f;
+       if (++serve_tick >= SERVE_LIFT_TICKS)
+       {
+           serve_stage = SERVE_STAGE_LIFT_RETURN;
+           serve_tick = 0;
+       }
+       break;
 
-//    case SERVE_STAGE_HIT:
-//        // damiao[1] 向前击球
-//        damiao[0].angle = -0.25f;
-//        damiao[1].angle = 1.8f;//1.8f;
-//        if (++serve_tick >= SERVE_HIT_TICKS)
-//        {
-//            serve_stage = SERVE_STAGE_HIT_RETURN;
-//            serve_tick = 0;
-//        }
-//        break;
+   case SERVE_STAGE_LIFT_RETURN:
+       // 抬球机构回到零位，为后续击球让出位置
+      // damiao[0].angle = -0.25f;
+       if (++serve_tick >= SERVE_RETURN_TICKS)
+       {
+           serve_stage = SERVE_STAGE_HIT;
+           serve_tick = 0;
+       }
+       break;
 
-//    case SERVE_STAGE_HIT_RETURN:
-//    default:
-//       // progress = (float)serve_tick / (float)SERVE_HIT_RETURN_TICKS;
-//        //progress = clamp_max(progress, 1.0f);
-//        damiao[0].angle = -0.25f; // 保持抬球机构位置不变
-//        //damiao[1].angle = 1.0f - 2.6f * progress; // 从 1.8f 平滑过渡回 -0.8f
-//		    damiao[1].angle=-0.5f;
-//		    //serve_tick++;
-//        //if(serve_tick >= SERVE_HIT_RETURN_TICKS)
-//        //{
-//         //   damiao[1].angle = -0.8f;
-//            serve_stage = SERVE_STAGE_IDLE;
-//        //    serve_tick = 0;
-//            serve_active = 0;
-//       // }
-//		      break;
-//    }
-//}
+   case SERVE_STAGE_HIT:
+       // damiao[1] 向前击球
+      // damiao[0].angle = -0.25f;
+       C620_up_angle.target_angle = 170.0f * C620_UP_REDUCTION_RATIO;
+       if (++serve_tick >= SERVE_HIT_TICKS)
+       {
+           serve_stage = SERVE_STAGE_HIT_RETURN;
+           serve_tick = 0;
+       }
+       break;
+
+   case SERVE_STAGE_HIT_RETURN:
+   default:
+     //  damiao[0].angle = -0.25f; // 保持抬球机构位置不变
+	   C620_up_angle.target_angle=0.0f;
+      	
+    if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
+    {
+        serve_stage = SERVE_STAGE_IDLE;
+        serve_tick = 0;
+        serve_active = 0;
+    }
+		      break;
+   }
+}
 
 //串口中断
 void USART1_IRQHandlerCallBack(void)
@@ -450,12 +445,12 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         // MecanumWheel_Move(car_x,car_y,car_w);
 
         // 离开下档后重新装填一次发球触发资格
-        if (KEY_SWB_UP & sbus_ctrl -> key_flag)
-        {
-            serve_armed = 1;
-        }
+        if (KEY_SWB_UP & sbus_ctrl->key_flag)
+				{
+						serve_armed = 1;
+				}
 
-        if (KEY_SWB_UP & sbus_ctrl -> key_flag)
+        if (KEY_SWB_DOWN & sbus_ctrl -> key_flag)
         {
             // 上档：保留原有 C620 角度电机控制
             C620_angle.Speed_pid.set = 25000 * (sbus_ctrl->ch[3] / 800.0f);
@@ -495,17 +490,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
                 damiao[1].angle = 0.0f;
             }
         }
-        if(KEY_SWA_UP)
-        {
-        damiao[0].KP = 40.0f;//150.0f;
-        damiao[0].KD = 1.5f;
-        damiao[0].tor = -1.15f;//-1.65
-        damiao[0].angle=0.0f;
-        }
-            //else if(sbus_ctrl->ch[4]==3){
-        
-        //}
-
+      
     }
 }
  

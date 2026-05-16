@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-// 存储陀螺仪9轴数据
+// 存储陀螺仪9轴数�?
 JY901P_DataStruct gyro_data;
 /* USER CODE END PV */
 
@@ -106,10 +106,8 @@ int main(void)
   
 
   All_Init();
+  DebugTune_Init();
   
-	
-	HAL_TIM_Base_Start_IT(&htim3);
-  HAL_TIM_Base_Start_IT(&htim14);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,6 +120,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    DebugTune_Task();
   }
   /* USER CODE END 3 */
 }
