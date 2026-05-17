@@ -54,12 +54,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
-        for(int i=0;i<MotorCount;i++)
-        {
-			      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
-                  voltages[i]=(int16_t)C620[i].Speed_pid.out;
+        // for(int i=0;i<MotorCount;i++)
+        // {
+		// 	      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+        //           voltages[i]=(int16_t)C620[i].Speed_pid.out;
 			
-        }
+        // }
 //					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
 //          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
 //          Set_voltage_angle(&hcan2,voltage_angle);
@@ -74,7 +74,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //            gyro_data.Angle_Z
 //        };
 ////        Vofa_JustFloat(num, 3);
-        Set_voltage(&hcan2,voltages);
+       // Set_voltage(&hcan2,voltages);
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 //	{

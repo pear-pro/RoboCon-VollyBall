@@ -150,6 +150,7 @@ class Link:
             time.sleep(self.char_delay)
 
     def command(self, command: str, wait: float = 0.25) -> list[str]:
+        self.ser.reset_input_buffer()
         self.send(command)
         end = time.monotonic() + wait
         lines: list[str] = []
@@ -159,12 +160,16 @@ class Link:
                 lines.append(raw.decode("ascii", errors="ignore").strip())
         return lines
 
-    def command_expect(self, command: str, prefix: str, wait: float = 0.5) -> list[str]:
+    def command_expect(self, command: str, prefix: str, wait: float = 0.5, required: bool = False) -> list[str]:
         lines = self.command(command, wait=wait)
         if self.verbose:
             print(f"CMD {command!r} -> {lines[:12]}")
-        if not any(line.startswith(prefix) for line in lines):
-            print(f"WARN no {prefix} after {command!r}; got: {lines[:5]}", file=sys.stderr)
+        ok = any(line.startswith(prefix) or prefix in line for line in lines)
+        if not ok:
+            message = f"no {prefix} after {command!r}; got: {lines[:5]}"
+            if required:
+                raise RuntimeError(message)
+            print(f"WARN {message}", file=sys.stderr)
         return lines
 
     def collect(self, seconds: float, vofa: "VofaForwarder | None" = None) -> list[Sample]:
@@ -225,7 +230,7 @@ def apply_pid(link: Link, pid: Pid) -> None:
 
 def score_position_step(samples: list[Sample], output_target_deg: float, settle_deg: float, ratio: float) -> dict[str, float]:
     if len(samples) < 5:
-        return {"score": 1e9, "settle_ms": 1e9, "overshoot_deg": 1e9, "steady_deg": 1e9}
+        return {"score": 1e9, "settle_ms": 1e9, "overshoot": 1e9, "steady": 1e9}
 
     target_motor = output_target_deg * ratio
     direction = 1.0 if target_motor >= samples[0].angle else -1.0
@@ -264,16 +269,16 @@ def score_position_step(samples: list[Sample], output_target_deg: float, settle_
     return {
         "score": score,
         "settle_ms": settle_ms,
-        "overshoot_deg": overshoot,
-        "steady_deg": steady,
-        "ripple_deg": ripple,
+        "overshoot": overshoot,
+        "steady": steady,
+        "ripple": ripple,
         "sat_ratio": sat_ratio,
     }
 
 
 def score_speed_step(samples: list[Sample], target_rpm: float, settle_rpm: float) -> dict[str, float]:
     if len(samples) < 5:
-        return {"score": 1e9, "settle_ms": 1e9, "overshoot_deg": 1e9, "steady_deg": 1e9}
+        return {"score": 1e9, "settle_ms": 1e9, "overshoot": 1e9, "steady": 1e9}
 
     direction = 1.0 if target_rpm >= samples[0].angle else -1.0
     speeds = [s.angle for s in samples]
@@ -310,9 +315,9 @@ def score_speed_step(samples: list[Sample], target_rpm: float, settle_rpm: float
     return {
         "score": score,
         "settle_ms": settle_ms,
-        "overshoot_deg": overshoot,
-        "steady_deg": steady,
-        "ripple_deg": ripple,
+        "overshoot": overshoot,
+        "steady": steady,
+        "ripple": ripple,
         "sat_ratio": sat_ratio,
     }
 
@@ -428,12 +433,13 @@ def main() -> int:
 
     fieldnames = ["trial", *Sample.__dataclass_fields__.keys(), "score"]
     try:
-        link.command_expect("STOP", "OKS", wait=0.5)
+        link.command_expect("LOG 0", "OK LOG", wait=0.8)
+        link.command_expect("STOP", "OKS", wait=0.8, required=True)
         if args.select:
-            link.command_expect(f"SELECT {args.select}", "OKSEL", wait=0.5)
-        link.command_expect(f"MODE {args.mode.upper()}", "OKMODE", wait=0.5)
+            link.command_expect(f"SELECT {args.select}", "OKSEL", wait=0.8, required=True)
+        link.command_expect(f"MODE {args.mode.upper()}", "OKMODE", wait=0.8, required=True)
         if args.zero:
-            link.command_expect("ZERO", "OKZ", wait=0.5)
+            link.command_expect("ZERO", "OKZ", wait=0.8, required=True)
 
         with args.csv.open("w", newline="", encoding="utf-8") as fp:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)
@@ -441,7 +447,7 @@ def main() -> int:
             for idx, pid in enumerate(candidates, start=1):
                 metric = run_trial(link, vofa, pid, args.mode, target_value, args.ratio, args.duration, args.settle_deg, writer, idx)
                 print(f"{idx:03d} score={metric['score']:.3f} settle={metric['settle_ms']:.0f}ms "
-                      f"overshoot={metric['overshoot_deg']:.2f} steady={metric['steady_deg']:.2f} pid={pid}")
+                      f"overshoot={metric['overshoot']:.2f} steady={metric['steady']:.2f} pid={pid}")
                 if metric["score"] < best_metric["score"]:
                     best_metric = metric
                     best_pid = pid
