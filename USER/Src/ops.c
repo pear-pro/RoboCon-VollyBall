@@ -9,8 +9,7 @@
 extern motor_info_t C620_up_angle;
 extern motor_info_t C620_angle;
 extern motor_info_t C620_hit_angle[3];
-extern motor_info_t C620[4];
-
+extern motor_info_t C620[MotorCount];
 static void ops_set_up_output(int16_t output)
 {
     int16_t cmd[1] = {output};
@@ -30,7 +29,7 @@ static void ops_set_hit_output(int16_t output)
     cmd[1] = output;
     cmd[2] = output;
     cmd[3] = output;
-    Set_voltage(&hcan2, cmd);
+    Set_voltage_angle(&hcan2, cmd);
 }
 
 static ops_control_t ops_targets[OPS_TARGET_MAX] =

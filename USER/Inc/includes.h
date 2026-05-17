@@ -21,6 +21,7 @@
 #include "JY901P_Calibrate.h"
 #include "ht_10a_remote_control.h"
 #include "jumper_t15_rc.h"
+#include "t14.h"
 
 #define damiao_1_back 	2.20f
 #define damiao_1_front 	-1.0f
@@ -43,7 +44,7 @@ extern int16_t Z_zeropoint;
 
 #define MAX_CAR_SPEED 1000.0f
 //�����ȼ�/���ٲ�����T=10ms
-#define SPEED_UP_TICKS (60u) // �Ӿ�ֹ���ٵ�����ٶ����?�Ŀ���������
-#define SPEED_DOWN_TICKS (70u) // ������ٶȼ��ٵ���ֹ���?�Ŀ���������
+#define SPEED_UP_TICKS (60u) // �Ӿ�ֹ���ٵ�����ٶ����?�Ŀ���������
+#define SPEED_DOWN_TICKS (70u) // ������ٶȼ��ٵ���ֹ���?�Ŀ���������
 
 #endif

@@ -58,6 +58,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/USER/Src/ops.c
     ${CMAKE_SOURCE_DIR}/USER/Src/jy901p.c
     ${CMAKE_SOURCE_DIR}/USER/Src/JY901P_Calibrate.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/t14.c
 )
 
 # Add include paths
