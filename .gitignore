@@ -17,9 +17,8 @@
 *.htm
 *.lnp
 *.sct
-*.idx
 *.json
-
+*.idx
 *.uvgui.*
 *.uvguix.*
 
@@ -65,5 +64,5 @@ Thumbs.db
 *.lnk
 
 # Allow firmware binaries
-!达妙电机固件/*.bin
+!达�?�电机固�?/*.bin
 

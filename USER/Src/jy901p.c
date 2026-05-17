@@ -12,7 +12,7 @@ static int16_t JY901P_Read16BitReg(uint8_t reg_addr)
     uint8_t temp_buf[2] = {0};
     if (HAL_I2C_Mem_Read(&hi2c2, JY901P_ADDR, reg_addr, I2C_MEMADD_SIZE_8BIT, temp_buf, 2, 100) != HAL_OK)
     {
-        return 0;
+        return (int16_t)0x666666; // 读取失败返回一个明显的错误值
     }
     return (int16_t)(temp_buf[1] << 8 | temp_buf[0]);
 }

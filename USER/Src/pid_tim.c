@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "debug_uart.h"
 #include "pid.h"
+#include "ops.h"
 
 // 发球状态机在遥控器模块中推进，这里按固定周期调用
 extern void remote_control_serve_update(void);
@@ -26,10 +27,9 @@ uint16_t PID_Calc_Flag = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
-	  static int16_t voltage_angle[1];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
-			 damiao0_angle_update();
+			 //damiao0_angle_update();
 		 // 遥控超过 150ms 未更新时，进入底盘与发球机构安全态
 //		 remote_control_watchdog_update();
 //         // 达妙电机角度回零
@@ -38,26 +38,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //		 {
 //		     remote_control_enter_safe_state();
 //		 }
-
-		 // 每 10ms 更新一次发球动作阶段
-		 remote_control_serve_update();
+      
+		 // 每 10ms 更新一次发球动作阶段，串口调参接管时不推进遥控发球状态机
+		 if (!DebugTune_IsActive())
+         {
+             remote_control_serve_update();
+         }
+         Set_dm_mit(&hcan1,0);
          // 每10ms让速度加/减
          car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
          car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         car_w=remote_control_meanum_update(car_w,car_tarw, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         MecanumWheel_Move(car_x, car_y, car_w);
-		 Set_dm(&hcan1,0);
-		 Set_dm(&hcan1,1);
-		 
+		
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
-        for(int i=0;i<MotorCount;i++)
-        {
-			      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
-            voltages[i]=(int16_t)C620[i].Speed_pid.out;
-            
-        }
+        // for(int i=0;i<MotorCount;i++)
+        // {
+		// 	      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
+        //           voltages[i]=(int16_t)C620[i].Speed_pid.out;
+			
+        // }
 //					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
 //          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
 //          Set_voltage_angle(&hcan2,voltage_angle);
@@ -72,8 +74,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //            gyro_data.Angle_Z
 //        };
 ////        Vofa_JustFloat(num, 3);
-        Set_voltage(&hcan2,voltages);
-//        comm_can_set_rpm(001, C620[0].Speed_pid.out);
+       // Set_voltage(&hcan2,voltages);
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 //	{
@@ -92,10 +93,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
-		    pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
-        voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
-        Set_voltage_angle(&hcan2,voltage_angle);
-        } 
+	   ops_control();
+    }	
+	
     }
 
 

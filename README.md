@@ -36,3 +36,21 @@ https://marketplace.visualstudio.com/items?itemName=MS-CEINTL.vscode-language-pa
 5.左上拨杆对应s[1],上中下值分别为1,3,2
 
 2026.4.2 pid计算放回定时中断里了，定时中断的优先级都给成0，can的中断优先级是1，5号3508改为了速度环，具体的对应关系还要修改，然后4310的参数需要修改
+
+2026.5.16 自动调参说明
+终端输入命令格式 :
+角度
+python scripts/tune_c620_up_angle.py COM3 --select up --mode position --target 10 --duration 1.0 --settle-deg 1.0 --zero --max-trials 3 --char-delay 0.003 --verbose
+速度
+python scripts/tune_c620_up_angle.py COM3 --select pitch_speed --mode speed --target 1000 --duration 1.0 --settle-deg 50 --max-trials 3 --char-delay 0.003 --verbose
+
+**串口需要自己对应自己电脑的串口，目前演示的是角度环
+**如果想在vofa上看波形，命令如下python scripts/tune_c620_up_angle.py COM3 --select up --mode position --target 10 --duration 1.0 --settle-deg 1.0 --zero --max-trials 3 --char-delay 0.003 --vofa-port COM11 --verbose
+
+***这里串口11是虚拟串口，VOFA上打开串口12（虚拟），通过下载Virtual Serial Port Driver设置虚拟串口，链接:[text](https://pan.baidu.com/s/1fQu9QWQWkSCthAjdE5lrQA?pwd=6666)
+提取码6666
+***在static ops_control_t ops_targets[OPS_TARGET_MAX]中创建自己想要自动调参的对象
+--select up / --select pitch_speed：选择固件里的调参对象
+--mode position|speed：选择双环控角度或单速度环
+--target：position 下是输出轴角度，speed 下是 rpm
+--ratio：位置模式评分和 VOFA 显示用的减速比，默认 19

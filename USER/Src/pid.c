@@ -41,7 +41,7 @@ void pid_init(pid_t *pid, float p, float i, float d, int32_t max_out, int32_t in
 	pid->integral_limit = integral_limit;
 
 	/* 设置输出死区为5 */
-	pid->output_deadband = 5;
+	pid->output_deadband = 0; //dm的电机死区尽量不要给
 }
 
 /**
@@ -158,12 +158,13 @@ int16_t PID_PROCESS_Double(pid_t *pid_Angle,pid_t *pid_speed,float target, float
 {
 	//position		
 
-	pid_Angle->pid_calc(pid_Angle, Angle_get, target);
+	pid_calc(pid_Angle, Angle_get, target);
 	//speed
 
-	pid_speed->pid_calc(pid_speed, speed_get, pid_Angle->out);
-	return pid_speed->out;
+	pid_calc(pid_speed, speed_get, pid_Angle->out);
+	return (int16_t)pid_speed->out;
 }
+
 
 
 

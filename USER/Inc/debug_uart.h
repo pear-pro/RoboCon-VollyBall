@@ -30,5 +30,9 @@
 #include <stdarg.h>
 
 void Vofa_JustFloat(float *_data, uint8_t _num);
+void DebugTune_Init(void);
+void DebugTune_Task(void);
+void DebugTune_OnControlTick(int16_t control_out);
+uint8_t DebugTune_IsActive(void);
 
 #endif /* __DEBUG_UART_H */
