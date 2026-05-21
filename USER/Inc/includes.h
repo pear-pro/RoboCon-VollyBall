@@ -21,6 +21,7 @@
 #include "JY901P_Calibrate.h"
 #include "ht_10a_remote_control.h"
 #include "jumper_t15_rc.h"
+#include "FSM.h"
 #include "t14.h"
 
 #define damiao_1_back 	2.20f

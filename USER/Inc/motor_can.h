@@ -13,7 +13,6 @@
 */
 #define NORMALIZE_ANGLE180(angle) angle = ((angle) > 180) ? ((angle) - 360) : (((angle) < -180) ? (angle) + 360 : angle)
 #define MotorCount 4
-#define C620_UP_REDUCTION_RATIO 19.0f
 #define DM_MIT_ID_BASE 0x140U
 #define DM_MIT_FIRST_ID 1U
 #define DM_MIT_DEFAULT_KP 20.0f
@@ -65,6 +64,7 @@ void can2_fliter_init(void);
 void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t vlotage[]);
 void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[]);
+void Set_voltage_hit(CAN_HandleTypeDef* hcan,int16_t voltage[]);
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID);
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID);
 void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID);

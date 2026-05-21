@@ -107,6 +107,7 @@ void Set_voltage(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
+//忘记搞那个的了，应该是俯仰角
 void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
 	uint32_t tx_mailbox;
@@ -125,6 +126,7 @@ void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
+//发球3508 id=6
 void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
 	uint32_t tx_mailbox;
@@ -136,6 +138,28 @@ void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
   canTxMsg.DLC   = 8;//数据长度
    canTxData[2]=(voltage[0]>>8)&0xff;
    canTxData[3]=(voltage[0])&0xff;
+	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+	{
+			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
+	}
+}
+
+//击球3508  id=6,7,8
+void Set_voltage_hit(CAN_HandleTypeDef* hcan,int16_t voltage[])
+{
+	uint32_t tx_mailbox;
+  CAN_TxHeaderTypeDef canTxMsg;
+  uint8_t             canTxData[8] = {0};
+  canTxMsg.StdId = 0x1FF;
+  canTxMsg.IDE   = CAN_ID_STD;//标准ID
+  canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
+  canTxMsg.DLC   = 8;//数据长度
+  for(uint8_t i=1;i<4;i++)
+  {
+   canTxData[2*i]=(voltage[i-1]>>8)&0xff;
+   canTxData[2*i+1]=(voltage[i-1])&0xff;
+  }
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
@@ -416,23 +440,24 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					C620_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
 					C620_angle.Rxmsg.Temp=can2RxData[6];
 					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
-				}			//HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-			if(can2RxMsg.StdId==0x206){
-				C620_up_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-				C620_up_angle.Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
-				C620_up_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
-				C620_up_angle.Rxmsg.Temp=can2RxData[6];
-				C620_up_angle.currentRead=C620_up_angle.Rxmsg.Angle;
-				C620_up_angle.Speed_pid.get=C620_up_angle.Rxmsg.Speed;
-				//计算相对零点转了多少度
-				if(C620_up_angle.FirstEntre==0)
+				}		
+			for(uint8_t i=0;i<3;i++)
+			{
+				if(can2RxMsg.StdId==0x206+i){
+					C620_hit_angle[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C620_hit_angle[i].Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
+					C620_hit_angle[i].Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
+					C620_hit_angle[i].Rxmsg.Temp=can2RxData[6];
+					C620_hit_angle[i].currentRead=C620_hit_angle[i].Rxmsg.Angle;
+					C620_hit_angle[i].Speed_pid.get=C620_hit_angle[i].Rxmsg.Speed;
+					if(C620_hit_angle[i].FirstEntre==0)
 				{
-					C620_up_angle.Zero=C620_up_angle.currentRead;
-					C620_up_angle.FirstEntre=1;
-					C620_up_angle.lastRead=C620_up_angle.currentRead;
-					C620_up_angle.totalAngle=0;
+					C620_hit_angle[i].Zero=C620_hit_angle[i].currentRead;
+					C620_hit_angle[i].FirstEntre=1;
+					C620_hit_angle[i].lastRead=C620_hit_angle[i].currentRead;
+					C620_hit_angle[i].totalAngle=0;
 				}
-				float delta=C620_up_angle.currentRead-C620_up_angle.lastRead;
+				float delta=C620_hit_angle[i].currentRead-C620_hit_angle[i].lastRead;
 				if(delta>180)
 				{
 					delta=delta-360;
@@ -445,10 +470,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				{
 					delta=delta+0;
 				}
-				C620_up_angle.totalAngle+=delta;
-				C620_up_angle.Angle_pid.get=C620_up_angle.totalAngle;
-				C620_up_angle.lastRead=C620_up_angle.currentRead;
-				//Vofa_JustFloat(&C620_up_angle.Angle_pid.set, 1);
+				C620_hit_angle[i].totalAngle+=delta;
+				C620_hit_angle[i].Angle_pid.get=C620_hit_angle[i].totalAngle;
+				C620_hit_angle[i].lastRead=C620_hit_angle[i].currentRead;
+				//Vofa_JustFloat(&C620_hit_angle[i].Angle_pid.set, 1);
+				}
 			}
 				}
 			}

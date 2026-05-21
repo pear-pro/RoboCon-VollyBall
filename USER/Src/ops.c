@@ -6,10 +6,10 @@
 #include <stdint.h>
 #include <string.h>
 
-extern motor_info_t C620_up_angle;
-extern motor_info_t C620_angle;
-extern motor_info_t C620_hit_angle[3];
-extern motor_info_t C620[MotorCount];
+extern motor_info_t C620_up_angle;  //发球3508
+extern motor_info_t C620_angle;     //俯仰角3508
+extern motor_info_t C620_hit_angle[3];  //击球3508
+extern motor_info_t C620[MotorCount];   //底盘3508
 static void ops_set_up_output(int16_t output)
 {
     int16_t cmd[1] = {output};
@@ -24,12 +24,11 @@ static void ops_set_pitch_output(int16_t output)
 
 static void ops_set_hit_output(int16_t output)
 {
-    int16_t cmd[4] = {0};
+    int16_t cmd[3] = {0};
     cmd[0] = output;
     cmd[1] = output;
     cmd[2] = output;
-    cmd[3] = output;
-    Set_voltage_angle(&hcan2, cmd);
+    Set_voltage_hit(&hcan2, cmd);
 }
 
 static ops_control_t ops_targets[OPS_TARGET_MAX] =
@@ -52,16 +51,16 @@ static ops_control_t ops_targets[OPS_TARGET_MAX] =
     },
     {
         .name = "hit",
-        .motor = C620,
+        .motor = C620_hit_angle,
         .mode = ops_mode_position,
         .ratio = 19.0f,
         .set_output = ops_set_hit_output,
-        .max_output = 2000,
+        .max_output = 30000,
     }
 };
 
 static const uint8_t ops_target_count = 3U;
-static uint8_t ops_now_index = 0U;  //索引，当前选中的是发球的
+static uint8_t ops_now_index = 2U;  //索引，选中被控对象
 
 static void ops_limit_output(int16_t *output, int16_t limit)
 {
@@ -235,6 +234,6 @@ void ops_control(void)
     }
 
     ops_limit_output(&output, target->max_output);
-    target->set_output(output);
-    DebugTune_OnControlTick(output);
+    target->set_output(output);    
+  //  DebugTune_OnControlTick(output);  //自动调参工具接口，输出当前控制值
 }

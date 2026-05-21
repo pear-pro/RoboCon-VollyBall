@@ -49,8 +49,26 @@ python scripts/tune_c620_up_angle.py COM3 --select pitch_speed --mode speed --ta
 
 ***这里串口11是虚拟串口，VOFA上打开串口12（虚拟），通过下载Virtual Serial Port Driver设置虚拟串口，链接:[text](https://pan.baidu.com/s/1fQu9QWQWkSCthAjdE5lrQA?pwd=6666)
 提取码6666
-***在static ops_control_t ops_targets[OPS_TARGET_MAX]中创建自己想要自动调参的对象
+***在ops.c static ops_control_t ops_targets[OPS_TARGET_MAX]中创建自己想要自动调参的对象
 --select up / --select pitch_speed：选择固件里的调参对象
 --mode position|speed：选择双环控角度或单速度环
 --target：position 下是输出轴角度，speed 下是 rpm
---ratio：位置模式评分和 VOFA 显示用的减速比，默认 19
+--ratio：减速比
+***重点参数按优先级看：
+score
+总评分，越小越好。脚本就是按这个选 best。
+settle_ms
+稳定时间，越小越好。
+如果是 1000000000.0，说明在测试时间内没有稳定到阈值内。
+steady
+末段平均误差，越小越好。
+位置模式单位约等于输出轴角度。比如 steady=0.3 表示最后平均差约 0.3 度。
+overshoot
+超调量，越小越好。
+ripple
+末段抖动，越小越好。
+这个大，说明到位后还在抖。
+sat_ratio
+输出饱和比例，越小越好。
+接近 1.0 说明电流/输出经常打满，PID 太猛或限幅太低，调出来不稳也不安全。
+*** 在c620_up_angle_best.json里看这次最好的pid参数 .csv里可以看收敛情况

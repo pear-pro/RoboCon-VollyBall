@@ -1,0 +1,45 @@
+#ifndef __FSM_H__
+#define __FSM_H__
+
+#include <stdint.h>
+
+#define SCALE 19.0f
+#define HIT_MOTOR_COUNT 3U
+#define HIT_OUTPUT_LIMIT 20000
+#define HIT_RETURN_DONE_DEG 20.0f //20/19 小于1.05°认为回零
+
+#define SERVE_LIFT_TICKS        (15U)
+#define SERVE_RETURN_TICKS      (36U)
+#define SERVE_HIT_TICKS         (20U)
+#define SERVE_HIT_RETURN_TICKS  (20U)
+
+typedef enum
+{
+    HIT_IDLE = 0,
+    HIT_PUT_ANGLE,
+    HIT_RETURN,
+} hit_state_t;
+
+typedef enum
+{
+    SERVE_STAGE_IDLE = 0,
+    SERVE_STAGE_LIFT,
+    SERVE_STAGE_LIFT_RETURN,
+    SERVE_STAGE_HIT,
+    SERVE_STAGE_HIT_RETURN,
+} serve_stage_t;
+
+void serve_arm(void);
+void serve_request_start(void);
+uint8_t serve_is_active(void);
+
+void hit_set_preset(uint8_t preset);
+void hit_request_press(void);
+void hit_request_release(void);
+uint8_t hit_is_active(void);
+
+void remote_control_hit_update(void);
+void remote_control_serve_update(void);
+void hit_angle_control(void);
+
+#endif

@@ -143,6 +143,7 @@ class Link:
         data = (command.strip() + "\n").encode("ascii")
         if self.char_delay <= 0.0:
             self.ser.write(data)
+            self.ser.flush()
             return
         for byte in data:
             self.ser.write(bytes([byte]))
@@ -151,26 +152,59 @@ class Link:
 
     def command(self, command: str, wait: float = 0.25) -> list[str]:
         self.ser.reset_input_buffer()
+        self.ser.write(b"\r\n")
+        self.ser.flush()
+        time.sleep(max(0.02, self.char_delay * 4.0))
         self.send(command)
         end = time.monotonic() + wait
         lines: list[str] = []
+        pending = ""
         while time.monotonic() < end:
-            raw = self.ser.readline()
+            raw = self.ser.read(max(1, self.ser.in_waiting))
             if raw:
-                lines.append(raw.decode("ascii", errors="ignore").strip())
+                pending += raw.decode("ascii", errors="ignore")
+                while "\n" in pending or "\r" in pending:
+                    split_at = min(
+                        [idx for idx in (pending.find("\n"), pending.find("\r")) if idx >= 0]
+                    )
+                    line = pending[:split_at].strip()
+                    pending = pending[split_at + 1 :]
+                    if line:
+                        lines.append(line)
+            else:
+                time.sleep(0.005)
+        if pending.strip():
+            lines.append(pending.strip())
         return lines
 
-    def command_expect(self, command: str, prefix: str, wait: float = 0.5, required: bool = False) -> list[str]:
-        lines = self.command(command, wait=wait)
-        if self.verbose:
-            print(f"CMD {command!r} -> {lines[:12]}")
-        ok = any(line.startswith(prefix) or prefix in line for line in lines)
-        if not ok:
-            message = f"no {prefix} after {command!r}; got: {lines[:5]}"
-            if required:
-                raise RuntimeError(message)
-            print(f"WARN {message}", file=sys.stderr)
-        return lines
+    def command_expect(
+        self,
+        command: str,
+        prefix: str,
+        wait: float = 0.5,
+        required: bool = False,
+        retries: int = 0,
+    ) -> list[str]:
+        last_lines: list[str] = []
+        for attempt in range(retries + 1):
+            lines = self.command(command, wait=wait)
+            last_lines = lines
+            if self.verbose:
+                suffix = f" retry={attempt}" if attempt else ""
+                print(f"CMD {command!r}{suffix} -> {lines[:12]}")
+            joined = "".join(lines)
+            ok = any(line.startswith(prefix) or prefix in line for line in lines) or prefix in joined
+            if not ok and prefix in {"OKS", "OKZ", "OKSEL", "OKMODE"}:
+                ok = any(line.startswith("OK") for line in lines)
+            if ok:
+                return lines
+            time.sleep(0.08)
+
+        message = f"no {prefix} after {command!r}; got: {last_lines[:5]}"
+        if required:
+            raise RuntimeError(message)
+        print(f"WARN {message}", file=sys.stderr)
+        return last_lines
 
     def collect(self, seconds: float, vofa: "VofaForwarder | None" = None) -> list[Sample]:
         end = time.monotonic() + seconds
@@ -436,8 +470,8 @@ def main() -> int:
         link.command_expect("LOG 0", "OK LOG", wait=0.8)
         link.command_expect("STOP", "OKS", wait=0.8, required=True)
         if args.select:
-            link.command_expect(f"SELECT {args.select}", "OKSEL", wait=0.8, required=True)
-        link.command_expect(f"MODE {args.mode.upper()}", "OKMODE", wait=0.8, required=True)
+            link.command_expect(f"SELECT {args.select}", "OKSEL", wait=1.0, required=True, retries=3)
+        link.command_expect(f"MODE {args.mode.upper()}", "OKMODE", wait=1.0, required=True, retries=3)
         if args.zero:
             link.command_expect("ZERO", "OKZ", wait=0.8, required=True)
 

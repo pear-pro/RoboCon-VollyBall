@@ -8,8 +8,6 @@ void All_Init(){
 
     can1_filter_init();
     can2_fliter_init();
-	// remote_control_init();
-    // ht_10a_remote_control_init();
     sbus_remote_control_init();
 //    JY901P_Unlock();
 //    JY901P_Calibrate_Full();
@@ -33,6 +31,23 @@ void All_Init(){
             300,
             INIT);
 
+//            //·¢Çò3508
+//              PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
+//            10.5f, 
+//            0.0f,
+//            0.15f, 
+//            30000, 
+//            16000,
+//            INIT);
+//        PID_Struct_Init(&C620_hit_angle[i].Angle_pid,
+//            7.0f,
+//            0.0f,
+//            0.02f,
+//            30000,
+//            16000,
+//            INIT);
+//          //  
+
     }
 	damiao[0].KP = 150.0f;//150.0f;
 	damiao[0].KD = 0.2f;
@@ -51,10 +66,7 @@ void All_Init(){
     
 
    
-    PID_Struct_Init(&car_pid,
-                    10.0f,0.0f, 0.0f,
-                    1000, 1000, INIT);
-    PID_Struct_Init(&C620_angle.Speed_pid, 10.0f, 0.3f, 0.0f, 10000, 16000, INIT);
+        PID_Struct_Init(&C620_angle.Speed_pid, 10.0f, 0.3f, 0.0f, 10000, 16000, INIT);
 		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.02f, 20000, 16000, INIT);
 		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
     int16_t Z_zeropoint=gyro_data.Angle_Z;    

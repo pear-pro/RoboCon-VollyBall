@@ -30,6 +30,7 @@ static volatile uint8_t tune_snapshot_pending;
 static volatile uint8_t tune_control_active;
 static volatile uint32_t tune_ms;
 static debug_tune_snapshot_t tune_snapshot;
+static uint8_t tune_rx_dma_byte;
 
 void Vofa_JustFloat(float *_data, uint8_t _num)
 {
@@ -76,11 +77,11 @@ static void tune_rx_feed_byte(uint8_t ch)
     }
 }
 
-static void tune_poll_uart_rx(void)
+static void tune_start_rx_dma(void)
 {
-    while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_RXNE) != RESET)
+    if (huart6.RxState == HAL_UART_STATE_READY)
     {
-        tune_rx_feed_byte((uint8_t)(huart6.Instance->DR & 0xFFU));
+        (void)HAL_UART_Receive_DMA(&huart6, &tune_rx_dma_byte, 1U);
     }
 }
 
@@ -367,6 +368,7 @@ void DebugTune_Init(void)
     tune_report_tick = 0U;
     tune_snapshot_pending = 0U;
     tune_ms = 0U;
+    tune_start_rx_dma();
     tune_send_text("OK DEBUG_TUNE USART6 115200\r\n");
 }
 
@@ -376,8 +378,6 @@ void DebugTune_Task(void)
     debug_tune_snapshot_t snapshot;
     uint8_t has_command = 0U;
     uint8_t has_snapshot = 0U;
-
-    tune_poll_uart_rx();
 
     __disable_irq();
     if (tune_cmd_ready)
@@ -396,6 +396,7 @@ void DebugTune_Task(void)
 
     if (has_command)
     {
+        has_snapshot = 0U;
         tune_process_command(line);
     }
 
@@ -457,5 +458,9 @@ void DebugTune_OnControlTick(int16_t control_out)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    (void)huart;
+    if (huart->Instance == USART6)
+    {
+        tune_rx_feed_byte(tune_rx_dma_byte);
+        tune_start_rx_dma();
+    }
 }
