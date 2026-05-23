@@ -8,12 +8,10 @@ void All_Init(){
 
     can1_filter_init();
     can2_fliter_init();
-	// remote_control_init();
-    // ht_10a_remote_control_init();
     sbus_remote_control_init();
 //    JY901P_Unlock();
 //    JY901P_Calibrate_Full();
-	   
+
        Set_dm_enable(&hcan1,0);
 
     for(int i=0;i<MotorCount;i++){

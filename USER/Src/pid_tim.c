@@ -29,11 +29,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     static int16_t voltages[4];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
-			 //damiao0_angle_update();
 		 // 遥控超过 150ms 未更新时，进入底盘与发球机构安全态
 //		 remote_control_watchdog_update();
-//         // 达妙电机角度回零
-//        
 //		 if (remote_control_is_timeout())
 //		 {
 //		     remote_control_enter_safe_state();
@@ -45,12 +42,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
              remote_control_serve_update();
          }
          Set_dm_mit(&hcan1,0);
-         // 每10ms让速度加/减
-         car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
-         car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
-        car_w=remote_control_meanum_update(car_w,car_tarw, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
-        MecanumWheel_Move(car_x, car_y, car_w);
-		
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
@@ -93,7 +84,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //在这里可以添加角度环的中断处理逻辑
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
+    if(DebugTune_IsActive())
+    {
 	   ops_control();
+    }else 
+    {
+        up_angle_control();
     }	
 	
     }
