@@ -19,17 +19,17 @@ static int16_t JY901P_Read16BitReg(uint8_t reg_addr)
 
 void JY901P_ReadAllData(JY901P_DataStruct *pData)
 {
-    pData->Acc_X   = JY901P_Read16BitReg(JY901P_REG_AX)*16/32768;
-    pData->Acc_Y   = JY901P_Read16BitReg(JY901P_REG_AY)*16/32768;
-    pData->Acc_Z   = JY901P_Read16BitReg(JY901P_REG_AZ)*16/32768;
-    
-    pData->Gyro_X  = JY901P_Read16BitReg(JY901P_REG_GX)*2000/32768;
-    pData->Gyro_Y  = JY901P_Read16BitReg(JY901P_REG_GY)*2000/32768;
-    pData->Gyro_Z  = JY901P_Read16BitReg(JY901P_REG_GZ)*2000/32768;
-    
-    pData->Angle_X = JY901P_Read16BitReg(JY901P_REG_ROLL)*180/32768;
-    pData->Angle_Y = JY901P_Read16BitReg(JY901P_REG_PITCH)*180/32768;
-    pData->Angle_Z = JY901P_Read16BitReg(JY901P_REG_YAW)*180/32768;
+    pData->Acc_X   = JY901P_Read16BitReg(JY901P_REG_AX)*0.00048828125f; // 16g范围，32768对应16g，所以每LSB约0.00048828125g
+    pData->Acc_Y   = JY901P_Read16BitReg(JY901P_REG_AY)*0.00048828125f;
+    pData->Acc_Z   = JY901P_Read16BitReg(JY901P_REG_AZ)*0.00048828125f;
+
+    pData->Gyro_X  = JY901P_Read16BitReg(JY901P_REG_GX)*0.06103515625f; // 2000dps范围，32768对应2000dps，所以每LSB约0.001f
+    pData->Gyro_Y  = JY901P_Read16BitReg(JY901P_REG_GY)*0.06103515625f;
+    pData->Gyro_Z  = JY901P_Read16BitReg(JY901P_REG_GZ)*0.06103515625f;
+
+    pData->Angle_X = JY901P_Read16BitReg(JY901P_REG_ROLL)*0.0054931640625f; // 360°范围，32768对应360°，所以每LSB约0.0054931640625°
+    pData->Angle_Y = JY901P_Read16BitReg(JY901P_REG_PITCH)*0.0054931640625f;
+    pData->Angle_Z = JY901P_Read16BitReg(JY901P_REG_YAW)*0.0054931640625f;
 }
 
 // 全局DMA接收缓冲区，用于批量接收9个16位寄存器（共18字节）
