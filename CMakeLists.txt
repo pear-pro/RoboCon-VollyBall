@@ -50,6 +50,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/USER/Src/debug_uart.c
     ${CMAKE_SOURCE_DIR}/USER/Src/Initialize.c
     ${CMAKE_SOURCE_DIR}/USER/Src/motor_can.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/FSM.c
     ${CMAKE_SOURCE_DIR}/USER/Src/pid.c
     ${CMAKE_SOURCE_DIR}/USER/Src/pid_tim.c
     ${CMAKE_SOURCE_DIR}/USER/Src/pg_led.c

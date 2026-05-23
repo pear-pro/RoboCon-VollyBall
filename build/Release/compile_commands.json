@@ -103,6 +103,12 @@
 },
 {
   "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
+  "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\FSM.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\FSM.c",
+  "file": "E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\FSM.c",
+  "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\FSM.c.obj"
+},
+{
+  "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
   "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\pid.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\pid.c",
   "file": "E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\pid.c",
   "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\pid.c.obj"
@@ -133,6 +139,12 @@
 },
 {
   "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
+  "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\ops.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\ops.c",
+  "file": "E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\ops.c",
+  "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\ops.c.obj"
+},
+{
+  "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
   "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\jy901p.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\jy901p.c",
   "file": "E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\jy901p.c",
   "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\jy901p.c.obj"
@@ -142,6 +154,12 @@
   "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\JY901P_Calibrate.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\JY901P_Calibrate.c",
   "file": "E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\JY901P_Calibrate.c",
   "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\JY901P_Calibrate.c.obj"
+},
+{
+  "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
+  "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\t14.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\t14.c",
+  "file": "E:\\co_robocon\\RoboCon-VollyBall\\USER\\Src\\t14.c",
+  "output": "CMakeFiles\\DJ_A_wheel.dir\\USER\\Src\\t14.c.obj"
 },
 {
   "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",

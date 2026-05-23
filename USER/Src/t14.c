@@ -25,7 +25,7 @@ void sbus_remote_control_init(void)//SBUS遥控器初始化
     sbus_ctrl.last_se_state = POS_UP;  // SE初�?�化状态UP
     sbus_ctrl.last_sf_state = POS_UP;  // SF初�?�化状态UP
     sbus_ctrl.key_flag = KEY_NONE;       // 初�?�化标志位NONE
-	      serve_stage=SERVE_STAGE_LIFT;
+
 }
 
 const SBUS_ctrl_t *get_sbus_remote_control_point(void)//获取SBUS遥控器指�?
@@ -48,36 +48,36 @@ const SBUS_ctrl_t *get_sbus_remote_control_point(void)//获取SBUS遥控器指�
 //    }
 //}
 
-uint8_t remote_control_is_timeout(void)
-{
-    return rc_watchdog_timeout;
-}   
+//uint8_t remote_control_is_timeout(void)
+//{
+//    return rc_watchdog_timeout;
+//}   
 
-void remote_control_enter_safe_state(void)
-{
-    // 底盘停�??
-    car_x = 0.0f;
-    car_y = 0.0f;
-    car_w = 0.0f;
-    C620_angle.Speed_pid.set = 0.0f;
+//void remote_control_enter_safe_state(void)
+//{
+//    // 底盘停�??
+//    car_x = 0.0f;
+//    car_y = 0.0f;
+//    car_w = 0.0f;
+//    C620_angle.Speed_pid.set = 0.0f;
 
-    // 发球机构回零
-    serve_active = 0;
-    serve_armed = 1;
-    serve_tick = 0;
-    serve_stage = SERVE_STAGE_IDLE;
+//    // 发球机构回零
+//    serve_active = 0;
+//    serve_armed = 1;
+//    serve_tick = 0;
+//    serve_stage = SERVE_STAGE_IDLE;
 
-    // 达�?�电机回�?
-    //damiao[0].angle = 0.0f;
-    //damiao[1].angle = -0.5f;
+//    // 达�?�电机回�?
+//    //damiao[0].angle = 0.0f;
+//    //damiao[1].angle = -0.5f;
 
-    // 回零相关参数复位
-    count = 0;
-    returning = 0;
-    return_tick = 0;
-    return_start_angle = 0.0f;
-    damiao0_tarangle = 0.0f;
-}
+//    // 回零相关参数复位
+//    count = 0;
+//    returning = 0;
+//    return_tick = 0;
+//    return_start_angle = 0.0f;
+//    damiao0_tarangle = 0.0f;
+//}
 
 // float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
 // {
@@ -417,11 +417,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         else
         {
            serve_request_start();
-            if (!serve_active)
-            {
-                damiao[0].angle = 0.0f;
-                damiao[1].angle = 0.0f;
-            }
+  
         }
       
     }

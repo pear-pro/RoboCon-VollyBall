@@ -1,6 +1,7 @@
 #include "FSM.h"
 #include "can.h"
 #include "debug_uart.h"
+#include <stm32f4xx.h>
 #include "motor_can.h"
 #include "pid.h"
 #include <stdint.h>
@@ -19,9 +20,9 @@ static uint8_t hit_preset_index = 0;
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
-    {40.0f  * SCALE, 40.0f  * SCALE, 40.0f  * SCALE},
-    {25.0f * SCALE, 25.0f * SCALE, 25.0f * SCALE},
-    {15.0f * SCALE, 15.0f * SCALE, 15.0f * SCALE},
+    {40.0f  * SCALE, -40.0f  * SCALE, 40.0f  * SCALE},
+    {25.0f * SCALE, -25.0f * SCALE, 25.0f * SCALE},
+    {15.0f * SCALE, -15.0f * SCALE, 15.0f * SCALE},
 };
 
 //限幅函数，限制输出在[-limit, limit]范围内
@@ -203,14 +204,14 @@ void hit_angle_control(void)
 
 void up_angle_control(void)
 {
-    int16_t voltage = 0;
+    int16_t voltage[1] = {0};
 
     int32_t output = PID_PROCESS_Double(&C620_up_angle.Angle_pid,
                                         &C620_up_angle.Speed_pid,
                                         C620_up_angle.target_angle,
                                         C620_up_angle.Angle_pid.get,
                                         C620_up_angle.Speed_pid.get);
-    voltage = limit(output, HIT_OUTPUT_LIMIT);
+    voltage[0] = limit(output, HIT_OUTPUT_LIMIT);
 
     Set_voltage_up_angle(&hcan2, voltage);
 }

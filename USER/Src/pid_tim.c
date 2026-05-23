@@ -9,6 +9,7 @@
 #include "debug_uart.h"
 #include "pid.h"
 #include "ops.h"
+#include "FSM.h"
 
 // 发球状态机在遥控器模块中推进，这里按固定周期调用
 extern void remote_control_serve_update(void);
@@ -93,7 +94,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }	
 	
     }
-
+	}
 
 /************************ 错误处理函数（可选） ************************/
 #ifdef USE_FULL_ASSERT
