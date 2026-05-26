@@ -341,34 +341,18 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        // 更新虚拟键位状态
        virtual_key_update(sbus_ctrl);
 
-       // //归一化数据
-       // car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-       // car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-       // car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       //归一化数据
+       car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        
-       // //应用死区
-       // car_x=apply_deadzone(car_x, DEADZONE);
-       // car_y=apply_deadzone(car_y, DEADZONE);
-       // car_w=apply_deadzone(car_w, DEADZONE);
+       //应用死区
+       car_x=apply_deadzone(car_x, DEADZONE);
+       car_y=apply_deadzone(car_y, DEADZONE);
+       car_w=apply_deadzone(car_w, DEADZONE);
 
-       if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
-       car_tarx = 0;
-       }
-       else {
-           car_tarx=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
-           //car_x=low_pass(car_tarx, car_x, 0.25);
-
-       }
-       if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
-           car_tary = 0;
-       }
-       else {
-           car_tary=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-           //car_y=low_pass(car_tary, car_y, 0.32);
-       }
-       car_tarw=-normalize_to_range(sbus_ctrl->ch[2], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-
-       // MecanumWheel_Move(car_x,car_y,car_w);
+      
+        MecanumWheel_Move(car_x,car_y,car_w);
 
        // SWC 三档选择三组击球角度预设
        if (KEY_SWC_UP & sbus_ctrl->key_flag)
@@ -395,30 +379,19 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        }
 
        // 离开下档后重新装填一次发球触发资格
-       if (!(KEY_SWB_UP & sbus_ctrl->key_flag))
+       if (KEY_SWB_UP & sbus_ctrl->key_flag)
        {
-           serve_arm();
+           C620_angle.Speed_pid.set = 25000;
        }
 
-       if (KEY_SWB_DOWN & sbus_ctrl->key_flag)
+       if (KEY_SWB_MID & sbus_ctrl->key_flag)
        {
            // 上档：保留原有 C620 角度电机控制
-           C620_angle.Speed_pid.set = 25000 * (sbus_ctrl->ch[3] / 800.0f);
+           C620_angle.Speed_pid.set = 0.0f;
        }
-       else if (KEY_SWB_MID & sbus_ctrl->key_flag)
+       else if (KEY_SWB_DOWN & sbus_ctrl->key_flag)
        {
-           // 中档：击球机构由 SF 单独控制
-       }
-       else
-       {
-           // 下档：触发一次自动发球流程
-           serve_request_start();
-
-           if (!serve_is_active())
-           {
-               damiao[0].angle = 0.0f;
-               damiao[1].angle = 0.0f;
-           }
+           C620_angle.Speed_pid.set = -25000;
        }
    }
 }

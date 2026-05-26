@@ -17,11 +17,20 @@ static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
 static volatile hit_state_t hit_stage = HIT_IDLE;
 static uint8_t hit_preset_index = 0;
 
+
+#define hit0offset 15.0f //预先给0号加偏置，目测20°
+
+//注意1号角度给负的才向上
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
-    {40.0f  * SCALE, 40.0f  * SCALE, 40.0f  * SCALE},
-    {25.0f * SCALE, 25.0f * SCALE, 25.0f * SCALE},
-    {15.0f * SCALE, 15.0f * SCALE, 15.0f * SCALE},
+    {(60.0f-10.0f) * SCALE, (-60.0f) * SCALE, (60.0f) * SCALE},
+    {(60.0f-hit0offset) * SCALE, (-60.0f+hit0offset) * SCALE,(60.0f-hit0offset) * SCALE},
+    {(40.0f-hit0offset) * SCALE, (-40.0f+hit0offset) * SCALE, (40.0f-hit0offset)* SCALE},
+};
+
+static const float hit_angle_return[HIT_MOTOR_COUNT]=
+{
+  0,0,0
 };
 
 //限幅函数，限制输出在[-limit, limit]范围内
@@ -40,11 +49,11 @@ static int16_t limit(int32_t value, int16_t limit)
 
 //判断所有击球电机是否都在目标角度附近
 /*只要有一个还没回到阈值范围内，就返回 0；三个都接近 0，才返回 1，然后状态机进入 HIT_IDLE */
-static uint8_t hit_all_near(float target, float threshold)
+static uint8_t hit_all_near(const float *arr, float threshold)
 {
     for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
     {
-        float err = C620_hit_angle[i].Angle_pid.get - target;
+        float err = C620_hit_angle[i].Angle_pid.get - arr[i];
         if (err < 0.0f)
         {
             err = -err;
@@ -170,9 +179,9 @@ void remote_control_hit_update(void)
     case HIT_RETURN:
         for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            C620_hit_angle[i].target_angle = 0.0f;
+            C620_hit_angle[i].target_angle =hit_angle_return[i];
         }
-        if (hit_all_near(0.0f, HIT_RETURN_DONE_DEG))
+        if (hit_all_near(hit_angle_return, HIT_RETURN_DONE_DEG))
         {
             hit_stage = HIT_IDLE;
         }
@@ -198,5 +207,5 @@ void hit_angle_control(void)
         voltage[i] = limit(output, HIT_OUTPUT_LIMIT);
     }
 
-    Set_voltage_hit(&hcan2, voltage);
+    Set_voltage_hit(&hcan2, voltage+2000);
 }
