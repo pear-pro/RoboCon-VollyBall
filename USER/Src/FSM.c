@@ -18,6 +18,8 @@ static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
 static volatile hit_state_t hit_stage = HIT_IDLE;
 static uint8_t hit_preset_index = 0;
 
+serve_mode_t serve_mode = SERVE_MODE_ANGLE;
+
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
     {40.0f  * SCALE, -40.0f  * SCALE, 40.0f  * SCALE},
@@ -206,11 +208,25 @@ void up_angle_control(void)
 {
     int16_t voltage[1] = {0};
 
-    int32_t output = PID_PROCESS_Double(&C620_up_angle.Angle_pid,
+    int32_t output;
+    if(serve_mode == SERVE_MODE_ANGLE)
+    {
+        output = PID_PROCESS_Double(&C620_up_angle.Angle_pid,
                                         &C620_up_angle.Speed_pid,
                                         C620_up_angle.target_angle,
                                         C620_up_angle.Angle_pid.get,
                                         C620_up_angle.Speed_pid.get);
+    }
+    else
+    {
+        output =
+            PID_PROCESS_Speed(
+                &C620_up_angle.Speed_pid,
+                C620_up_angle.target_speed,
+                C620_up_angle.Speed_pid.get
+            );
+    }
+
     voltage[0] = limit(output, HIT_OUTPUT_LIMIT);
 
     Set_voltage_up_angle(&hcan2, voltage);

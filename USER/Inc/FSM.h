@@ -29,6 +29,15 @@ typedef enum
     SERVE_STAGE_HIT_RETURN,
 } serve_stage_t;
 
+typedef enum
+{
+    SERVE_MODE_ANGLE = 0,
+    SERVE_MODE_SPEED = 1
+
+}serve_mode_t;
+
+extern serve_mode_t serve_mode;
+
 void serve_arm(void);
 void serve_request_start(void);
 uint8_t serve_is_active(void);

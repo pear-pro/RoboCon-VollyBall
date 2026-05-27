@@ -69,4 +69,5 @@ void USART1_IRQHandlerCallBack(void);
 static uint8_t detect_switch_position(int16_t value);
 static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl);
 
+
 #endif

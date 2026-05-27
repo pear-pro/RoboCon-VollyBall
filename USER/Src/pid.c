@@ -165,6 +165,12 @@ int16_t PID_PROCESS_Double(pid_t *pid_Angle,pid_t *pid_speed,float target, float
 	return (int16_t)pid_speed->out;
 }
 
+int16_t PID_PROCESS_Speed(pid_t *pid_speed,float target_speed,float speed_get)
+{
+    pid_calc(pid_speed, speed_get,target_speed);
+
+    return (int16_t)pid_speed->out;
+}
 
 
 
