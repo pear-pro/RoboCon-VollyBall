@@ -405,11 +405,6 @@
               <FilePath>..\USER\Src\pid_tim.c</FilePath>
             </File>
             <File>
-              <FileName>remote_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\remote_control.c</FilePath>
-            </File>
-            <File>
               <FileName>math_utils.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\math_utils.c</FilePath>
@@ -450,11 +445,6 @@
               <FilePath>..\USER\Src\N630.c</FilePath>
             </File>
             <File>
-              <FileName>ht_10a_remote_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\ht_10a_remote_control.c</FilePath>
-            </File>
-            <File>
               <FileName>jumper_t15_rc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\jumper_t15_rc.c</FilePath>
@@ -473,6 +463,11 @@
               <FileName>t14.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\t14.c</FilePath>
+            </File>
+            <File>
+              <FileName>led_ops.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\led_ops.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -540,16 +535,6 @@
               <FilePath>..\USER\Inc\pid_tim.h</FilePath>
             </File>
             <File>
-              <FileName>remote_control.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\remote_control.h</FilePath>
-            </File>
-            <File>
-              <FileName>ht_10a_remote_control.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\ht_10a_remote_control.h</FilePath>
-            </File>
-            <File>
               <FileName>jumper_t15_rc.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\jumper_t15_rc.h</FilePath>
@@ -568,6 +553,11 @@
               <FileName>N630.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\N630.h</FilePath>
+            </File>
+            <File>
+              <FileName>led_ops.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\led_ops.h</FilePath>
             </File>
           </Files>
         </Group>

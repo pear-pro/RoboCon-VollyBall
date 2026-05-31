@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "main.h"
 #include "FSM.h"
+#include "led_ops.h"
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
@@ -14,11 +15,23 @@ static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMA双缓冲
 
 SBUS_ctrl_t sbus_ctrl;
 
+#define RC_RX_LED_TIMEOUT_MS 200U
+
+static volatile uint32_t rc_rx_last_valid_ms = 0U;
+
+static LED_HandleTypedef rc_rx_led = {
+   .port = GPIOG,
+   .pin = GPIO_PIN_1,
+   .active_level = 0,
+   .state = LED_STATE_OFF,
+};
+
 
 
 void sbus_remote_control_init(void)//SBUS遥控器初始化
 {
    RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
+   LED_Init(&rc_rx_led);
 
    
    sbus_ctrl.last_swa_state = POS_MID;  // SWA初始化状态MID
@@ -35,6 +48,16 @@ const SBUS_ctrl_t *get_sbus_remote_control_point(void)//获取SBUS遥控器指针
    return &sbus_ctrl;
 }
 
+void sbus_remote_control_led_update(void)
+{
+   uint32_t now = HAL_GetTick();
+   uint32_t elapsed = now - rc_rx_last_valid_ms;
+
+   if ((LED_GetState(&rc_rx_led) == LED_STATE_ON) && (elapsed > RC_RX_LED_TIMEOUT_MS))
+   {
+       LED_SetState(&rc_rx_led, LED_STATE_OFF);
+   }
+}
 float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
 {
    float delat = target - input;
@@ -321,6 +344,9 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 {
    if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//判断头帧和尾帧
    {
+       rc_rx_last_valid_ms = HAL_GetTick();
+       LED_SetState(&rc_rx_led, LED_STATE_ON);
+
        sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//右左右
        sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//右上下
        sbus_ctrl -> ch[2] = ((sbus_buffer[3] >> 6 )| (sbus_buffer[4] << 2 ) | (sbus_buffer[5] << 10)) & 0x07ff;//左上下
@@ -347,9 +373,9 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        
        //应用死区
-       car_x=apply_deadzone(car_x, DEADZONE);
-       car_y=apply_deadzone(car_y, DEADZONE);
-       car_w=apply_deadzone(car_w, DEADZONE);
+//       car_x=apply_deadzone(car_x, DEADZONE);
+//       car_y=apply_deadzone(car_y, DEADZONE);
+//       car_w=apply_deadzone(car_w, DEADZONE);
 
       
         MecanumWheel_Move(car_x,car_y,car_w);
