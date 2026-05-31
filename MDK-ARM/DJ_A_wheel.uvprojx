@@ -415,6 +415,11 @@
               <FilePath>..\USER\Src\math_utils.c</FilePath>
             </File>
             <File>
+              <FileName>heading_hold.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\heading_hold.c</FilePath>
+            </File>
+            <File>
               <FileName>debug_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\debug_uart.c</FilePath>
@@ -508,6 +513,11 @@
               <FileName>jy901p.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\jy901p.h</FilePath>
+            </File>
+            <File>
+              <FileName>heading_hold.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\heading_hold.h</FilePath>
             </File>
             <File>
               <FileName>JY901P_Calibrate.h</FileName>

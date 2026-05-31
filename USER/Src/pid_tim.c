@@ -49,12 +49,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
          // 每10ms让速度加/减
          car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
          car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
-        car_w=remote_control_meanum_update(car_w,car_tarw, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
+        car_w=HeadingHold_Update(0.0f);
         MecanumWheel_Move(car_x, car_y, car_w);
 		
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
-        car_w=car_pid.out;
          for(int i=0;i<MotorCount;i++)
          {
 		 	      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);

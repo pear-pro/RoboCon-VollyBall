@@ -9,8 +9,8 @@ void All_Init(){
     can1_filter_init();
     can2_fliter_init();
     sbus_remote_control_init();
-//    JY901P_Unlock();
-//    JY901P_Calibrate_Full();
+    JY901P_Unlock();
+    JY901P_Calibrate_Full();
 	   
        Set_dm_enable(&hcan1,0);
 
@@ -72,7 +72,7 @@ void All_Init(){
             20000, 16000, INIT);
 		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 
             20000, 16000, INIT);
-    int16_t Z_zeropoint=gyro_data.Angle_Z;    
+    HeadingHold_Init();
 }
 
 void All_Clear(){

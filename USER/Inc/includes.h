@@ -17,6 +17,7 @@
 #include "remote_control.h"
 #include "math_utils.h"
 #include "jy901p.h"
+#include "heading_hold.h"
 #include "debug_uart.h"
 #include "JY901P_Calibrate.h"
 #include "ht_10a_remote_control.h"
