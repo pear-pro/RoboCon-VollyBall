@@ -28,13 +28,9 @@ static float heading_hold_normalize_deg(float angle)
 
 static float heading_hold_get_yaw_deg(void)
 {
-    float yaw_deg = (float)gyro_data.Angle_Z;
+    IMU_GetData(&imu);
 
-    if (JY901P_ReadYawDeg(&yaw_deg)) {
-        gyro_data.Angle_Z = (int16_t)yaw_deg;
-    }
-
-    return yaw_deg;
+    return imu.angle_deg.yaw;
 }
 
 void HeadingHold_Init(void)
@@ -95,10 +91,8 @@ void HeadingHold_Task(void)
     }
 
     heading_hold_last_sample_ms = now;
-    if (JY901P_ReadYawDeg(&yaw_deg)) {
-        gyro_data.Angle_Z = (int16_t)yaw_deg;
-        heading_hold.current_yaw_deg = yaw_deg;
-    }
+    yaw_deg = heading_hold_get_yaw_deg();
+    heading_hold.current_yaw_deg = yaw_deg;
 }
 
 float HeadingHold_Update(float manual_wz)
@@ -114,7 +108,7 @@ float HeadingHold_Update(float manual_wz)
         return manual_wz;
     }
 
-    heading_hold.current_yaw_deg = (float)gyro_data.Angle_Z;
+    heading_hold.current_yaw_deg = heading_hold_get_yaw_deg();
     heading_hold.error_deg = heading_hold_normalize_deg(heading_hold.target_yaw_deg -
                                                         heading_hold.current_yaw_deg);
 
@@ -131,3 +125,4 @@ float HeadingHold_Update(float manual_wz)
     heading_hold.output_wz = heading_hold_pid.out * HEADING_HOLD_OUTPUT_DIR;
     return heading_hold.output_wz;
 }
+

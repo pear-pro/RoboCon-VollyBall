@@ -425,16 +425,6 @@
               <FilePath>..\USER\Src\debug_uart.c</FilePath>
             </File>
             <File>
-              <FileName>JY901P_Calibrate.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\JY901P_Calibrate.c</FilePath>
-            </File>
-            <File>
-              <FileName>jy901p.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\jy901p.c</FilePath>
-            </File>
-            <File>
               <FileName>pg_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\pg_led.c</FilePath>
@@ -479,6 +469,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Src\t14.c</FilePath>
             </File>
+            <File>
+              <FileName>imu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\imu.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -510,19 +505,9 @@
               <FilePath>..\USER\Inc\Initialize.h</FilePath>
             </File>
             <File>
-              <FileName>jy901p.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\jy901p.h</FilePath>
-            </File>
-            <File>
               <FileName>heading_hold.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\heading_hold.h</FilePath>
-            </File>
-            <File>
-              <FileName>JY901P_Calibrate.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\JY901P_Calibrate.h</FilePath>
             </File>
             <File>
               <FileName>math_utils.h</FileName>
@@ -578,6 +563,11 @@
               <FileName>N630.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\N630.h</FilePath>
+            </File>
+            <File>
+              <FileName>imu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\imu.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -2450,7 +2440,7 @@
   <LayerInfo>
     <Layers>
       <Layer>
-        <LayName>&lt;Project Info&gt;</LayName>
+        <LayName>DJ_A_wheel</LayName>
         <LayTarg>0</LayTarg>
         <LayPrjMark>1</LayPrjMark>
       </Layer>

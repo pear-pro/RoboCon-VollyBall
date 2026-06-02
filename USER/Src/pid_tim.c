@@ -3,7 +3,6 @@
 #include "car_ctrl.h"
 #include "includes.h"
 #include "can.h"
-#include "jy901p.h"
 #include "motor_can.h"
 #include <stdint.h>
 #include "debug_uart.h"
@@ -51,7 +50,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
          car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         car_w=HeadingHold_Update(0.0f);
         MecanumWheel_Move(car_x, car_y, car_w);
-				 JY901P_ReadAllData(&gyro_data);
+				 IMU_GetData(&imu);
 		
          for(int i=0;i<MotorCount;i++)
          {
@@ -63,12 +62,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
 //          Set_voltage_angle(&hcan2,voltage_angle);
        float num[]={
-//				 gyro_data.Gyro_X,
-//           gyro_data.Gyro_Y,
-//           gyro_data.Gyro_Z,
-				 gyro_data.Angle_X,
-				 gyro_data.Angle_Y,
-				 gyro_data.Angle_Z
+				 imu.angle_deg.roll,
+				 imu.angle_deg.pitch,
+				 imu.angle_deg.yaw
        };
         Vofa_JustFloat(num, 3);
         Set_voltage(&hcan2,voltages);
@@ -114,3 +110,5 @@ void Error_Handler(void)
     }
 }
 #endif
+
+
