@@ -17,6 +17,7 @@ extern HeadingHold_t heading_hold;
 void HeadingHold_Init(void);
 void HeadingHold_Enable(uint8_t enable);
 void HeadingHold_ResetTargetToCurrent(void);
+void HeadingHold_Task(void);
 float HeadingHold_Update(float manual_wz);
 
 #endif

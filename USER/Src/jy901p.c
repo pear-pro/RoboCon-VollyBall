@@ -1,60 +1,105 @@
 #include "jy901p.h"
 #include "i2c.h"
-#include <string.h>
 #include "main.h"
-#include "includes.h"
+#include <string.h>
 
-//extern DMA_HandleTypeDef hdma_i2c2_rx;
+#define JY901P_I2C_TIMEOUT_MS 2U
 
-// 读取单个16位寄存器
-static int16_t JY901P_Read16BitReg(uint8_t reg_addr)
+static uint8_t JY901P_Read16BitReg(uint8_t reg_addr, int16_t *raw)
 {
     uint8_t temp_buf[2] = {0};
-    if (HAL_I2C_Mem_Read(&hi2c2, JY901P_ADDR, reg_addr, I2C_MEMADD_SIZE_8BIT, temp_buf, 2, 100) != HAL_OK)
-    {
-        return (int16_t)0x666666; // 读取失败返回一个明显的错误值
+
+    if (raw == NULL) {
+        return 0;
     }
-    return (int16_t)(temp_buf[1] << 8 | temp_buf[0]);
+
+    if (HAL_I2C_GetState(&hi2c2) != HAL_I2C_STATE_READY) {
+        return 0;
+    }
+
+    if (HAL_I2C_Mem_Read(&hi2c2,
+                         JY901P_ADDR,
+                         reg_addr,
+                         I2C_MEMADD_SIZE_8BIT,
+                         temp_buf,
+                         2,
+                         JY901P_I2C_TIMEOUT_MS) != HAL_OK) {
+        JY901P_Recover();
+        return 0;
+    }
+
+    *raw = (int16_t)(temp_buf[1] << 8 | temp_buf[0]);
+    return 1;
+}
+
+void JY901P_Recover(void)
+{
+    HAL_I2C_DeInit(&hi2c2);
+    HAL_I2C_Init(&hi2c2);
+}
+
+uint8_t JY901P_ReadYawDeg(float *yaw_deg)
+{
+    int16_t raw_yaw;
+
+    if (yaw_deg == NULL) {
+        return 0;
+    }
+
+    if (!JY901P_Read16BitReg(JY901P_REG_YAW, &raw_yaw)) {
+        return 0;
+    }
+
+    *yaw_deg = (float)raw_yaw * 0.0054931640625f;
+    return 1;
+}
+
+uint8_t JY901P_ReadAllDataSafe(JY901P_DataStruct *pData)
+{
+    int16_t raw;
+    JY901P_DataStruct next;
+
+    if (pData == NULL) {
+        return 0;
+    }
+
+    next = *pData;
+
+    if (!JY901P_Read16BitReg(JY901P_REG_GX, &raw)) {
+        return 0;
+    }
+    next.Gyro_X = (int16_t)((float)raw * 0.06103515625f);
+
+    if (!JY901P_Read16BitReg(JY901P_REG_GY, &raw)) {
+        return 0;
+    }
+    next.Gyro_Y = (int16_t)((float)raw * 0.06103515625f);
+
+    if (!JY901P_Read16BitReg(JY901P_REG_GZ, &raw)) {
+        return 0;
+    }
+    next.Gyro_Z = (int16_t)((float)raw * 0.06103515625f);
+
+    if (!JY901P_Read16BitReg(JY901P_REG_ROLL, &raw)) {
+        return 0;
+    }
+    next.Angle_X = (int16_t)((float)raw * 0.0054931640625f);
+
+    if (!JY901P_Read16BitReg(JY901P_REG_PITCH, &raw)) {
+        return 0;
+    }
+    next.Angle_Y = (int16_t)((float)raw * 0.0054931640625f);
+
+    if (!JY901P_Read16BitReg(JY901P_REG_YAW, &raw)) {
+        return 0;
+    }
+    next.Angle_Z = (int16_t)((float)raw * 0.0054931640625f);
+
+    *pData = next;
+    return 1;
 }
 
 void JY901P_ReadAllData(JY901P_DataStruct *pData)
 {
-    pData->Acc_X   = JY901P_Read16BitReg(JY901P_REG_AX)*0.00048828125f; // 16g范围，32768对应16g，所以每LSB约0.00048828125g
-    pData->Acc_Y   = JY901P_Read16BitReg(JY901P_REG_AY)*0.00048828125f;
-    pData->Acc_Z   = JY901P_Read16BitReg(JY901P_REG_AZ)*0.00048828125f;
-
-    pData->Gyro_X  = JY901P_Read16BitReg(JY901P_REG_GX)*0.06103515625f; // 2000dps范围，32768对应2000dps，所以每LSB约0.001f
-    pData->Gyro_Y  = JY901P_Read16BitReg(JY901P_REG_GY)*0.06103515625f;
-    pData->Gyro_Z  = JY901P_Read16BitReg(JY901P_REG_GZ)*0.06103515625f;
-
-    pData->Angle_X = JY901P_Read16BitReg(JY901P_REG_ROLL)*0.0054931640625f; // 360°范围，32768对应360°，所以每LSB约0.0054931640625°
-    pData->Angle_Y = JY901P_Read16BitReg(JY901P_REG_PITCH)*0.0054931640625f;
-    pData->Angle_Z = JY901P_Read16BitReg(JY901P_REG_YAW)*0.0054931640625f;
+    (void)JY901P_ReadAllDataSafe(pData);
 }
-
-// 全局DMA接收缓冲区，用于批量接收9个16位寄存器（共18字节）
-//uint8_t jy901p_i2c2_dma_rx_buf[18] = {0};
-
-// 新增：读取I2C1 DMA接收的当前状态与已接收数据
-// pRxData: 输出缓冲区，用于存放DMA接收到的数据
-// max_len: 输出缓冲区的最大长度
-// 返回值：实际已接收的字节数
-//uint32_t JY901P_ReadI2C2_DMA_Data(uint8_t *pRxData, uint32_t max_len)
-//{
-//    // 1. 获取DMA剩余未传输的数据量
-//    uint32_t dma_remain = __HAL_DMA_GET_COUNTER(&hdma_i2c2_rx);
-    
-    // 2. 计算已接收的数据量（你配置的是18字节批量接收）
-//    uint32_t recv_len = 18 - dma_remain;
-
-    // 3. 安全拷贝数据到用户缓冲区，防止溢出
-//    if (pRxData != NULL && recv_len > 0)
-//    {
-//        uint32_t copy_len = recv_len > max_len ? max_len : recv_len;
-//        memcpy(pRxData, jy901p_i2c2_dma_rx_buf, copy_len);
-//    }
-
-    // 4. 返回已接收的有效字节数
-//    return recv_len;
-//}
-

@@ -51,9 +51,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
          car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         car_w=HeadingHold_Update(0.0f);
         MecanumWheel_Move(car_x, car_y, car_w);
+				 JY901P_ReadAllData(&gyro_data);
 		
-//        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
-//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
          for(int i=0;i<MotorCount;i++)
          {
 		 	      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
@@ -63,17 +62,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
 //          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
 //          Set_voltage_angle(&hcan2,voltage_angle);
-//        float num[]={//gyro_data.Gyro_X,
-//            gyro_data.Gyro_Y,
-//            gyro_data.Gyro_Z,
-//            gyro_data.Acc_X,
-//            gyro_data.Acc_Y,
-//            gyro_data.Acc_Z,
-//            gyro_data.Angle_X,
-//            gyro_data.Angle_Y,
-//            gyro_data.Angle_Z
-//        };
-////        Vofa_JustFloat(num, 3);
+       float num[]={
+//				 gyro_data.Gyro_X,
+//           gyro_data.Gyro_Y,
+//           gyro_data.Gyro_Z,
+				 gyro_data.Angle_X,
+				 gyro_data.Angle_Y,
+				 gyro_data.Angle_Z
+       };
+        Vofa_JustFloat(num, 3);
         Set_voltage(&hcan2,voltages);
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
@@ -94,14 +91,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
         //调参模式下由自动调参工具接管控制逻辑，正常模式下执行击球角度控制
-        if (DebugTune_IsActive())
-        {
-            ops_control();
-        }
-        else
-        {
-            hit_angle_control();
-        }
+//        if (DebugTune_IsActive())
+//        {
+//            ops_control();
+//        }
+//        else
+//        {
+//            hit_angle_control();
+//        }
     }	
 	
     }

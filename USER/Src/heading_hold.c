@@ -8,10 +8,12 @@
 #define HEADING_HOLD_INTEGRAL_LIMIT     200.0f
 #define HEADING_HOLD_ERROR_DEADBAND_DEG 1.0f
 #define HEADING_HOLD_OUTPUT_DIR         1.0f
+#define HEADING_HOLD_SAMPLE_PERIOD_MS   10U
 
 HeadingHold_t heading_hold;
 
 static pid_t heading_hold_pid;
+static uint32_t heading_hold_last_sample_ms;
 
 static float heading_hold_normalize_deg(float angle)
 {
@@ -26,8 +28,13 @@ static float heading_hold_normalize_deg(float angle)
 
 static float heading_hold_get_yaw_deg(void)
 {
-    JY901P_ReadAllData(&gyro_data);
-    return (float)gyro_data.Angle_Z;
+    float yaw_deg = (float)gyro_data.Angle_Z;
+
+    if (JY901P_ReadYawDeg(&yaw_deg)) {
+        gyro_data.Angle_Z = (int16_t)yaw_deg;
+    }
+
+    return yaw_deg;
 }
 
 void HeadingHold_Init(void)
@@ -46,6 +53,7 @@ void HeadingHold_Init(void)
     heading_hold.output_wz = 0.0f;
     heading_hold.enabled = 1;
     heading_hold.initialized = 1;
+    heading_hold_last_sample_ms = HAL_GetTick();
 }
 
 void HeadingHold_Enable(uint8_t enable)
@@ -77,12 +85,28 @@ void HeadingHold_ResetTargetToCurrent(void)
               HEADING_HOLD_KD);
 }
 
+void HeadingHold_Task(void)
+{
+    uint32_t now = HAL_GetTick();
+    float yaw_deg;
+
+    if ((uint32_t)(now - heading_hold_last_sample_ms) < HEADING_HOLD_SAMPLE_PERIOD_MS) {
+        return;
+    }
+
+    heading_hold_last_sample_ms = now;
+    if (JY901P_ReadYawDeg(&yaw_deg)) {
+        gyro_data.Angle_Z = (int16_t)yaw_deg;
+        heading_hold.current_yaw_deg = yaw_deg;
+    }
+}
+
 float HeadingHold_Update(float manual_wz)
 {
     (void)manual_wz;
 
     if (!heading_hold.initialized) {
-        HeadingHold_Init();
+        return 0.0f;
     }
 
     if (!heading_hold.enabled) {
@@ -90,7 +114,7 @@ float HeadingHold_Update(float manual_wz)
         return manual_wz;
     }
 
-    heading_hold.current_yaw_deg = heading_hold_get_yaw_deg();
+    heading_hold.current_yaw_deg = (float)gyro_data.Angle_Z;
     heading_hold.error_deg = heading_hold_normalize_deg(heading_hold.target_yaw_deg -
                                                         heading_hold.current_yaw_deg);
 
