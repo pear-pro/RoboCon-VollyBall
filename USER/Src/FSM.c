@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 //声明结构体对象
-extern motor_info_t C620_up_angle;
-extern motor_info_t C620_hit_angle[HIT_MOTOR_COUNT];
+extern motor_info_t DM4310_up_angle;
+extern motor_info_t DM4310_hit_angle[HIT_MOTOR_COUNT];
 //发球状态机相关变量
 static volatile uint8_t serve_active = 0;
 static volatile uint8_t serve_armed = 1;
@@ -22,9 +22,13 @@ serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
-    {40.0f  * SCALE, -40.0f  * SCALE, 40.0f  * SCALE},
-    {25.0f * SCALE, -25.0f * SCALE, 25.0f * SCALE},
-    {15.0f * SCALE, -15.0f * SCALE, 15.0f * SCALE},
+    {40.0f, -40.0f, 40.0f},
+    {25.0f, -25.0f, 25.0f},
+};
+
+static const float hit_angle_return[HIT_MOTOR_COUNT] =
+{
+    0,0,0
 };
 
 //限幅函数，限制输出在[-limit, limit]范围内
@@ -47,7 +51,7 @@ static uint8_t hit_all_near(float target, float threshold)
 {
     for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
     {
-        float err = C620_hit_angle[i].Angle_pid.get - target;
+        float err = DM4310_hit_angle[i].Angle_pid.get - target;
         if (err < 0.0f)
         {
             err = -err;
@@ -137,7 +141,7 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_HIT:
-        C620_up_angle.target_angle = 170.0f * SCALE;
+//        DM4310_hit_angle.target_angle = 170.0f;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -147,7 +151,7 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_HIT_RETURN:
     default:
-        C620_up_angle.target_angle = 0.0f;
+//        DM4310_hit_angle.target_angle = 0.0f;
         if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
         {
             serve_stage = SERVE_STAGE_IDLE;
@@ -166,14 +170,14 @@ void remote_control_hit_update(void)
     case HIT_PUT_ANGLE:
         for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            C620_hit_angle[i].target_angle = hit_angle_table[hit_preset_index][i];
+            DM4310_hit_angle[i].target_angle = hit_angle_table[hit_preset_index][i];
         }
         break;
 
     case HIT_RETURN:
         for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            C620_hit_angle[i].target_angle = 0.0f;
+            DM4310_hit_angle[i].target_angle = 0.0f;
         }
         if (hit_all_near(0.0f, HIT_RETURN_DONE_DEG))
         {
@@ -187,47 +191,47 @@ void remote_control_hit_update(void)
     }
 }
 
-void hit_angle_control(void)
-{
-    int16_t voltage[HIT_MOTOR_COUNT] = {0};
+// void hit_angle_control(void)
+// {
+//     int16_t voltage[HIT_MOTOR_COUNT] = {0};
 
-    for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
-    {
-        int32_t output = PID_PROCESS_Double(&C620_hit_angle[i].Angle_pid,
-                                            &C620_hit_angle[i].Speed_pid,
-                                            C620_hit_angle[i].target_angle,
-                                            C620_hit_angle[i].Angle_pid.get,
-                                            C620_hit_angle[i].Speed_pid.get);
-        voltage[i] = limit(output, HIT_OUTPUT_LIMIT);
-    }
+//     for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
+//     {
+//         int32_t output = PID_PROCESS_Double(&C620_hit_angle[i].Angle_pid,
+//                                             &C620_hit_angle[i].Speed_pid,
+//                                             C620_hit_angle[i].target_angle,
+//                                             C620_hit_angle[i].Angle_pid.get,
+//                                             C620_hit_angle[i].Speed_pid.get);
+//         voltage[i] = limit(output, HIT_OUTPUT_LIMIT);
+//     }
 
-    Set_voltage_hit(&hcan2, voltage);
-}
+//     Set_voltage_hit(&hcan2, voltage);
+// }
 
-void up_angle_control(void)
-{
-    int16_t voltage[1] = {0};
+// void up_angle_control(void)
+// {
+//     int16_t voltage[1] = {0};
 
-    int32_t output;
-    if(serve_mode == SERVE_MODE_ANGLE)
-    {
-        output = PID_PROCESS_Double(&C620_up_angle.Angle_pid,
-                                        &C620_up_angle.Speed_pid,
-                                        C620_up_angle.target_angle,
-                                        C620_up_angle.Angle_pid.get,
-                                        C620_up_angle.Speed_pid.get);
-    }
-    else
-    {
-        output =
-            PID_PROCESS_Speed(
-                &C620_up_angle.Speed_pid,
-                C620_up_angle.target_speed,
-                C620_up_angle.Speed_pid.get
-            );
-    }
+//     int32_t output;
+//     if(serve_mode == SERVE_MODE_ANGLE)
+//     {
+//         output = PID_PROCESS_Double(&C620_up_angle.Angle_pid,
+//                                         &C620_up_angle.Speed_pid,
+//                                         C620_up_angle.target_angle,
+//                                         C620_up_angle.Angle_pid.get,
+//                                         C620_up_angle.Speed_pid.get);
+//     }
+//     else
+//     {
+//         output =
+//             PID_PROCESS_Speed(
+//                 &C620_up_angle.Speed_pid,
+//                 C620_up_angle.target_speed,
+//                 C620_up_angle.Speed_pid.get
+//             );
+//     }
 
-    voltage[0] = limit(output, HIT_OUTPUT_LIMIT);
+//     voltage[0] = limit(output, HIT_OUTPUT_LIMIT);
 
-    Set_voltage_up_angle(&hcan2, voltage);
-}
+//     Set_voltage_up_angle(&hcan2, voltage);
+// }

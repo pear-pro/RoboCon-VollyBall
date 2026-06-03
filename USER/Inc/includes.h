@@ -34,6 +34,12 @@ extern motor_info_t C620_angle;
 extern motor_info_t C620_hit_angle[3];
 extern motor_info_t damiao[MotorCount];
 extern motor_info_t C620_up_angle;
+
+extern motor_info_t DM4310[MotorCount];
+extern motor_info_t DM4310_angle;
+extern motor_info_t DM4310_hit_angle[3];
+extern motor_info_t DM4310_up_angle;
+
 extern uint16_t PID_Calc_Flag;
 extern float car_x,car_y,car_w;
 extern float car_tarx,car_tary,car_tarw;

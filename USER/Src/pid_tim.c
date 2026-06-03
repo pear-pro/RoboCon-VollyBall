@@ -38,11 +38,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //		 }
       
 		 // 每 10ms 更新一次发球动作阶段，串口调参接管时不推进遥控发球状态机
-		 if (!DebugTune_IsActive())
-         {
-             remote_control_serve_update();
-         }
-         Set_dm_mit(&hcan1,0);
+		//  if (!DebugTune_IsActive())
+        //  {
+        //      remote_control_serve_update();
+        //  }
+        //  Set_dm_mit(&hcan1,0);
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
 //        car_w=car_pid.out;
@@ -66,7 +66,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //            gyro_data.Angle_Z
 //        };
 ////        Vofa_JustFloat(num, 3);
-       // Set_voltage(&hcan2,voltages);
+       Set_voltage(&hcan2,voltages);
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 //	{
@@ -90,7 +90,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	   ops_control();
     }else 
     {
-        up_angle_control();
+        Set_dm_mit(&hcan1,0);
+        Set_dm_mit(&hcan1,1);
+        Set_dm_mit(&hcan1,2);
     }	
 	
     }
