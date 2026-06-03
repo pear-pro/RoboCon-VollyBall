@@ -122,6 +122,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     DebugTune_Task();
+    sbus_remote_control_led_update();
   }
   /* USER CODE END 3 */
 }

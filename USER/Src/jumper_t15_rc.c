@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "main.h"
 #include "FSM.h"
+#include "led_ops.h"
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
@@ -26,6 +27,7 @@ int apply_deadzone(int16_t car_n,float deadzone)
 void sbus_remote_control_init(void)//SBUSÒ£¿ØÆ÷³õÊ¼»¯
 {
    RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
+   LED_Init(&rc_rx_led);
 
    
    sbus_ctrl.last_swa_state = POS_MID;  // SWA³õÊ¼»¯×´Ì¬MID
@@ -42,6 +44,16 @@ const SBUS_ctrl_t *get_sbus_remote_control_point(void)//»ñÈ¡SBUSÒ£¿ØÆ÷Ö¸Õë
    return &sbus_ctrl;
 }
 
+void sbus_remote_control_led_update(void)
+{
+   uint32_t now = HAL_GetTick();
+   uint32_t elapsed = now - rc_rx_last_valid_ms;
+
+   if ((LED_GetState(&rc_rx_led) == LED_STATE_ON) && (elapsed > RC_RX_LED_TIMEOUT_MS))
+   {
+       LED_SetState(&rc_rx_led, LED_STATE_OFF);
+   }
+}
 float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
 {
    float delat = target - input;
@@ -329,6 +341,9 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 {
    if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//ÅÐ¶ÏÍ·Ö¡ºÍÎ²Ö¡
    {
+       rc_rx_last_valid_ms = HAL_GetTick();
+       LED_SetState(&rc_rx_led, LED_STATE_ON);
+
        sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//ÓÒ×óÓÒ
        sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//ÓÒÉÏÏÂ
        sbus_ctrl -> ch[2] = ((sbus_buffer[3] >> 6 )| (sbus_buffer[4] << 2 ) | (sbus_buffer[5] << 10)) & 0x07ff;//×óÉÏÏÂ

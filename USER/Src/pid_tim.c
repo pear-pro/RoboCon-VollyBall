@@ -57,7 +57,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                    voltages[i]=(int16_t)C620[i].Speed_pid.out;
 			
          }
-					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
+					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,5000);
           voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
           Set_voltage_angle(&hcan2,voltage_angle);
 //        float num[]={//gyro_data.Gyro_X,

@@ -62,6 +62,7 @@
  void remote_control_serve_update(void);
 
  extern void sbus_remote_control_init(void);
+ extern void sbus_remote_control_led_update(void);
 
  extern const SBUS_ctrl_t *get_sbus_remote_control_point(void);
 
