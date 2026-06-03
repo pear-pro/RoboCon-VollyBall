@@ -860,11 +860,13 @@ ARM Macro Assembler    Page 14
   441 0000001C                 END
               00000000 
               00000000 
-Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4.fp.sp 
---depend=.\dj_a_wheel\startup_stm32f427xx.d -o.\dj_a_wheel\startup_stm32f427xx.
-o -IE:\c51mdk_packs\Keil\STM32F4xx_DFP\3.1.1\Device\Include --predefine="__MICR
-OLIB SETA 1" --predefine="__UVISION_VERSION SETA 539" --predefine="STM32F427xx 
-SETA 1" --list=startup_stm32f427xx.lst startup_stm32f427xx.s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --depend=.
+\dj_a_wheel\startup_stm32f427xx.d -o.\dj_a_wheel\startup_stm32f427xx.o -I.\RTE\
+_DJ_A_wheel -ID:\STM32\ARM\PACK\Keil\STM32F4xx_DFP\2.9.0\Drivers\CMSIS\Device\S
+T\STM32F4xx\Include -ID:\STM32\ARM\CMSIS\Include -ID:\STM32\ARM\PACK\Keil\STM32
+F4xx_DFP\2.9.0\Device\Include --predefine="__MICROLIB SETA 1" --predefine="__UV
+ISION_VERSION SETA 524" --predefine="STM32F427xx SETA 1" --list=startup_stm32f4
+27xx.lst startup_stm32f427xx.s
 
 
 

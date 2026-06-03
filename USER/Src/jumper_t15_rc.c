@@ -14,6 +14,13 @@ static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMA双缓冲
 
 SBUS_ctrl_t sbus_ctrl;
 
+//定义死区
+int apply_deadzone(int16_t car_n,float deadzone)
+{
+	if(car_n<deadzone&&car_n>0)car_n=0;
+	if(car_n>-deadzone&&car_n<0)car_n=0;
+	return car_n;
+}
 
 
 void sbus_remote_control_init(void)//SBUS遥控器初始化
@@ -293,7 +300,8 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
        if(SE_pos == POS_UP)
        {
            sbus_ctrl->key_flag |= KEY_SE_UP;
-       }
+       }  
+	     
        else if(SE_pos == POS_DOWN)
        {
            sbus_ctrl->key_flag |= KEY_SE_DOWN;
@@ -342,14 +350,14 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        virtual_key_update(sbus_ctrl);
 
        //归一化数据
-       car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-       car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       car_x=normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       car_y=-normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        
        //应用死区
-       car_x=apply_deadzone(car_x, DEADZONE);
-       car_y=apply_deadzone(car_y, DEADZONE);
-       car_w=apply_deadzone(car_w, DEADZONE);
+       car_x=apply_deadzone((float)sbus_ctrl -> ch[0], 50.0f);
+       car_y=-apply_deadzone((float)sbus_ctrl -> ch[1], 50.0f);
+       car_w=apply_deadzone((float)sbus_ctrl -> ch[3], 50.0f);
 
       
         MecanumWheel_Move(car_x,car_y,car_w);

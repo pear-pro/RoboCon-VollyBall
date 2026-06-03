@@ -14,15 +14,38 @@ void All_Init(){
 	   
        Set_dm_enable(&hcan1,0);
 
-    for(int i=0;i<MotorCount;i++){
-			
-        PID_Struct_Init(&C620[i].Speed_pid, 
-            2.0f, 
+    PID_Struct_Init(&C620[0].Speed_pid,    //rr
+            1.0f, 
             0.3f,
             0.0f, 
             10000, 
             16000,
             INIT);
+	PID_Struct_Init(&C620[1].Speed_pid,    //fr
+            4.0f, 
+            0.3f,
+            0.0f, 
+            10000, 
+            16000,
+            INIT);
+	PID_Struct_Init(&C620[2].Speed_pid,    //fl
+            1.0f, 
+            0.3f,
+            0.0f, 
+            10000, 
+            16000,
+            INIT);
+	PID_Struct_Init(&C620[3].Speed_pid,    //rl
+            4.0f, 
+            0.3f,
+            0.0f, 
+            10000, 
+            16000,
+            INIT);       
+
+    for(int i=0;i<MotorCount;i++){
+			
+
         PID_Struct_Init(&C620[i].Angle_pid,
             10.0f,
             0.0f,
