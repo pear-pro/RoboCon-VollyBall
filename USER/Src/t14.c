@@ -400,7 +400,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 
         if (KEY_SWD_UP & sbus_ctrl -> key_flag)
         {
-            // 上档：保留原�? DM4310 角度电机控制
+            // 上档：保留原�?角度电机控制
             C620_up_angle.Speed_pid.set = 25000 * (sbus_ctrl->ch[3] / 800.0f);
         }
         else if (KEY_SWD_MID & sbus_ctrl -> key_flag)
@@ -429,7 +429,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
             }
         }
 
-        // SA 三档选择三组击球角度预设
+        // SA 三档选择击球角度预设
        if (KEY_SWA_UP & sbus_ctrl->key_flag)
        {
            hit_set_preset(0);

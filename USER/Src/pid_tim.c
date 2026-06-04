@@ -38,10 +38,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //		 }
       
 		 // 每 10ms 更新一次发球动作阶段，串口调参接管时不推进遥控发球状态机
-		//  if (!DebugTune_IsActive())
-        //  {
-        //      remote_control_serve_update();
-        //  }
+		 if (!DebugTune_IsActive())
+         {
+             remote_control_serve_update();
+         }
         //  Set_dm_mit(&hcan1,0);
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
