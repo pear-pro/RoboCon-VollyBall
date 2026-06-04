@@ -193,7 +193,7 @@ void remote_control_hit_update(void)
     }
 }
 
-void hit_angle_control(void)
+void hit_angle_control(void)    //在PID定时器中被 remote_control_hit_update 调用，持续控制击球电机角度，直到回零完成
 {
     int16_t voltage[HIT_MOTOR_COUNT] = {0};
 

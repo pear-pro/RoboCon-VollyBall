@@ -3,7 +3,6 @@
 #include "car_ctrl.h"
 #include "includes.h"
 #include "can.h"
-#include "jy901p.h"
 #include "motor_can.h"
 #include <stdint.h>
 #include "debug_uart.h"
@@ -47,10 +46,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
              remote_control_hit_update();
          }
          Set_dm_mit(&hcan1,0);
+         // 每10ms让速度加/减
+         car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
+         car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
+        car_w=HeadingHold_Update(0.0f);
+        MecanumWheel_Move(car_x, car_y, car_w);
+				 IMU_GetData(&imu);
 		
-//        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
-//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
-        car_w=car_pid.out;
          for(int i=0;i<MotorCount;i++)
          {
 		 	      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
@@ -91,14 +93,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
         //调参模式下由自动调参工具接管控制逻辑，正常模式下执行击球角度控制
-        if (DebugTune_IsActive())
-        {
-            ops_control();
-        }
-        else
-        {
-            hit_angle_control();
-        }
+//        if (DebugTune_IsActive())
+//        {
+//            ops_control();
+//        }
+//        else
+//        {
+//            hit_angle_control();
+//        }
     }	
 	
     }
@@ -114,3 +116,5 @@ void Error_Handler(void)
     }
 }
 #endif
+
+

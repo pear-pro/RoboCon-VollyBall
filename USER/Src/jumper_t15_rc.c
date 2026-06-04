@@ -369,6 +369,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        car_y=-normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        
+<<<<<<< HEAD
        //应用死区
        car_x=apply_deadzone((float)sbus_ctrl -> ch[0], 50.0f);
        car_y=-apply_deadzone((float)sbus_ctrl -> ch[1], 50.0f);
@@ -376,6 +377,33 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 
       
         MecanumWheel_Move(car_x,car_y,car_w);
+=======
+       // //应用死区
+       // car_x=apply_deadzone(car_x, DEADZONE);
+       // car_y=apply_deadzone(car_y, DEADZONE);
+       // car_w=apply_deadzone(car_w, DEADZONE);
+         // MecanumWheel_Move(car_x,car_y,car_w);
+
+/*-------------------遥控逻辑的处理-----------------------*/
+       if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
+       car_tarx = 0;
+       }
+       else {
+           car_tarx=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+           //car_x=low_pass(car_tarx, car_x, 0.25);
+
+       }
+       if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
+           car_tary = 0;
+       }
+       else {
+           car_tary=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+           //car_y=low_pass(car_tary, car_y, 0.32);
+       }
+       car_tarw=-normalize_to_range(sbus_ctrl->ch[2], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+
+       // MecanumWheel_Move(car_x,car_y,car_w);
+>>>>>>> origin/JY901P闄�铻轰华
 
        // SWC 三档选择三组击球角度预设
        if (KEY_SWC_UP & sbus_ctrl->key_flag)
