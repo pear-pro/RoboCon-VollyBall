@@ -55,12 +55,15 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/USER/Src/pg_led.c
     ${CMAKE_SOURCE_DIR}/USER/Src/remote_control.c
     ${CMAKE_SOURCE_DIR}/USER/Src/math_utils.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/heading_hold.c
     ${CMAKE_SOURCE_DIR}/USER/Src/FSM.c
     ${CMAKE_SOURCE_DIR}/USER/Src/ops.c
-    ${CMAKE_SOURCE_DIR}/USER/Src/jy901p.c
-    ${CMAKE_SOURCE_DIR}/USER/Src/JY901P_Calibrate.c
     ${CMAKE_SOURCE_DIR}/USER/Src/t14.c
+<<<<<<< HEAD
      ${CMAKE_SOURCE_DIR}/USER/Src/led_ops.c
+=======
+    ${CMAKE_SOURCE_DIR}/USER/Src/imu.c
+>>>>>>> origin/JY901P陀螺仪
 )
 
 # Add include paths
@@ -83,3 +86,4 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
     # Add user defined libraries
 )
+

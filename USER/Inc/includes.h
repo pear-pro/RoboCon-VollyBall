@@ -15,12 +15,17 @@
 #include "bsp_rc.h"
 #include "Initialize.h"
 #include "math_utils.h"
-#include "jy901p.h"
+#include "heading_hold.h"
 #include "debug_uart.h"
+<<<<<<< HEAD
 #include "JY901P_Calibrate.h"
+=======
+#include "ht_10a_remote_control.h"
+>>>>>>> origin/JY901P陀螺仪
 #include "jumper_t15_rc.h"
 #include "FSM.h"
 #include "t14.h"
+#include "imu.h"
 
 #define damiao_1_back 	2.20f
 #define damiao_1_front 	-1.0f
@@ -36,7 +41,6 @@ extern motor_info_t C620_up_angle;
 extern uint16_t PID_Calc_Flag;
 extern float car_x,car_y,car_w;
 extern float car_tarx,car_tary,car_tarw;
-extern JY901P_DataStruct gyro_data;
 extern int16_t Z_zeropoint;
 
 
@@ -47,3 +51,4 @@ extern int16_t Z_zeropoint;
 #define SPEED_DOWN_TICKS (70u) // ������ٶȼ��ٵ���ֹ���?�Ŀ���������
 
 #endif
+

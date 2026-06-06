@@ -3,7 +3,6 @@
 #include "car_ctrl.h"
 #include "includes.h"
 #include "can.h"
-#include "jy901p.h"
 #include "motor_can.h"
 #include <stdint.h>
 #include "debug_uart.h"
@@ -93,14 +92,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
         //调参模式下由自动调参工具接管控制逻辑，正常模式下执行击球角度控制
-        if (DebugTune_IsActive())
-        {
-            ops_control();
-        }
-        else
-        {
-            hit_angle_control();
-        }
+//        if (DebugTune_IsActive())
+//        {
+//            ops_control();
+//        }
+//        else
+//        {
+//            hit_angle_control();
+//        }
     }	
 	
     }
@@ -116,3 +115,5 @@ void Error_Handler(void)
     }
 }
 #endif
+
+

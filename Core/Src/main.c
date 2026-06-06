@@ -29,7 +29,6 @@
 /* USER CODE BEGIN Includes */
 #include "PID_TIM.h"
 #include "includes.h"
-#include "JY901P_Calibrate.h"
 #include "pg_led.h"
 /* USER CODE END Includes */
 
@@ -51,7 +50,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-// 存储陀螺仪9轴数�?
+// 瀛樺偍闄€铻轰华9杞存暟锟�?
 JY901P_DataStruct gyro_data;
 /* USER CODE END PV */
 
@@ -101,7 +100,8 @@ int main(void)
   MX_CAN2_Init();
   MX_TIM14_Init();
   MX_USART6_UART_Init();
-  MX_I2C2_Init();
+//  MX_I2C2_Init();
+  MX_UART7_Init();
   /* USER CODE BEGIN 2 */
   
 
@@ -115,11 +115,13 @@ int main(void)
 
   while (1)
   {
+	
 
     /* USER CODE END WHILE */
     volatile int test = 10;
 	  test = *(int *)0x56785678;
     /* USER CODE BEGIN 3 */
+    HeadingHold_Task();
     DebugTune_Task();
     sbus_remote_control_led_update();
   }

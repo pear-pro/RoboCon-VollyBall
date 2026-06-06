@@ -15,17 +15,13 @@ static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMA双缓冲
 
 SBUS_ctrl_t sbus_ctrl;
 
-#define RC_RX_LED_TIMEOUT_MS 200U
-
-static volatile uint32_t rc_rx_last_valid_ms = 0U;
-
-static LED_HandleTypedef rc_rx_led = {
-   .port = GPIOG,
-   .pin = GPIO_PIN_1,
-   .active_level = 0,
-   .state = LED_STATE_OFF,
-};
-
+//定义死区
+int apply_deadzone(int16_t car_n,float deadzone)
+{
+	if(car_n<deadzone&&car_n>0)car_n=0;
+	if(car_n>-deadzone&&car_n<0)car_n=0;
+	return car_n;
+}
 
 
 void sbus_remote_control_init(void)//SBUS遥控器初始化
@@ -316,7 +312,8 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
        if(SE_pos == POS_UP)
        {
            sbus_ctrl->key_flag |= KEY_SE_UP;
-       }
+       }  
+	     
        else if(SE_pos == POS_DOWN)
        {
            sbus_ctrl->key_flag |= KEY_SE_DOWN;
@@ -368,17 +365,45 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        virtual_key_update(sbus_ctrl);
 
        //归一化数据
-       car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-       car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       car_x=normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       car_y=-normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        
+<<<<<<< HEAD
        //应用死区
-//       car_x=apply_deadzone(car_x, DEADZONE);
-//       car_y=apply_deadzone(car_y, DEADZONE);
-//       car_w=apply_deadzone(car_w, DEADZONE);
+       car_x=apply_deadzone((float)sbus_ctrl -> ch[0], 50.0f);
+       car_y=-apply_deadzone((float)sbus_ctrl -> ch[1], 50.0f);
+       car_w=apply_deadzone((float)sbus_ctrl -> ch[3], 50.0f);
 
       
         MecanumWheel_Move(car_x,car_y,car_w);
+=======
+       // //应用死区
+       // car_x=apply_deadzone(car_x, DEADZONE);
+       // car_y=apply_deadzone(car_y, DEADZONE);
+       // car_w=apply_deadzone(car_w, DEADZONE);
+         // MecanumWheel_Move(car_x,car_y,car_w);
+
+/*-------------------遥控逻辑的处理-----------------------*/
+       if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
+       car_tarx = 0;
+       }
+       else {
+           car_tarx=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+           //car_x=low_pass(car_tarx, car_x, 0.25);
+
+       }
+       if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
+           car_tary = 0;
+       }
+       else {
+           car_tary=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+           //car_y=low_pass(car_tary, car_y, 0.32);
+       }
+       car_tarw=-normalize_to_range(sbus_ctrl->ch[2], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+
+       // MecanumWheel_Move(car_x,car_y,car_w);
+>>>>>>> origin/JY901P闄�铻轰华
 
        // SWC 三档选择三组击球角度预设
        if (KEY_SWC_UP & sbus_ctrl->key_flag)

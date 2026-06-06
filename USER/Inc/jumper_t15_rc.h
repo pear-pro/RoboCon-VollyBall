@@ -69,5 +69,6 @@
  extern uint8_t   sbus_buffer[SBUS_BUFLEN];
  void USART1_IRQHandlerCallBack(void);
 
+ int apply_deadzone(int16_t car_n,float deadzone);//ËÀÇø
 
  #endif
