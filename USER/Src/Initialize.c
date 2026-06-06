@@ -52,7 +52,6 @@ void All_Init(){
             300,
             INIT);
 
-<<<<<<< HEAD
            //击球3508
              PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
            10.5f, //10.5  13
@@ -69,7 +68,7 @@ void All_Init(){
            16000,
            INIT);
          //  
-=======
+
 //            //锟斤拷锟斤拷3508
 //              PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
 //            10.5f, 
@@ -86,7 +85,7 @@ void All_Init(){
 //            16000,
 //            INIT);
 //          //  
->>>>>>> origin/JY901P闄€铻轰华
+
 
     }
 	damiao[0].KP = 150.0f;//150.0f;
@@ -97,7 +96,7 @@ void All_Init(){
 	damiao[1].KD = 3.0f;
 	damiao[1].tor = -0.65f;//-1.65
 	damiao[1].angle=0.0f;
-  C620_up_angle.target_angle = -3420.0f;
+ // C620_up_angle.target_angle = -3420.0f;
         PID_Struct_Init(&damiao[0].Angle_pid,
             15.0f,
             0.0f,
@@ -110,12 +109,12 @@ void All_Init(){
     
 
    
-<<<<<<< HEAD
+
         PID_Struct_Init(&C620_angle.Speed_pid, 25.0f, 0.0f, 0.0f, 30000, 16000, INIT);
 		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.02f, 20000, 16000, INIT);
 		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
-    int16_t Z_zeropoint=gyro_data.Angle_Z;    
-=======
+  //  int16_t Z_zeropoint=gyro_data.Angle_Z;    
+
         PID_Struct_Init(&C620_angle.Speed_pid, 10.0f, 0.3f, 0.0f, 
             10000, 16000, INIT);
 		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.02f, 
@@ -126,7 +125,7 @@ void All_Init(){
 		
 		HAL_Delay(500);
     HeadingHold_Init();
->>>>>>> origin/JY901P闄€铻轰华
+
 }
 
 void All_Clear(){

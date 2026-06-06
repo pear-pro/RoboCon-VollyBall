@@ -152,9 +152,6 @@ class Link:
 
     def command(self, command: str, wait: float = 0.25) -> list[str]:
         self.ser.reset_input_buffer()
-        self.ser.write(b"\r\n")
-        self.ser.flush()
-        time.sleep(max(0.02, self.char_delay * 4.0))
         self.send(command)
         end = time.monotonic() + wait
         lines: list[str] = []
@@ -192,10 +189,10 @@ class Link:
             if self.verbose:
                 suffix = f" retry={attempt}" if attempt else ""
                 print(f"CMD {command!r}{suffix} -> {lines[:12]}")
-            joined = "".join(lines)
-            ok = any(line.startswith(prefix) or prefix in line for line in lines) or prefix in joined
-            if not ok and prefix in {"OKS", "OKZ", "OKSEL", "OKMODE"}:
-                ok = any(line.startswith("OK") for line in lines)
+            if prefix == "OK LOG":
+                ok = any(line == prefix or line.startswith(prefix + " ") for line in lines)
+            else:
+                ok = any(line == prefix for line in lines)
             if ok:
                 return lines
             time.sleep(0.08)
@@ -468,12 +465,12 @@ def main() -> int:
     fieldnames = ["trial", *Sample.__dataclass_fields__.keys(), "score"]
     try:
         link.command_expect("LOG 0", "OK LOG", wait=0.8)
-        link.command_expect("STOP", "OKS", wait=0.8, required=True)
+        link.command_expect("STOP", "OKS", wait=1.0, required=True, retries=3)
         if args.select:
             link.command_expect(f"SELECT {args.select}", "OKSEL", wait=1.0, required=True, retries=3)
         link.command_expect(f"MODE {args.mode.upper()}", "OKMODE", wait=1.0, required=True, retries=3)
         if args.zero:
-            link.command_expect("ZERO", "OKZ", wait=0.8, required=True)
+            link.command_expect("ZERO", "OKZ", wait=1.0, required=True, retries=3)
 
         with args.csv.open("w", newline="", encoding="utf-8") as fp:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)
@@ -488,7 +485,7 @@ def main() -> int:
 
         apply_pid(link, best_pid)
         link.command_expect("LOG 0", "OK LOG", wait=0.5)
-        link.command_expect("STOP", "OKS", wait=0.5)
+        link.command_expect("STOP", "OKS", wait=1.0, retries=3)
     finally:
         vofa.close()
         link.close()

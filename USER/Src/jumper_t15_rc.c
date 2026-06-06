@@ -27,7 +27,7 @@ int apply_deadzone(int16_t car_n,float deadzone)
 void sbus_remote_control_init(void)//SBUS遥控器初始化
 {
    RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
-   LED_Init(&rc_rx_led);
+  // LED_Init(&rc_rx_led);
 
    
    sbus_ctrl.last_swa_state = POS_MID;  // SWA初始化状态MID
@@ -47,11 +47,11 @@ const SBUS_ctrl_t *get_sbus_remote_control_point(void)//获取SBUS遥控器指针
 void sbus_remote_control_led_update(void)
 {
    uint32_t now = HAL_GetTick();
-   uint32_t elapsed = now - rc_rx_last_valid_ms;
+  // uint32_t elapsed = now - rc_rx_last_valid_ms;
 
-   if ((LED_GetState(&rc_rx_led) == LED_STATE_ON) && (elapsed > RC_RX_LED_TIMEOUT_MS))
+  // if ((LED_GetState(&rc_rx_led) == LED_STATE_ON) && (elapsed > RC_RX_LED_TIMEOUT_MS))
    {
-       LED_SetState(&rc_rx_led, LED_STATE_OFF);
+ //      LED_SetState(&rc_rx_led, LED_STATE_OFF);
    }
 }
 float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
@@ -341,8 +341,8 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 {
    if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//判断头帧和尾帧
    {
-       rc_rx_last_valid_ms = HAL_GetTick();
-       LED_SetState(&rc_rx_led, LED_STATE_ON);
+    //   rc_rx_last_valid_ms = HAL_GetTick();
+     //  LED_SetState(&rc_rx_led, LED_STATE_ON);
 
        sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//右左右
        sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//右上下
@@ -369,7 +369,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        car_y=-normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
        
-<<<<<<< HEAD
+
        //应用死区
        car_x=apply_deadzone((float)sbus_ctrl -> ch[0], 50.0f);
        car_y=-apply_deadzone((float)sbus_ctrl -> ch[1], 50.0f);
@@ -377,7 +377,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 
       
         MecanumWheel_Move(car_x,car_y,car_w);
-=======
+
        // //应用死区
        // car_x=apply_deadzone(car_x, DEADZONE);
        // car_y=apply_deadzone(car_y, DEADZONE);
@@ -403,7 +403,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        car_tarw=-normalize_to_range(sbus_ctrl->ch[2], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
 
        // MecanumWheel_Move(car_x,car_y,car_w);
->>>>>>> origin/JY901P闄�铻轰华
+
 
        // SWC 三档选择三组击球角度预设
        if (KEY_SWC_UP & sbus_ctrl->key_flag)

@@ -118,8 +118,8 @@ int main(void)
 	
 
     /* USER CODE END WHILE */
-    volatile int test = 10;
-	  test = *(int *)0x56785678;
+    // volatile int test = 10;
+	  // test = *(int *)0x56785678;
     /* USER CODE BEGIN 3 */
     HeadingHold_Task();
     DebugTune_Task();

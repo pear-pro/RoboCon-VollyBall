@@ -235,5 +235,5 @@ void ops_control(void)
 
     ops_limit_output(&output, target->max_output);
     target->set_output(output);    
-  //  DebugTune_OnControlTick(output);  //自动调参工具接口，输出当前控制值
+    DebugTune_OnControlTick(output);  //自动调参工具接口，输出当前控制值
 }

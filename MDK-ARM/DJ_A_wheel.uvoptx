@@ -103,7 +103,7 @@
         <bEvRecOn>1</bEvRecOn>
         <bSchkAxf>0</bSchkAxf>
         <bTchkAxf>0</bTchkAxf>
-        <nTsel>6</nTsel>
+        <nTsel>3</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -114,7 +114,7 @@
         <tDlgDll></tDlgDll>
         <tDlgPa></tDlgPa>
         <tIfile></tIfile>
-        <pMon>STLink\ST-LINKIII-KEIL_SWO.dll</pMon>
+        <pMon>BIN\CMSIS_AGDI.dll</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
         <SetRegEntry>
@@ -195,34 +195,22 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-<<<<<<< HEAD
           <ItemText>can2RxData[0]</ItemText>
-=======
-          <ItemText>gyro_data</ItemText>
->>>>>>> origin/JY901P陀螺仪
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-<<<<<<< HEAD
           <ItemText>can2RxData[2]</ItemText>
-=======
-          <ItemText>hi2c</ItemText>
->>>>>>> origin/JY901P陀螺仪
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-<<<<<<< HEAD
           <ItemText>C620[i].Speed_pid.get</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
           <ItemText>C620[0].Speed_pid.set </ItemText>
-=======
-          <ItemText>imu</ItemText>
->>>>>>> origin/JY901P陀螺仪
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -231,7 +219,6 @@
       <DebugFlag>
         <trace>0</trace>
         <periodic>0</periodic>
-        <aLwin>1</aLwin>
         <aLwin>1</aLwin>
         <aCover>0</aCover>
         <aSer1>1</aSer1>
@@ -270,6 +257,7 @@
       <pMultCmdsp></pMultCmdsp>
       <DebugDescription>
         <Enable>1</Enable>
+        <EnableFlashSeq>0</EnableFlashSeq>
         <EnableLog>0</EnableLog>
         <Protocol>2</Protocol>
         <DbgClock>10000000</DbgClock>
@@ -374,21 +362,6 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-<<<<<<< HEAD
-      <PathWithFileName>..\USER\Src\jy901p.c</PathWithFileName>
-      <FilenameWithoutPath>jy901p.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>1</GroupNumber>
-      <FileNumber>9</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-=======
->>>>>>> origin/JY901P陀螺仪
       <PathWithFileName>..\USER\Src\pg_led.c</PathWithFileName>
       <FilenameWithoutPath>pg_led.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -396,7 +369,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>10</FileNumber>
+      <FileNumber>9</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -408,7 +381,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>11</FileNumber>
+      <FileNumber>10</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -420,7 +393,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>12</FileNumber>
+      <FileNumber>11</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -432,7 +405,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>13</FileNumber>
+      <FileNumber>12</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -444,7 +417,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>14</FileNumber>
+      <FileNumber>13</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -456,22 +429,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>15</FileNumber>
-<<<<<<< HEAD
-=======
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\USER\Src\FSM.c</PathWithFileName>
-      <FilenameWithoutPath>FSM.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>1</GroupNumber>
-      <FileNumber>16</FileNumber>
->>>>>>> origin/JY901P陀螺仪
+      <FileNumber>14</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -483,7 +441,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>16</FileNumber>
+      <FileNumber>15</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -495,22 +453,25 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-<<<<<<< HEAD
-      <FileNumber>17</FileNumber>
-=======
-      <FileNumber>18</FileNumber>
->>>>>>> origin/JY901P陀螺仪
+      <FileNumber>16</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-<<<<<<< HEAD
       <PathWithFileName>..\USER\Src\led_ops.c</PathWithFileName>
       <FilenameWithoutPath>led_ops.c</FilenameWithoutPath>
-=======
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>17</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
       <PathWithFileName>..\USER\Src\imu.c</PathWithFileName>
       <FilenameWithoutPath>imu.c</FilenameWithoutPath>
->>>>>>> origin/JY901P陀螺仪
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -524,7 +485,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>19</FileNumber>
+      <FileNumber>18</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -536,7 +497,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>20</FileNumber>
+      <FileNumber>19</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -548,7 +509,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>21</FileNumber>
+      <FileNumber>20</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -560,7 +521,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>22</FileNumber>
+      <FileNumber>21</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -572,7 +533,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>23</FileNumber>
+      <FileNumber>22</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -584,7 +545,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>24</FileNumber>
+      <FileNumber>23</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -596,7 +557,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>25</FileNumber>
+      <FileNumber>24</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -608,7 +569,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>26</FileNumber>
+      <FileNumber>25</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -620,7 +581,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>27</FileNumber>
+      <FileNumber>26</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -632,7 +593,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>28</FileNumber>
+      <FileNumber>27</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -644,7 +605,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>29</FileNumber>
+      <FileNumber>28</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -656,7 +617,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>30</FileNumber>
+      <FileNumber>29</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -668,7 +629,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>31</FileNumber>
+      <FileNumber>30</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -680,7 +641,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>32</FileNumber>
+      <FileNumber>31</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -692,7 +653,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>33</FileNumber>
+      <FileNumber>32</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -704,22 +665,25 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-<<<<<<< HEAD
-      <FileNumber>34</FileNumber>
-=======
-      <FileNumber>36</FileNumber>
->>>>>>> origin/JY901P陀螺仪
+      <FileNumber>33</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-<<<<<<< HEAD
       <PathWithFileName>..\USER\Inc\led_ops.h</PathWithFileName>
       <FilenameWithoutPath>led_ops.h</FilenameWithoutPath>
-=======
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>2</GroupNumber>
+      <FileNumber>34</FileNumber>
+      <FileType>5</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
       <PathWithFileName>..\USER\Inc\imu.h</PathWithFileName>
       <FilenameWithoutPath>imu.h</FilenameWithoutPath>
->>>>>>> origin/JY901P陀螺仪
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -733,11 +697,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>35</FileNumber>
-=======
-      <FileNumber>37</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -749,11 +709,7 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>36</FileNumber>
-=======
-      <FileNumber>38</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -765,11 +721,7 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>37</FileNumber>
-=======
-      <FileNumber>39</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -781,11 +733,7 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>38</FileNumber>
-=======
-      <FileNumber>40</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -797,11 +745,7 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>39</FileNumber>
-=======
-      <FileNumber>41</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -813,11 +757,7 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>40</FileNumber>
-=======
-      <FileNumber>42</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -829,11 +769,7 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>41</FileNumber>
-=======
-      <FileNumber>43</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -845,11 +781,7 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>42</FileNumber>
-=======
-      <FileNumber>44</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -861,11 +793,7 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>43</FileNumber>
-=======
-      <FileNumber>45</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -885,11 +813,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>44</FileNumber>
-=======
-      <FileNumber>46</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -901,11 +825,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>45</FileNumber>
-=======
-      <FileNumber>47</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -917,11 +837,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>46</FileNumber>
-=======
-      <FileNumber>48</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -933,11 +849,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>47</FileNumber>
-=======
-      <FileNumber>49</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -949,11 +861,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>48</FileNumber>
-=======
-      <FileNumber>50</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -965,11 +873,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>49</FileNumber>
-=======
-      <FileNumber>51</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -981,11 +885,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>50</FileNumber>
-=======
-      <FileNumber>52</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -997,11 +897,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>51</FileNumber>
-=======
-      <FileNumber>53</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1013,11 +909,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>52</FileNumber>
-=======
-      <FileNumber>54</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1029,11 +921,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>53</FileNumber>
-=======
-      <FileNumber>55</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1045,11 +933,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>54</FileNumber>
-=======
-      <FileNumber>56</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1061,11 +945,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>55</FileNumber>
-=======
-      <FileNumber>57</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1077,11 +957,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>56</FileNumber>
-=======
-      <FileNumber>58</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1093,11 +969,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>57</FileNumber>
-=======
-      <FileNumber>59</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1109,11 +981,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>58</FileNumber>
-=======
-      <FileNumber>60</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1125,11 +993,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>59</FileNumber>
-=======
-      <FileNumber>61</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1141,11 +1005,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>60</FileNumber>
-=======
-      <FileNumber>62</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1157,11 +1017,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>61</FileNumber>
-=======
-      <FileNumber>63</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1173,11 +1029,7 @@
     </File>
     <File>
       <GroupNumber>4</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>62</FileNumber>
-=======
-      <FileNumber>64</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1197,11 +1049,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>5</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>63</FileNumber>
-=======
-      <FileNumber>65</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1221,11 +1069,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>6</GroupNumber>
-<<<<<<< HEAD
       <FileNumber>64</FileNumber>
-=======
-      <FileNumber>66</FileNumber>
->>>>>>> origin/JY901P陀螺仪
       <FileType>2</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

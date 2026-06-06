@@ -17,11 +17,8 @@
 #include "math_utils.h"
 #include "heading_hold.h"
 #include "debug_uart.h"
-<<<<<<< HEAD
 #include "JY901P_Calibrate.h"
-=======
 #include "ht_10a_remote_control.h"
->>>>>>> origin/JY901P陀螺仪
 #include "jumper_t15_rc.h"
 #include "FSM.h"
 #include "t14.h"
