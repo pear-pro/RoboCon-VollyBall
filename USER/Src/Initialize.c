@@ -13,7 +13,7 @@ void All_Init(){
 //    JY901P_Calibrate_Full();
 	   
        Set_dm_enable(&hcan1,0);
-
+        Set_dm_enable(&hcan1,1);
     for(int i=0;i<MotorCount;i++){
 			
         PID_Struct_Init(&C620[i].Speed_pid, 
@@ -53,6 +53,10 @@ void All_Init(){
 	damiao[0].KD = 0.2f;
 	damiao[0].tor = -0.25f;//-1.65
 	damiao[0].angle=0.0f;
+		damiao[1].KP = 18.0f;//150.0f;
+	damiao[1].KD = 3.0f;
+	damiao[1].tor = -0.65f;//-1.65
+	damiao[1].angle=0.0f;
   C620_up_angle.target_angle = -3420.0f;
         PID_Struct_Init(&damiao[0].Angle_pid,
             15.0f,

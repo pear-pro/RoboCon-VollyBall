@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-// 存储陀螺仪9轴数�?
+// 存储陀螺仪9轴数�?
 JY901P_DataStruct gyro_data;
 /* USER CODE END PV */
 
@@ -112,13 +112,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_Delay(2000);
 
   while (1)
   {
 
     /* USER CODE END WHILE */
-
+    volatile int test = 10;
+	  test = *(int *)0x56785678;
     /* USER CODE BEGIN 3 */
     DebugTune_Task();
     sbus_remote_control_led_update();

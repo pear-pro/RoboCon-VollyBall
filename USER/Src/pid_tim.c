@@ -46,8 +46,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
              remote_control_serve_update();
              remote_control_hit_update();
          }
-         Set_dm_mit(&hcan1,0);
-		
+				// dm_circle_test();
+				 damiao[0].angle=-1.0;
+         Set_dm_mit(&hcan1,1);
+		   Set_dm_mit(&hcan1,0);
 //        JY901P_ReadAllData(&gyro_data);//读取陀螺仪数据
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // 假设控制角速度为0
         car_w=car_pid.out;
