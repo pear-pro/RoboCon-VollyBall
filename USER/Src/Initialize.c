@@ -33,7 +33,7 @@ void All_Init(){
 
         //·¢Çò3508
         PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
-            15.0f, 
+            10.5f, 
             0.0f,
             0.15f, 
             20000, 
