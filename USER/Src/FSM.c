@@ -142,7 +142,7 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_HIT:
-        C620_up_angle.target_angle = 170.0f;
+        C620_up_angle.target_angle = 1900.0f;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;

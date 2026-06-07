@@ -54,8 +54,8 @@ void All_Init(){
     PID_Struct_Init(&car_pid,
                     10.0f,0.0f, 0.0f,
                     1000, 1000, INIT);
-    PID_Struct_Init(&C620_angle.Speed_pid, 10.0f, 0.3f, 0.0f, 10000, 16000, INIT);
-		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.02f, 20000, 16000, INIT);
+    PID_Struct_Init(&C620_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);
+		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
 		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
     int16_t Z_zeropoint=gyro_data.Angle_Z;    
 }

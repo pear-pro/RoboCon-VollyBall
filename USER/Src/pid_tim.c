@@ -93,6 +93,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         Set_dm_mit(&hcan1,0);
         Set_dm_mit(&hcan1,1);
         Set_dm_mit(&hcan1,2);
+		up_angle_control();
     }	
 	
     }

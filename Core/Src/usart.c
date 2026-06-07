@@ -19,7 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
-
+#include <stdio.h>
 /* USER CODE BEGIN 0 */
 	DMA_HandleTypeDef hdma_usart1_rx;
 /* USER CODE END 0 */
@@ -248,5 +248,42 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+#ifdef __CC_ARM
+#pragma import(__use_no_semihosting) //关闭半主机
+#endif
+//struct __FILE
+//{
+//	int handle;
+//};
 
+//FILE __stdout;
+void _sys_exit(int x)
+{
+    (void)x;
+}
+//重定义fputc函数
+int fputc(int ch, FILE *f)
+{
+    uint32_t timeout = 1000000U;
+
+    (void)f;
+    while (((USART6->SR & USART_SR_TXE) == 0U) && (timeout > 0U))
+    {
+        timeout--;
+    }
+    if (timeout == 0U)
+    {
+        return ch;
+    }
+
+    USART6->DR = (uint8_t)ch;
+
+    timeout = 1000000U;
+    while (((USART6->SR & USART_SR_TC) == 0U) && (timeout > 0U))
+    {
+        timeout--;
+    }
+
+    return ch;
+}
 /* USER CODE END 1 */
