@@ -229,7 +229,7 @@ static void tune_process_command(char *line)
         {
             ops_set_limit((int32_t)f[6], (int32_t)f[7]);
         }
-        tune_send_status("OKP");
+        tune_send_text("OKP\r\n");
     }
     else if (strcmp(cmd, "LIMIT") == 0)
     {
@@ -239,7 +239,7 @@ static void tune_process_command(char *line)
             return;
         }
         ops_set_limit((int32_t)f[0], (int32_t)f[1]);
-        tune_send_status("OKL");
+        tune_send_text("OKL\r\n");
     }
     else if (strcmp(cmd, "TARGET") == 0)
     {
@@ -250,7 +250,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_target_motor(f[0]);
-        tune_send_status("OKT");
+        tune_send_text("OKT\r\n");
     }
     else if (strcmp(cmd, "GOTO") == 0)
     {
@@ -261,7 +261,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_target_output(f[0]);
-        tune_send_status("OKG");
+        tune_send_text("OKG\r\n");
     }
     else if (strcmp(cmd, "SPEED") == 0)
     {
@@ -272,19 +272,19 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_speed(f[0]);
-        tune_send_status("OKV");
+        tune_send_text("OKV\r\n");
     }
     else if (strcmp(cmd, "ZERO") == 0)
     {
         tune_control_active = 1U;
         ops_zero();
-        tune_send_status("OKZ");
+        tune_send_text("OKZ\r\n");
     }
     else if (strcmp(cmd, "STOP") == 0)
     {
         tune_control_active = 1U;
         ops_stop();
-        tune_send_status("OKS");
+        tune_send_text("OKS\r\n");
     }
     else if (strcmp(cmd, "LOG") == 0)
     {
@@ -333,7 +333,7 @@ static void tune_process_command(char *line)
             return;
         }
         tune_control_active = 1U;
-        tune_send_status("OKSEL");
+        tune_send_text("OKSEL\r\n");
     }
     else if (strcmp(cmd, "MODE") == 0)
     {
@@ -346,7 +346,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_mode(mode);
-        tune_send_status("OKMODE");
+        tune_send_text("OKMODE\r\n");
     }
     else if (strcmp(cmd, "HELP") == 0)
     {

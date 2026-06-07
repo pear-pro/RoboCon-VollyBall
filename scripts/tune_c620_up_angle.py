@@ -164,7 +164,10 @@ class Link:
         lines = self.command(command, wait=wait)
         if self.verbose:
             print(f"CMD {command!r} -> {lines[:12]}")
-        ok = any(line.startswith(prefix) or prefix in line for line in lines)
+        if prefix == "OK LOG":
+            ok = any(line == prefix or line.startswith(prefix + " ") for line in lines)
+        else:
+            ok = any(line == prefix for line in lines)
         if not ok:
             message = f"no {prefix} after {command!r}; got: {lines[:5]}"
             if required:

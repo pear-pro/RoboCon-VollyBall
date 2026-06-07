@@ -21,7 +21,6 @@
 #include "usart.h"
 #include <stdio.h>
 /* USER CODE BEGIN 0 */
-	DMA_HandleTypeDef hdma_usart1_rx;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -264,26 +263,8 @@ void _sys_exit(int x)
 //重定义fputc函数
 int fputc(int ch, FILE *f)
 {
-    uint32_t timeout = 1000000U;
-
     (void)f;
-    while (((USART6->SR & USART_SR_TXE) == 0U) && (timeout > 0U))
-    {
-        timeout--;
-    }
-    if (timeout == 0U)
-    {
-        return ch;
-    }
-
-    USART6->DR = (uint8_t)ch;
-
-    timeout = 1000000U;
-    while (((USART6->SR & USART_SR_TC) == 0U) && (timeout > 0U))
-    {
-        timeout--;
-    }
-
+    HAL_UART_Transmit(&huart6, (uint8_t *)&ch, 1, 10);
     return ch;
 }
 /* USER CODE END 1 */
