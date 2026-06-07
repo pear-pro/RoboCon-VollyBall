@@ -345,6 +345,16 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
 
 }
 
+void Pump_On(void)
+{
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,GPIO_PIN_SET);//PE5引脚 低电平触发
+}
+
+void Pump_Off(void)
+{
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,GPIO_PIN_RESET);
+}
+
 
 static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctrl_t *sbus_ctrl)
 {
@@ -432,11 +442,13 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         // SA 三档选择击球角度预设
        if (KEY_SWA_UP & sbus_ctrl->key_flag)
        {
-           hit_set_preset(0);
+           //hit_set_preset(0);
+		   Pump_Off();
        }
        else if (KEY_SWA_DOWN & sbus_ctrl->key_flag)
        {
-           hit_set_preset(1);
+           //hit_set_preset(1);
+		   Pump_On();
        }
 
        // SF 按下击球，松手回零

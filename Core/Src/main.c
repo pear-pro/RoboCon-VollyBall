@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-// 存储陀螺仪9轴数�?
+// 存储陀螺仪9轴数�?
 JY901P_DataStruct gyro_data;
 /* USER CODE END PV */
 
