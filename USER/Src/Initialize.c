@@ -14,10 +14,10 @@ void All_Init(){
 
     for(int i=0;i<MotorCount;i++){
 			
-        PID_Struct_Init(&C620[i].Speed_pid, 
+        PID_Struct_Init(&C620[i].Speed_pid,   
             2.0f, 
             0.3f,
-            0.0f, 
+            0.75f, 
             10000, 
             16000,
             INIT);
