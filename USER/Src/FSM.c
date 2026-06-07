@@ -19,10 +19,12 @@ static uint8_t hit_preset_index = 0;
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
-    {40.0f  * SCALE, 40.0f  * SCALE, 40.0f  * SCALE},
+    {-65.0f  * SCALE,-65.0f  * SCALE, 65.0f  * SCALE},
     {25.0f * SCALE, 25.0f * SCALE, 25.0f * SCALE},
     {15.0f * SCALE, 15.0f * SCALE, 15.0f * SCALE},
 };
+
+static const float hit_angle_reset[HIT_MOTOR_COUNT] = {-3.0f * SCALE,-3.0f * SCALE,3.0f * SCALE}; 
 
 //限幅函数，限制输出在[-limit, limit]范围内
 static int16_t limit(int32_t value, int16_t limit)
@@ -170,12 +172,17 @@ void remote_control_hit_update(void)
     case HIT_RETURN:
         for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            C620_hit_angle[i].target_angle = 0.0f;
+            C620_hit_angle[i].target_angle = hit_angle_reset[i];
         }
-        if (hit_all_near(0.0f, HIT_RETURN_DONE_DEG))
+
+				for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            hit_stage = HIT_IDLE;
-        }
+        if (hit_all_near(hit_angle_reset[i], HIT_RETURN_DONE_DEG))
+					{
+							hit_stage = HIT_IDLE;
+					}
+			  }
+				
         break;
 
     case HIT_IDLE:
