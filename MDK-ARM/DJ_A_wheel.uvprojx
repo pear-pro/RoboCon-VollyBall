@@ -415,6 +415,7 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Src\debug_uart.c</FilePath>
             </File>
+
             <File>
               <FileName>JY901P_Calibrate.c</FileName>
               <FileType>1</FileType>
@@ -519,6 +520,11 @@
               <FileName>motor_can.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\motor_can.h</FilePath>
+            </File>
+            <File>
+              <FileName>mech_limit_pid_debug.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\mech_limit_pid_debug.h</FilePath>
             </File>
             <File>
               <FileName>pg_led.h</FileName>

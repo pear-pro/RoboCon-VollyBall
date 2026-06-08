@@ -101,7 +101,22 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
         else
         {
-            hit_angle_control();
+					
+					for(int i=0;i<MotorCount;i++)
+         {
+					 if(C620_hit_angle[0].totalAngle<-60)C620_hit_angle[0].Speed_pid.set = 0;
+                     if(C620_hit_angle[1].totalAngle<-60)C620_hit_angle[1].Speed_pid.set = 0;
+                     if(C620_hit_angle[2].totalAngle<+60)C620_hit_angle[2].Speed_pid.set = 0;
+		 	      pid_calc(&C620_hit_angle[i].Speed_pid,C620_hit_angle[i].Speed_pid.get,C620_hit_angle[i].Speed_pid.set);
+            voltages[i]=(int16_t)C620_hit_angle[i].Speed_pid.out;
+         }
+						Set_voltage(&hcan1,voltages);
+				 float num[] = {
+					 C620_hit_angle[0].Speed_pid.set,
+					 C620_hit_angle[0].Speed_pid.get
+				 };
+				 Vofa_JustFloat(num, 2);
+            //hit_angle_control();
         }
     }	
 	

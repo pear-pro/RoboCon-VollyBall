@@ -409,45 +409,16 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-//	if(hcan==&hcan1)
-//	{
-//		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-//         uint8_t motor_id=can1RxData[0] & 0x0F; //电机ID在第一个字节的低4位
-//		if (motor_id>=0 && motor_id < MotorCount)
-//		{
-//			dm_motor_fbdata(&damiao[motor_id], can1RxData);
-//		}
-//	}
-    if(hcan==&hcan2) //底盘加角度3508
-		{
-
-			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-			for(int i=0;i<MotorCount;i++)
+	if(hcan==&hcan1)
+	{
+		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+        for(uint8_t i=0;i<3;i++)
 			{
-				if(can2RxMsg.StdId==0x201+i){
-					C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-					C620[i].Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
-					C620[i].Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
-					C620[i].Rxmsg.Temp=can2RxData[6];
-					C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
-					flag=1;
-				}
-			}
-			//俯仰角3508
-				if(can2RxMsg.StdId==0x205){
-					C620_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-					C620_angle.Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
-					C620_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
-					C620_angle.Rxmsg.Temp=can2RxData[6];
-					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
-				}		
-			for(uint8_t i=0;i<3;i++)
-			{
-				if(can2RxMsg.StdId==0x206+i){
-					C620_hit_angle[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-					C620_hit_angle[i].Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
-					C620_hit_angle[i].Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
-					C620_hit_angle[i].Rxmsg.Temp=can2RxData[6];
+				if(can1RxMsg.StdId==0x206+i){
+					C620_hit_angle[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
+					C620_hit_angle[i].Rxmsg.Speed= dji_motor_decode_int16(can1RxData[2], can1RxData[3]);
+					C620_hit_angle[i].Rxmsg.Torque= dji_motor_decode_int16(can1RxData[4], can1RxData[5]);
+					C620_hit_angle[i].Rxmsg.Temp=can1RxData[6];
 					C620_hit_angle[i].currentRead=C620_hit_angle[i].Rxmsg.Angle;
 					C620_hit_angle[i].Speed_pid.get=C620_hit_angle[i].Rxmsg.Speed;
 					if(C620_hit_angle[i].FirstEntre==0)
@@ -476,5 +447,30 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				//Vofa_JustFloat(&C620_hit_angle[i].Angle_pid.set, 1);
 				}
 			}
+	}
+    if(hcan==&hcan2) //底盘加角度3508
+		{
+
+			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+			for(int i=0;i<MotorCount;i++)
+			{
+				if(can2RxMsg.StdId==0x201+i){
+					C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C620[i].Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
+					C620[i].Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
+					C620[i].Rxmsg.Temp=can2RxData[6];
+					C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+					flag=1;
+				}
+			}
+			//俯仰角3508
+				if(can2RxMsg.StdId==0x205){
+					C620_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C620_angle.Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
+					C620_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
+					C620_angle.Rxmsg.Temp=can2RxData[6];
+					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
+				}		
+			
 				}
 			}
