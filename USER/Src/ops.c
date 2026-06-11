@@ -25,8 +25,8 @@ static void ops_set_pitch_output(int16_t output)
 static void ops_set_hit_output(int16_t output)
 {
     int16_t cmd[3] = {0};
-    cmd[0] = output;
-    cmd[1] = output;
+    cmd[0] = -output;
+    cmd[1] = -output;
     cmd[2] = output;
     Set_voltage_hit(&hcan2, cmd);
 }

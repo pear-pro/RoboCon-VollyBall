@@ -52,40 +52,22 @@ void All_Init(){
             300,
             INIT);
 
-           //击球3508
-             PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
-           10.5f, //10.5  13
-           0.0f,
-           0.15f,  //.15
-           30000, 
-           16000,
-           INIT);
-       PID_Struct_Init(&C620_hit_angle[i].Angle_pid,
-           7.0f, //7.0  9
-           0.0f,
-           0.02f, //0.02
-           30000,
-           16000,
-           INIT);
-         //  
-
-//            //锟斤拷锟斤拷3508
-//              PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
-//            10.5f, 
-//            0.0f,
-//            0.15f, 
-//            30000, 
-//            16000,
-//            INIT);
-//        PID_Struct_Init(&C620_hit_angle[i].Angle_pid,
-//            7.0f,
-//            0.0f,
-//            0.02f,
-//            30000,
-//            16000,
-//            INIT);
-//          //  
-
+        //����3508
+        PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
+            10.5f, 
+            0.0f,
+            0.15f, 
+            20000, 
+            16000,
+            INIT);
+        PID_Struct_Init(&C620_hit_angle[i].Angle_pid,
+            7.0f,
+            0.0f,
+            0.02f,
+            30000,
+            16000,
+            INIT);
+          //  
 
     }
 	damiao[0].KP = 150.0f;//150.0f;

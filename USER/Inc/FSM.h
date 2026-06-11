@@ -6,7 +6,8 @@
 #define SCALE 19.0f
 #define HIT_MOTOR_COUNT 3U
 #define HIT_OUTPUT_LIMIT 20000
-#define HIT_RETURN_DONE_DEG 20.0f //20/19 小于1.05°认为回零
+#define HIT_RETURN_DONE_DEG 20.0f //20/19 灏忎簬1.05璁や负褰掗浂
+#define HIT_RETURN_STEP     (0.15f * SCALE) // 姣忔鏇存柊鍥炲綊瑙掑害姝ラ暱(瑙掑害鍗曚綅),瓒婂皬鍥炲綊瓒婃參
 
 #define SERVE_LIFT_TICKS        (15U)
 #define SERVE_RETURN_TICKS      (36U)

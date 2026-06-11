@@ -5,35 +5,34 @@
 #include "pid.h"
 #include <stdint.h>
 
-//ÉùÃ÷½á¹¹Ìå¶ÔÏó
+//ç”µæœºç»“æ„ä½“å˜é‡
 extern motor_info_t C620_up_angle;
 extern motor_info_t C620_hit_angle[HIT_MOTOR_COUNT];
-//·¢Çò×´Ì¬»úÏà¹Ø±äÁ¿
+//å‘çƒçŠ¶æ€æœºç›¸å…³å˜é‡
 static volatile uint8_t serve_active = 0;
 static volatile uint8_t serve_armed = 1;
 static volatile uint16_t serve_tick = 0;
 static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
-//»÷Çò×´Ì¬»úÏà¹Ø±äÁ¿
+//å‡»çƒçŠ¶æ€æœºç›¸å…³å˜é‡
 static volatile hit_state_t hit_stage = HIT_IDLE;
 static uint8_t hit_preset_index = 0;
 
 
-#define hit0offset 15.0f //Ô¤ÏÈ¸ø0ºÅ¼ÓÆ«ÖÃ£¬Ä¿²â20¡ã
+#define hit0offset 15.0f //é¢„å…ˆç»™0å·åŠ åç½®ï¼Œç›®æµ‹20Â°
 
-//×¢Òâ1ºÅ½Ç¶È¸ø¸ºµÄ²ÅÏòÉÏ
+//æ³¨æ„1å·è§’åº¦ç»™è´Ÿçš„æ‰å‘ä¸Š
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
-    {(60.0f-10.0f) * SCALE, (-60.0f) * SCALE, (60.0f) * SCALE},
-    {(60.0f-hit0offset) * SCALE, (-60.0f+hit0offset) * SCALE,(60.0f-hit0offset) * SCALE},
-    {(40.0f-hit0offset) * SCALE, (-40.0f+hit0offset) * SCALE, (40.0f-hit0offset)* SCALE},
+    {-65.0f  * SCALE,-65.0f  * SCALE, 65.0f  * SCALE},
+    {-25.0f * SCALE, -25.0f * SCALE, 25.0f * SCALE},
+    {-15.0f * SCALE, -15.0f * SCALE, 15.0f * SCALE},
 };
 
-static const float hit_angle_return[HIT_MOTOR_COUNT]=
-{
-  0,0,0
-};
+static const float hit_angle_reset[HIT_MOTOR_COUNT] = {-5.0f * SCALE,-5.0f * SCALE,5.0f * SCALE}; 
 
-//ÏŞ·ùº¯Êı£¬ÏŞÖÆÊä³öÔÚ[-limit, limit]·¶Î§ÄÚ
+static const float hit_angle_reset[HIT_MOTOR_COUNT] = {-5.0f * SCALE,-5.0f * SCALE,5.0f * SCALE}; 
+
+//é™å¹…å‡½æ•°ï¼šå°† value é™åˆ¶åœ¨ [-limit, limit] èŒƒå›´å†…
 static int16_t limit(int32_t value, int16_t limit)
 {
     if (value > limit)
@@ -47,9 +46,33 @@ static int16_t limit(int32_t value, int16_t limit)
     return (int16_t)value;
 }
 
-//ÅĞ¶ÏËùÓĞ»÷Çòµç»úÊÇ·ñ¶¼ÔÚÄ¿±ê½Ç¶È¸½½ü
-/*Ö»ÒªÓĞÒ»¸ö»¹Ã»»Øµ½ãĞÖµ·¶Î§ÄÚ£¬¾Í·µ»Ø 0£»Èı¸ö¶¼½Ó½ü 0£¬²Å·µ»Ø 1£¬È»ºó×´Ì¬»ú½øÈë HIT_IDLE */
-static uint8_t hit_all_near(const float *arr, float threshold)
+// å°† target_angle é€æ­¥é€¼è¿‘ç›®æ ‡è§’åº¦ (æ¯æ¬¡æŒªåŠ¨ step_size)
+// ç›®æ ‡ç¼“æ…¢å˜åŒ–ï¼ŒPID è‡ªç„¶è·Ÿè¿›ï¼Œå›è½è½¨è¿¹æ›´å¹³æ»‘
+// è¿”å›å€¼: 1 = å·²åˆ°è¾¾ç›®æ ‡, 0 = æ­£åœ¨è°ƒèŠ‚
+static uint8_t move_to_angle_smooth(motor_info_t *motor, float target, float step_size)
+{
+    float diff = target - motor->target_angle;
+
+    if (diff > step_size)
+    {
+        motor->target_angle += step_size;
+        return 0;
+    }
+    else if (diff < -step_size)
+    {
+        motor->target_angle -= step_size;
+        return 0;
+    }
+    else
+    {
+        motor->target_angle = target;
+        return 1;
+    }
+}
+
+//åˆ¤æ–­ä¸‰ä¸ªç”µæœºæ˜¯å¦åœ¨ç›®æ ‡è§’åº¦é™„è¿‘
+/*åªè¦æœ‰ä¸€ä¸ªæ²¡å›åˆ°æ•°å€¼èŒƒå›´å†…ï¼Œå°±è¿”å› 0ï¼›å…¨éƒ¨æ¥è¿‘ 0 æ‰è¿”å› 1ï¼Œç„¶åçŠ¶æ€æœºè¿›å…¥ HIT_IDLE */
+static uint8_t hit_all_near(float target, float threshold)
 {
     for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
     {
@@ -88,7 +111,7 @@ uint8_t serve_is_active(void)
     return serve_active;
 }
 
-//¸ù¾İÔ¤ÉèË÷ÒıÉèÖÃ¶ÔÓ¦µÄÄ¿±ê½Ç¶È
+//è®¾ç½®é¢„è®¾è§’åº¦ï¼šè®¾ç½®å¯¹åº”çš„ç›®æ ‡è§’åº¦
 void hit_set_preset(uint8_t preset)
 {
     if (preset >= HIT_MOTOR_COUNT)
@@ -98,19 +121,19 @@ void hit_set_preset(uint8_t preset)
     hit_preset_index = preset;
 }
 
-//Íâ²¿µ÷ÓÃ£¬´¥·¢»÷Çò¶¯×÷
+//å¤–éƒ¨è°ƒç”¨ï¼šå‡»çƒæŒ‰ä¸‹
 void hit_request_press(void)
 {
     hit_stage = HIT_PUT_ANGLE;
 }
 
-//Íâ²¿µ÷ÓÃ£¬´¥·¢»÷Çò»ØÁã
+//å¤–éƒ¨è°ƒç”¨ï¼šå‡»çƒå¤ä½é‡Šæ”¾
 void hit_request_release(void)
 {
     hit_stage = HIT_RETURN;
 }
 
-//ÅĞ¶Ï»÷Çò×´Ì¬»úÊÇ·ñ´¦ÓÚ»î¶¯×´Ì¬
+//åˆ¤æ–­å‡»çƒçŠ¶æ€æ˜¯å¦åœ¨æ´»åŠ¨çŠ¶æ€
 uint8_t hit_is_active(void)
 {
     return hit_stage != HIT_IDLE;
@@ -177,15 +200,21 @@ void remote_control_hit_update(void)
         break;
 
     case HIT_RETURN:
+    {
+        uint8_t all_done = 1;
         for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            C620_hit_angle[i].target_angle =hit_angle_return[i];
+            if (!move_to_angle_smooth(&C620_hit_angle[i], hit_angle_reset[i], HIT_RETURN_STEP))
+            {
+                all_done = 0;
+            }
         }
-        if (hit_all_near(hit_angle_return, HIT_RETURN_DONE_DEG))
+        if (all_done)
         {
             hit_stage = HIT_IDLE;
         }
         break;
+    }
 
     case HIT_IDLE:
     default:
@@ -193,7 +222,7 @@ void remote_control_hit_update(void)
     }
 }
 
-void hit_angle_control(void)    //ÔÚPID¶¨Ê±Æ÷ÖĞ±» remote_control_hit_update µ÷ÓÃ£¬³ÖĞø¿ØÖÆ»÷Çòµç»ú½Ç¶È£¬Ö±µ½»ØÁãÍê³É
+void hit_angle_control(void)    //åœ¨PIDå®šæ—¶å™¨ä¸­è¢« remote_control_hit_update è°ƒç”¨ï¼ŒæŒç»­æ§åˆ¶å‡»çƒç”µæœºè§’åº¦ï¼Œç›´åˆ°å›é›¶å®Œæˆ
 {
     int16_t voltage[HIT_MOTOR_COUNT] = {0};
 
