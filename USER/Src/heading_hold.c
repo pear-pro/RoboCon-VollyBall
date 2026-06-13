@@ -1,9 +1,9 @@
 #include "heading_hold.h"
 #include "includes.h"
 
-#define HEADING_HOLD_KP                 7.0f
+#define HEADING_HOLD_KP                 1.0f
 #define HEADING_HOLD_KI                 0.0f
-#define HEADING_HOLD_KD                 2.5f
+#define HEADING_HOLD_KD                 2.0f
 #define HEADING_HOLD_MAX_WZ             600.0f
 #define HEADING_HOLD_INTEGRAL_LIMIT     200.0f
 #define HEADING_HOLD_ERROR_DEADBAND_DEG 1.0f
