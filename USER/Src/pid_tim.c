@@ -31,6 +31,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     static int16_t voltages[4];
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
+        /*uart8_test*/
+        g_uart8_timTick++;
+        if (g_uart8_timTick >= 20)  // 每 100ms 触发一次定时发送
+        {
+            g_uart8_timTick = 0;
+            g_uart8_reportflag = 1;  // 设置定时发送标志，在 UART8_Process 中检查并发送数据
+        }
+        /*uart8_test*/
+
 			 //damiao0_angle_update();
 		 // 遥控超过 150ms 未更新时，进入底盘与发球机构安全态
 //		 remote_control_watchdog_update();

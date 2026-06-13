@@ -22,6 +22,7 @@ set(MX_Application_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/gpio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/can.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/dma.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/tim.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/usart.c
@@ -30,7 +31,6 @@ set(MX_Application_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/sysmem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/syscalls.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../startup_stm32f427xx.s
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/dma.c
 )
 
 # STM32 HAL/LL Drivers

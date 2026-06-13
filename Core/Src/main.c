@@ -100,8 +100,9 @@ int main(void)
   MX_CAN2_Init();
   MX_TIM14_Init();
   MX_USART6_UART_Init();
-//  MX_I2C2_Init();
+  MX_I2C2_Init();
   MX_UART7_Init();
+  MX_UART8_Init();
   /* USER CODE BEGIN 2 */
   
 
@@ -118,11 +119,11 @@ int main(void)
 	
 
     /* USER CODE END WHILE */
-    // volatile int test = 10;
-	  // test = *(int *)0x56785678;
+
     /* USER CODE BEGIN 3 */
     HeadingHold_Task();
     DebugTune_Task();
+    UART8_Process();
     sbus_remote_control_led_update();
   }
   /* USER CODE END 3 */

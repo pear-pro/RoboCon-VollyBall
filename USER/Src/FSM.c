@@ -30,8 +30,6 @@ static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 
 static const float hit_angle_reset[HIT_MOTOR_COUNT] = {-5.0f * SCALE,-5.0f * SCALE,5.0f * SCALE}; 
 
-static const float hit_angle_reset[HIT_MOTOR_COUNT] = {-5.0f * SCALE,-5.0f * SCALE,5.0f * SCALE}; 
-
 //限幅函数：将 value 限制在 [-limit, limit] 范围内
 static int16_t limit(int32_t value, int16_t limit)
 {
@@ -76,7 +74,7 @@ static uint8_t hit_all_near(float target, float threshold)
 {
     for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
     {
-        float err = C620_hit_angle[i].Angle_pid.get - arr[i];
+        float err = C620_hit_angle[i].Angle_pid.get - hit_angle_reset[i];
         if (err < 0.0f)
         {
             err = -err;

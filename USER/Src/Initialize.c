@@ -9,7 +9,11 @@ void All_Init(){
     can1_filter_init();
     can2_fliter_init();
     sbus_remote_control_init();
-	   
+    
+    /*uart8_test*/
+    UART8_Init();
+    /*uart8_test*/
+	
        Set_dm_enable(&hcan1,0);
 
     PID_Struct_Init(&C620[0].Speed_pid,    //rr

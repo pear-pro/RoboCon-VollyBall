@@ -59,6 +59,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/USER/Src/ops.c
     ${CMAKE_SOURCE_DIR}/USER/Src/t14.c
     ${CMAKE_SOURCE_DIR}/USER/Src/imu.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/UART_Protocol.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/jumper_t15_rc.c
+    ${CMAKE_SOURCE_DIR}/USER/Src/UART8.c
 )
 
 # Add include paths
