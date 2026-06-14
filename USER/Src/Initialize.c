@@ -49,9 +49,9 @@ void All_Init(){
           //  
 
     }
-		C620_hit_angle[0].target_angle = -15.0f * SCALE;
-		C620_hit_angle[1].target_angle = -15.0f * SCALE;
-		C620_hit_angle[2].target_angle = 15.0f * SCALE;
+		C620_hit_angle[0].target_angle = -10.0f * SCALE;
+		C620_hit_angle[1].target_angle = -10.0f * SCALE;
+		C620_hit_angle[2].target_angle = 10.0f * SCALE;
 	damiao[0].KP = 150.0f;//150.0f;
 	damiao[0].KD = 0.2f;
 	damiao[0].tor = -0.25f;//-1.65
