@@ -7,7 +7,7 @@
 #define HIT_MOTOR_COUNT 3U
 #define HIT_OUTPUT_LIMIT 20000
 #define HIT_RETURN_DONE_DEG 20.0f //20/19 小于1.05认为归零
-#define HIT_RETURN_STEP     (0.15f * SCALE) // 每次更新回归角度步长(角度单位),越小回归越慢
+#define HIT_RETURN_STEP     (0.25f * SCALE) // 每次更新回归角度步长(角度单位),越小回归越慢
 
 #define SERVE_LIFT_TICKS        (15U)
 #define SERVE_RETURN_TICKS      (36U)

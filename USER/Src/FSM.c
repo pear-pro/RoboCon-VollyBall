@@ -24,7 +24,7 @@ static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
     {-15.0f * SCALE, -15.0f * SCALE, 15.0f * SCALE},
 };
 
-static const float hit_angle_reset[HIT_MOTOR_COUNT] = {-5.0f * SCALE,-5.0f * SCALE,5.0f * SCALE}; 
+static const float hit_angle_reset[HIT_MOTOR_COUNT] = {-10.0f * SCALE,-10.0f * SCALE,10.0f * SCALE}; 
 
 //限幅函数：将 value 限制在 [-limit, limit] 范围内
 static int16_t limit(int32_t value, int16_t limit)
