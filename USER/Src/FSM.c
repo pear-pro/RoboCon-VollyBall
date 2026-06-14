@@ -5,20 +5,23 @@
 #include "motor_can.h"
 #include "pid.h"
 #include <stdint.h>
+#include "t14.h"
+#include "jumper_t15_rc.h"
 
-//ÉùÃ÷½á¹¹Ìå¶ÔÏó
+//ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½
 extern motor_info_t damiao[HIT_MOTOR_COUNT];
 extern motor_info_t C620_up_angle;
 extern motor_info_t C620_hit_angle[HIT_MOTOR_COUNT];
-//·¢Çò×´Ì¬»úÏà¹Ø±äÁ¿
+//ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ï¿½ï¿½
 static volatile uint8_t serve_active = 0;
 static volatile uint8_t serve_armed = 1;
 static volatile uint16_t serve_tick = 0;
 static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
-//»÷Çò×´Ì¬»úÏà¹Ø±äÁ¿
+//ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ï¿½ï¿½
 static volatile hit_state_t hit_stage = HIT_IDLE;
 static uint8_t hit_preset_index = 0;
-
+double set_angle = -170.0f;
+volatile uint16_t count = 0;
 serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
@@ -32,7 +35,7 @@ static const float hit_angle_return[HIT_MOTOR_COUNT] =
     0,0,0
 };
 
-//ÏÞ·ùº¯Êý£¬ÏÞÖÆÊä³öÔÚ[-limit, limit]·¶Î§ÄÚ
+//ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[-limit, limit]ï¿½ï¿½Î§ï¿½ï¿½
 static int16_t limit(int32_t value, int16_t limit)
 {
     if (value > limit)
@@ -46,8 +49,8 @@ static int16_t limit(int32_t value, int16_t limit)
     return (int16_t)value;
 }
 
-//ÅÐ¶ÏËùÓÐ»÷Çòµç»úÊÇ·ñ¶¼ÔÚÄ¿±ê½Ç¶È¸½½ü
-/*Ö»ÒªÓÐÒ»¸ö»¹Ã»»Øµ½ãÐÖµ·¶Î§ÄÚ£¬¾Í·µ»Ø 0£»Èý¸ö¶¼½Ó½ü 0£¬²Å·µ»Ø 1£¬È»ºó×´Ì¬»ú½øÈë HIT_IDLE */
+//ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½Ç¶È¸ï¿½ï¿½ï¿½
+/*Ö»Òªï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Øµï¿½ï¿½ï¿½Öµï¿½ï¿½Î§ï¿½Ú£ï¿½ï¿½Í·ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ 0ï¿½ï¿½ï¿½Å·ï¿½ï¿½ï¿½ 1ï¿½ï¿½È»ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ HIT_IDLE */
 static uint8_t hit_all_near(float target, float threshold)
 {
     for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
@@ -87,7 +90,7 @@ uint8_t serve_is_active(void)
     return serve_active;
 }
 
-//¸ù¾ÝÔ¤ÉèË÷ÒýÉèÖÃ¶ÔÓ¦µÄÄ¿±ê½Ç¶È
+//ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ó¦ï¿½ï¿½Ä¿ï¿½ï¿½Ç¶ï¿½
 void hit_set_preset(uint8_t preset)
 {
     if (preset >= HIT_MOTOR_COUNT)
@@ -97,19 +100,19 @@ void hit_set_preset(uint8_t preset)
     hit_preset_index = preset;
 }
 
-//Íâ²¿µ÷ÓÃ£¬´¥·¢»÷Çò¶¯×÷
+//ï¿½â²¿ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void hit_request_press(void)
 {
     hit_stage = HIT_PUT_ANGLE;
 }
 
-//Íâ²¿µ÷ÓÃ£¬´¥·¢»÷Çò»ØÁã
+//ï¿½â²¿ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void hit_request_release(void)
 {
     hit_stage = HIT_RETURN;
 }
 
-//ÅÐ¶Ï»÷Çò×´Ì¬»úÊÇ·ñ´¦ÓÚ»î¶¯×´Ì¬
+//ï¿½Ð¶Ï»ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ú»î¶¯×´Ì¬
 uint8_t hit_is_active(void)
 {
     return hit_stage != HIT_IDLE;
@@ -142,7 +145,8 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_HIT:
-        C620_up_angle.target_angle = 1900.0f;
+        C620_up_angle.target_angle = (set_angle + 360 * count) * 19;
+		Pump_On();
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -152,7 +156,8 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_HIT_RETURN:
     default:
-        C620_up_angle.target_angle = 0.0f;
+        //C620_up_angle.target_angle = ;
+	    Pump_Off();
         if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
         {
             serve_stage = SERVE_STAGE_IDLE;

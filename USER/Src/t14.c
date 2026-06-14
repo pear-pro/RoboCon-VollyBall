@@ -13,6 +13,8 @@ static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMA双缓�?
 
 SBUS_ctrl_t sbus_ctrl;
 
+uint8_t count_flag=0;
+
 void sbus_remote_control_init(void)//SBUS遥控器初始化
 {
     RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
@@ -403,29 +405,29 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         }
         
          // 离开下档后重新�?�填一次发球触发资�?
-        if (!(KEY_SWD_DOWN & sbus_ctrl->key_flag))
-		{
-			serve_arm();
-		}
+//        if (!(KEY_SWD_DOWN & sbus_ctrl->key_flag))
+//		{
+//			serve_arm();
+//		}
 
-        if (KEY_SWD_UP & sbus_ctrl -> key_flag)
-        {
-            // 上档：保留原�?角度电机控制
-            C620_up_angle.Speed_pid.set = 25000 * (sbus_ctrl->ch[3] / 800.0f);
-        }
-        else if (KEY_SWD_MID & sbus_ctrl -> key_flag)
-        {  
-           //
-        }
-        else
-        {
-           if(serve_mode == SERVE_MODE_ANGLE)
-            {
-                serve_request_start();
-            }
-            
-  
-        }
+//        if (KEY_SWD_UP & sbus_ctrl -> key_flag)
+//        {
+//            // 上档：保留原�?角度电机控制
+//            C620_up_angle.Speed_pid.set = 25000 * (sbus_ctrl->ch[3] / 800.0f);
+//        }
+//        else if (KEY_SWD_MID & sbus_ctrl -> key_flag)
+//        {  
+//           //
+//        }
+//        else
+//        {
+//           if(serve_mode == SERVE_MODE_ANGLE)
+//            {
+//                serve_request_start();
+//            }
+//            
+//  
+//        }
         
         if(serve_mode == SERVE_MODE_SPEED)
         {
@@ -443,12 +445,20 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        if (KEY_SWA_UP & sbus_ctrl->key_flag)
        {
            //hit_set_preset(0);
-		   Pump_Off();
+		  // Pump_Off();
+		   count_flag = 0;
+		   serve_arm();
        }
        else if (KEY_SWA_DOWN & sbus_ctrl->key_flag)
        {
            //hit_set_preset(1);
-		   Pump_On();
+		  //8 Pump_On();
+		   if(!count_flag)
+		   {
+			   count++;
+			   count_flag = 1;
+		   }
+		   serve_request_start();
        }
 
        // SF 按下击球，松手回零

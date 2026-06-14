@@ -10,7 +10,7 @@
 
 #define SERVE_LIFT_TICKS        (15U)
 #define SERVE_RETURN_TICKS      (36U)
-#define SERVE_HIT_TICKS         (20U)
+#define SERVE_HIT_TICKS         (100U)
 #define SERVE_HIT_RETURN_TICKS  (20U)
 
 typedef enum
@@ -51,5 +51,7 @@ void remote_control_hit_update(void);
 void remote_control_serve_update(void);
 void hit_angle_control(void);
 void up_angle_control(void);
+
+extern volatile uint16_t count;
 
 #endif

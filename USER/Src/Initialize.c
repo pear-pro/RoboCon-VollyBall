@@ -39,6 +39,7 @@ void All_Init(){
 	damiao[0].tor = -0.25f;//-1.65
 	damiao[0].angle=0.0f;
   C620_up_angle.target_angle = -3420.0f;
+	Pump_Off();
         PID_Struct_Init(&damiao[0].Angle_pid,
             15.0f,
             0.0f,
