@@ -350,7 +350,9 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        // car_x=apply_deadzone(car_x, DEADZONE);
        // car_y=apply_deadzone(car_y, DEADZONE);
        // car_w=apply_deadzone(car_w, DEADZONE);
+         // MecanumWheel_Move(car_x,car_y,car_w);
 
+/*-------------------Ò£¿ØÂß¼­µÄ´¦Àí-----------------------*/
        if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
        car_tarx = 0;
        }

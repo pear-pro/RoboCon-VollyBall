@@ -1,6 +1,7 @@
 #include "debug_uart.h"
 #include "ops.h"
 #include "usart.h"
+#include "imu.h"
 #include <stdlib.h>
 
 #define DEBUG_TUNE_LINE_MAX 128U
@@ -463,4 +464,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         tune_rx_feed_byte(tune_rx_dma_byte);
         tune_start_rx_dma();
     }
+    else if (huart->Instance == UART7)
+    {
+        IMU_UART_RxCpltCallback(huart);
+    }
 }
+
+
