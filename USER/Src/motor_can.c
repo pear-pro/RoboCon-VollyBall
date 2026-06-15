@@ -411,14 +411,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   CAN_RxHeaderTypeDef can2RxMsg;
 	if(hcan==&hcan1)
 	{
-		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-         uint8_t motor_id=can1RxData[0] & 0x0F; //电机ID在第一个字节的低4位
-		if (motor_id>=0 && motor_id < MotorCount)
-		{
-			dm_motor_fbdata(&damiao[motor_id], can1RxData);
-		}
+		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData); 
 					//俯仰角3508
-				if(can2RxMsg.StdId==0x205){
+				if(can1RxMsg.StdId==0x205){
 					C620_angle.Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
 					C620_angle.Rxmsg.Speed= dji_motor_decode_int16(can1RxData[2], can1RxData[3]);
 					C620_angle.Rxmsg.Torque= dji_motor_decode_int16(can1RxData[4], can1RxData[5]);
@@ -427,7 +422,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				}
 		for(uint8_t i=0;i<3;i++)
 	  {
-		  if(can2RxMsg.StdId==0x206+i){
+		  if(can1RxMsg.StdId==0x206+i){
 					C620_hit_angle[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
 					C620_hit_angle[i].Rxmsg.Speed= dji_motor_decode_int16(can1RxData[2], can1RxData[3]);
 					C620_hit_angle[i].Rxmsg.Torque= dji_motor_decode_int16(can1RxData[4], can1RxData[5]);

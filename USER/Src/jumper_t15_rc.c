@@ -402,10 +402,10 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
            serve_arm();
        }
 
-       if (KEY_SWB_DOWN & sbus_ctrl->key_flag)
+       if (KEY_SWD_DOWN & sbus_ctrl->key_flag)
        {
            // 上档：保留原有 C620 角度电机控制
-           C620_angle.Speed_pid.set = 25000 * (sbus_ctrl->ch[3] / 800.0f);
+           C620_angle.Speed_pid.set = 25000.0f;
        }
        else if (KEY_SWB_MID & sbus_ctrl->key_flag)
        {
