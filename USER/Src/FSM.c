@@ -230,5 +230,5 @@ void hit_angle_control(void)    //在PID定时器中被 remote_control_hit_update 调用
         voltage[i] = limit(output, HIT_OUTPUT_LIMIT);
     }
 
-    Set_voltage_hit(&hcan2, voltage);
+    Set_voltage_hit(&hcan1, voltage);
 }

@@ -61,12 +61,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
 //          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
 //          Set_voltage_angle(&hcan2,voltage_angle);
-       float num[]={
-				 imu.angle_deg.roll,
-				 imu.angle_deg.pitch,
-				 imu.angle_deg.yaw
-       };
-        Vofa_JustFloat(num, 3);
         Set_voltage(&hcan2,voltages);
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
@@ -87,14 +81,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if(htim == &htim14)  // 确认是PID定时器的更新中断
     {
         //调参模式下由自动调参工具接管控制逻辑，正常模式下执行击球角度控制
-//        if (DebugTune_IsActive())
-//        {
-//            ops_control();
-//        }
-//        else
-//        {
-//            hit_angle_control();
-//        }
+        if (DebugTune_IsActive())
+        {
+            ops_control();
+        }
+        else
+        {
+            hit_angle_control();
+        }
     }	
 	
     }

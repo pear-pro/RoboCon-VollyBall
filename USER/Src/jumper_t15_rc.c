@@ -353,19 +353,19 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
          // MecanumWheel_Move(car_x,car_y,car_w);
 
 /*-------------------Ò£¿ØÂß¼­µÄ´¦Àí-----------------------*/
-       if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
+       if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
        car_tarx = 0;
        }
        else {
-           car_tarx=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+           car_tarx=normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
            //car_x=low_pass(car_tarx, car_x, 0.25);
 
        }
-       if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
+       if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
            car_tary = 0;
        }
        else {
-           car_tary=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+           car_tary=-normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
            //car_y=low_pass(car_tary, car_y, 0.32);
        }
        car_tarw=-normalize_to_range(sbus_ctrl->ch[2], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
