@@ -10,7 +10,7 @@
       <TargetName>DJ_A_wheel</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6240000::V6.24::ARMCLANG</pCCUsed>
+      <pCCUsed>6210000::V6.21::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -420,16 +420,6 @@
               <FilePath>..\USER\Src\debug_uart.c</FilePath>
             </File>
             <File>
-              <FileName>JY901P_Calibrate.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\JY901P_Calibrate.c</FilePath>
-            </File>
-            <File>
-              <FileName>jy901p.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\jy901p.c</FilePath>
-            </File>
-            <File>
               <FileName>pg_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\pg_led.c</FilePath>
@@ -484,6 +474,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Src\imu.c</FilePath>
             </File>
+            <File>
+              <FileName>watch_dog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\watch_dog.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -513,16 +508,6 @@
               <FileName>Initialize.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\Initialize.h</FilePath>
-            </File>
-            <File>
-              <FileName>jy901p.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\jy901p.h</FilePath>
-            </File>
-            <File>
-              <FileName>JY901P_Calibrate.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\USER\Inc\JY901P_Calibrate.h</FilePath>
             </File>
             <File>
               <FileName>math_utils.h</FileName>

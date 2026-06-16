@@ -19,16 +19,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
+#include <stdio.h>
 
 /* USER CODE BEGIN 0 */
-	DMA_HandleTypeDef hdma_usart1_rx;
-/* USER CODE END 0 */
-
 UART_HandleTypeDef huart7;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart6;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart6_tx;
+DMA_HandleTypeDef hdma_usart6_rx;
+/* USER CODE END 0 */
 
 /* UART7 init function */
 void MX_UART7_Init(void)
@@ -240,6 +240,23 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     }
 
     __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart6_tx);
+    /* USART6_RX Init */
+    hdma_usart6_rx.Instance = DMA2_Stream1;
+    hdma_usart6_rx.Init.Channel = DMA_CHANNEL_5;
+    hdma_usart6_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_usart6_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart6_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart6_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart6_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart6_rx.Init.Mode = DMA_NORMAL;
+    hdma_usart6_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_usart6_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    if (HAL_DMA_Init(&hdma_usart6_rx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart6_rx);
 
     /* USART6 interrupt Init */
     HAL_NVIC_SetPriority(USART6_IRQn, 0, 0);
@@ -324,6 +341,48 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+// GCC去掉#pragma import，KEIL保留
 
+#ifdef __CC_ARM
+#pragma import(__use_no_semihosting) //关闭半主机
+#endif
+////标准库需要的支持函数
+//struct __FILE
+//{
+//	int handle;
+//};
+
+//FILE __stdout;
+//定义_sys_exit()以避免使用半主机模式
+// GCC删掉FILE结构体、__stdout定义
+void _sys_exit(int x)
+{
+    (void)x;
+}
+//重定义fputc函数
+int fputc(int ch, FILE *f)
+{
+    uint32_t timeout = 1000000U;
+
+    (void)f;
+    while (((USART6->SR & USART_SR_TXE) == 0U) && (timeout > 0U))
+    {
+        timeout--;
+    }
+    if (timeout == 0U)
+    {
+        return ch;
+    }
+
+    USART6->DR = (uint8_t)ch;
+
+    timeout = 1000000U;
+    while (((USART6->SR & USART_SR_TC) == 0U) && (timeout > 0U))
+    {
+        timeout--;
+    }
+
+    return ch;
+}
 /* USER CODE END 1 */
 

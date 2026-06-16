@@ -41,6 +41,6 @@ uint8_t hit_is_active(void);
 
 void remote_control_hit_update(void);
 void remote_control_serve_update(void);
-void hit_angle_control(void);
+void hit_angle_control(int16_t voltage[]);
 
 #endif

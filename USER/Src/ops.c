@@ -19,7 +19,7 @@ static void ops_set_up_output(int16_t output)
 static void ops_set_pitch_output(int16_t output)
 {
     int16_t cmd[1] = {output};
-    Set_voltage_angle(&hcan2, cmd);
+    Set_voltage_angle(&hcan1, cmd);
 }
 
 static void ops_set_hit_output(int16_t output)
@@ -28,7 +28,7 @@ static void ops_set_hit_output(int16_t output)
     cmd[0] = -output;
     cmd[1] = -output;
     cmd[2] = output;
-    Set_voltage_hit(&hcan2, cmd);
+    Set_voltage_hit(&hcan1, cmd);
 }
 
 static ops_control_t ops_targets[OPS_TARGET_MAX] =
@@ -235,5 +235,5 @@ void ops_control(void)
 
     ops_limit_output(&output, target->max_output);
     target->set_output(output);    
-  //  DebugTune_OnControlTick(output);  //自动调参工具接口，输出当前控制值
+    DebugTune_OnControlTick(output);  //自动调参工具接口，输出当前控制值
 }

@@ -5,7 +5,7 @@
 #include "pid.h"
 #include <stdint.h>
 
-//电机结构体变量
+//电机结构体变�?
 extern motor_info_t C620_up_angle;
 extern motor_info_t C620_hit_angle[HIT_MOTOR_COUNT];
 //发球状态机相关变量
@@ -26,7 +26,7 @@ static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 
 static const float hit_angle_reset[HIT_MOTOR_COUNT] = {-10.0f * SCALE,-10.0f * SCALE,10.0f * SCALE}; 
 
-//限幅函数：将 value 限制在 [-limit, limit] 范围内
+//限幅函数：将 value 限制�?[-limit, limit] 范围�?
 static int16_t limit(int32_t value, int16_t limit)
 {
     if (value > limit)
@@ -40,9 +40,9 @@ static int16_t limit(int32_t value, int16_t limit)
     return (int16_t)value;
 }
 
-// 将 target_angle 逐步逼近目标角度 (每次挪动 step_size)
+// �?target_angle 逐步逼近目标角度 (每次挪动 step_size)
 // 目标缓慢变化，PID 自然跟进，回落轨迹更平滑
-// 返回值: 1 = 已到达目标, 0 = 正在调节
+// 返回�? 1 = 已到达目�? 0 = 正在调节
 static uint8_t move_to_angle_smooth(motor_info_t *motor, float target, float step_size)
 {
     float diff = target - motor->target_angle;
@@ -64,8 +64,8 @@ static uint8_t move_to_angle_smooth(motor_info_t *motor, float target, float ste
     }
 }
 
-//判断三个电机是否在目标角度附近
-/*只要有一个没回到数值范围内，就返回 0；全部接近 0 才返回 1，然后状态机进入 HIT_IDLE */
+//判断三个电机是否在目标角度附�?
+/*只要有一个没回到数值范围内，就返回 0；全部接�?0 才返�?1，然后状态机进入 HIT_IDLE */
 static uint8_t hit_all_near(float target, float threshold)
 {
     for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
@@ -115,19 +115,19 @@ void hit_set_preset(uint8_t preset)
     hit_preset_index = preset;
 }
 
-//外部调用：击球按下
+//外部调用：击球按�?
 void hit_request_press(void)
 {
     hit_stage = HIT_PUT_ANGLE;
 }
 
-//外部调用：击球复位释放
+//外部调用：击球复位释�?
 void hit_request_release(void)
 {
     hit_stage = HIT_RETURN;
 }
 
-//判断击球状态是否在活动状态
+//判断击球状态是否在活动状�?
 uint8_t hit_is_active(void)
 {
     return hit_stage != HIT_IDLE;
@@ -216,10 +216,8 @@ void remote_control_hit_update(void)
     }
 }
 
-void hit_angle_control(void)    //��PID��ʱ���б� remote_control_hit_update ���ã��������ƻ������Ƕȣ�ֱ���������
+void hit_angle_control(int16_t voltage[])    //��PID��ʱ���б� remote_control_hit_update ���ã��������ƻ������Ƕȣ�ֱ���������
 {
-    int16_t voltage[HIT_MOTOR_COUNT] = {0};
-
     for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
     {
         int32_t output = PID_PROCESS_Double(&C620_hit_angle[i].Angle_pid,
@@ -229,6 +227,4 @@ void hit_angle_control(void)    //��PID��ʱ���б� remote_control_hit_update ����
                                             C620_hit_angle[i].Speed_pid.get);
         voltage[i] = limit(output, HIT_OUTPUT_LIMIT);
     }
-
-    Set_voltage_hit(&hcan1, voltage);
 }

@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "main.h"
 #include "FSM.h"
+#include "watch_dog.h"
 
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
@@ -95,6 +96,7 @@ void USART1_IRQHandlerCallBack(void)
            if(this_time_rx_len == RC_FRAME_LENGTH)
            {
                sbus_to_remote_control(sbus_rx_buffer[0], &sbus_ctrl);
+               remote_control_watchdog_feed();
            }
        }
        else
@@ -124,6 +126,7 @@ void USART1_IRQHandlerCallBack(void)
            {
                //处理遥控器数据
                sbus_to_remote_control(sbus_rx_buffer[1], &sbus_ctrl);
+               remote_control_watchdog_feed();
            }
        }
    }
@@ -338,6 +341,8 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
            sbus_ctrl->ch[i] = (int16_t)(sbus_ctrl->ch[i] - SBUS_CH_VALUE_OFFSET);
        }
       
+       remote_control_watchdog_feed();
+
        // 更新虚拟键位状态
        virtual_key_update(sbus_ctrl);
 

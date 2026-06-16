@@ -75,7 +75,10 @@ typedef struct
 
     IMU_Float3Axis_t acc_g;        /* 加速度，单�?g */
     IMU_Float3Axis_t gyro_dps;     /* 角速度，单�?°/s */
+    IMU_Float3Axis_t gyro_dps_fused;
+    IMU_Float3Axis_t gyro_bias_dps;
     IMU_Angle_t angle_deg;         /* 欧拉角，单位 ° */
+    IMU_Angle_t angle_fused_deg;
     IMU_Float3Axis_t mag;          /* 磁场，原始�?*/
     IMU_Quat_t quat;               /* 四元�?*/
 
@@ -91,6 +94,7 @@ void IMU_UART_Init(UART_HandleTypeDef *huart);
 void IMU_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
 void IMU_GetData(IMU_Data_t *data);
+void IMU_ResetFusion(void);
 uint32_t IMU_GetUpdateFlag(void);
 uint32_t IMU_GetAndClearUpdateFlag(void);
 

@@ -17,11 +17,12 @@
 *.htm
 *.lnp
 *.sct
-*.json
 *.idx
 *.uvgui.*
 *.uvguix.*
-
+*.json
+__pycache__/
+*.py[cod]
 
 # Object, binary and map files
 *.o

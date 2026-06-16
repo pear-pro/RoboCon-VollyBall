@@ -6,6 +6,7 @@
 
 #define DEBUG_TUNE_LINE_MAX 128U
 #define DEBUG_TUNE_TX_MAX 192U
+#define DEBUG_TUNE_TX_TIMEOUT_MS 50U
 
 typedef struct
 {
@@ -33,6 +34,41 @@ static volatile uint32_t tune_ms;
 static debug_tune_snapshot_t tune_snapshot;
 static uint8_t tune_rx_dma_byte;
 
+static HAL_StatusTypeDef tune_uart6_dma_send_blocking(uint8_t *data, uint16_t len, uint32_t timeout_ms)
+{
+    uint32_t start = HAL_GetTick();
+
+    if (len == 0U)
+    {
+        return HAL_OK;
+    }
+
+    while (huart6.gState != HAL_UART_STATE_READY)
+    {
+        if ((HAL_GetTick() - start) > timeout_ms)
+        {
+            return HAL_TIMEOUT;
+        }
+    }
+
+    if (HAL_UART_Transmit_DMA(&huart6, data, len) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    start = HAL_GetTick();
+    while (huart6.gState != HAL_UART_STATE_READY)
+    {
+        if ((HAL_GetTick() - start) > timeout_ms)
+        {
+            (void)HAL_UART_AbortTransmit(&huart6);
+            return HAL_TIMEOUT;
+        }
+    }
+
+    return HAL_OK;
+}
+
 void Vofa_JustFloat(float *_data, uint8_t _num)
 {
     uint8_t tempData[100];
@@ -42,7 +78,7 @@ void Vofa_JustFloat(float *_data, uint8_t _num)
     memcpy(&temp_copy, _data, sizeof(float) * _num);
     memcpy(tempData, (uint8_t *)&temp_copy, sizeof(temp_copy));
     memcpy(&tempData[_num * 4], &temp_end[0], 4);
-    HAL_UART_Transmit_DMA(&huart6, tempData, (_num + 1U) * 4U);
+    (void)tune_uart6_dma_send_blocking(tempData, (_num + 1U) * 4U, DEBUG_TUNE_TX_TIMEOUT_MS);
 }
 
 static int32_t tune_scale_float(float value, float scale)
@@ -53,7 +89,7 @@ static int32_t tune_scale_float(float value, float scale)
 
 static void tune_send_text(const char *text)
 {
-    HAL_UART_Transmit(&huart6, (uint8_t *)text, (uint16_t)strlen(text), 50U);
+    (void)tune_uart6_dma_send_blocking((uint8_t *)text, (uint16_t)strlen(text), DEBUG_TUNE_TX_TIMEOUT_MS);
 }
 
 static void tune_rx_feed_byte(uint8_t ch)
@@ -231,7 +267,7 @@ static void tune_process_command(char *line)
         {
             ops_set_limit((int32_t)f[6], (int32_t)f[7]);
         }
-        tune_send_status("OKP");
+        tune_send_text("OKP\r\n");
     }
     else if (strcmp(cmd, "LIMIT") == 0)
     {
@@ -241,7 +277,7 @@ static void tune_process_command(char *line)
             return;
         }
         ops_set_limit((int32_t)f[0], (int32_t)f[1]);
-        tune_send_status("OKL");
+        tune_send_text("OKL\r\n");
     }
     else if (strcmp(cmd, "TARGET") == 0)
     {
@@ -252,7 +288,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_target_motor(f[0]);
-        tune_send_status("OKT");
+        tune_send_text("OKT\r\n");
     }
     else if (strcmp(cmd, "GOTO") == 0)
     {
@@ -263,7 +299,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_target_output(f[0]);
-        tune_send_status("OKG");
+        tune_send_text("OKG\r\n");
     }
     else if (strcmp(cmd, "SPEED") == 0)
     {
@@ -274,19 +310,19 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_speed(f[0]);
-        tune_send_status("OKV");
+        tune_send_text("OKV\r\n");
     }
     else if (strcmp(cmd, "ZERO") == 0)
     {
         tune_control_active = 1U;
         ops_zero();
-        tune_send_status("OKZ");
+        tune_send_text("OKZ\r\n");
     }
     else if (strcmp(cmd, "STOP") == 0)
     {
         tune_control_active = 1U;
         ops_stop();
-        tune_send_status("OKS");
+        tune_send_text("OKS\r\n");
     }
     else if (strcmp(cmd, "LOG") == 0)
     {
@@ -335,7 +371,7 @@ static void tune_process_command(char *line)
             return;
         }
         tune_control_active = 1U;
-        tune_send_status("OKSEL");
+        tune_send_text("OKSEL\r\n");
     }
     else if (strcmp(cmd, "MODE") == 0)
     {
@@ -348,7 +384,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_mode(mode);
-        tune_send_status("OKMODE");
+        tune_send_text("OKMODE\r\n");
     }
     else if (strcmp(cmd, "HELP") == 0)
     {
@@ -469,5 +505,3 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         IMU_UART_RxCpltCallback(huart);
     }
 }
-
-

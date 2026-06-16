@@ -30,7 +30,7 @@ static float heading_hold_get_yaw_deg(void)
 {
     IMU_GetData(&imu);
 
-    return imu.angle_deg.yaw;
+    return imu.angle_fused_deg.yaw;
 }
 
 void HeadingHold_Init(void)

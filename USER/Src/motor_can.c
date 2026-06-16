@@ -108,7 +108,7 @@ void Set_voltage(CAN_HandleTypeDef* hcan,int16_t voltage[])
 }
 
 //忘记搞那个的了，应该是俯仰角
-void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
+void Set_Voltage_can1(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
 	uint32_t tx_mailbox;
   CAN_TxHeaderTypeDef canTxMsg;
@@ -117,48 +117,10 @@ void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
   canTxMsg.IDE   = CAN_ID_STD;//标准ID
   canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
   canTxMsg.DLC   = 8;//数据长度
-   canTxData[0]=(voltage[0]>>8)&0xff;
-   canTxData[1]=(voltage[0])&0xff;
-	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
-	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
-	{
-			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
-	}
-}
-
-//发球3508 id=6
-void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
-{
-	uint32_t tx_mailbox;
-  CAN_TxHeaderTypeDef canTxMsg;
-  uint8_t             canTxData[8] = {0};
-  canTxMsg.StdId = 0x1FF;
-  canTxMsg.IDE   = CAN_ID_STD;//标准ID
-  canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  canTxMsg.DLC   = 8;//数据长度
-   canTxData[2]=(voltage[0]>>8)&0xff;
-   canTxData[3]=(voltage[0])&0xff;
-	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
-	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
-	{
-			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
-	}
-}
-
-//击球3508  id=6,7,8
-void Set_voltage_hit(CAN_HandleTypeDef* hcan,int16_t voltage[])
-{
-	uint32_t tx_mailbox;
-  CAN_TxHeaderTypeDef canTxMsg;
-  uint8_t             canTxData[8] = {0};
-  canTxMsg.StdId = 0x1FF;
-  canTxMsg.IDE   = CAN_ID_STD;//标准ID
-  canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
-  canTxMsg.DLC   = 8;//数据长度
-  for(uint8_t i=1;i<4;i++)
+  for(uint8_t i=0;i<4;i++)
   {
-   canTxData[2*i]=(voltage[i-1]>>8)&0xff;
-   canTxData[2*i+1]=(voltage[i-1])&0xff;
+   canTxData[2*i]=(voltage[i]>>8)&0xff;
+   canTxData[2*i+1]=(voltage[i])&0xff;
   }
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
@@ -166,11 +128,70 @@ void Set_voltage_hit(CAN_HandleTypeDef* hcan,int16_t voltage[])
 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
 	}
 }
+// void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
+// {
+// 	uint32_t tx_mailbox;
+//   CAN_TxHeaderTypeDef canTxMsg;
+//   uint8_t             canTxData[8] = {0};
+//   canTxMsg.StdId = 0x1FF;
+//   canTxMsg.IDE   = CAN_ID_STD;//标准ID
+//   canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
+//   canTxMsg.DLC   = 8;//数据长度
+//    canTxData[0]=(voltage[0]>>8)&0xff;
+//    canTxData[1]=(voltage[0])&0xff;
+// 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+// 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+// 	{
+// 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
+// 	}
+// }
+
+// //发球3508 id=6
+// void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
+// {
+// 	uint32_t tx_mailbox;
+//   CAN_TxHeaderTypeDef canTxMsg;
+//   uint8_t             canTxData[8] = {0};
+//   canTxMsg.StdId = 0x1FF;
+//   canTxMsg.IDE   = CAN_ID_STD;//标准ID
+//   canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
+//   canTxMsg.DLC   = 8;//数据长度
+//    canTxData[2]=(voltage[0]>>8)&0xff;
+//    canTxData[3]=(voltage[0])&0xff;
+// 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+// 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+// 	{
+// 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
+// 	}
+// }
+
+// //击球3508  id=6,7,8
+// void Set_voltage_hit(CAN_HandleTypeDef* hcan,int16_t voltage[])
+// {
+// 	uint32_t tx_mailbox;
+//   CAN_TxHeaderTypeDef canTxMsg;
+//   uint8_t             canTxData[8] = {0};
+//   canTxMsg.StdId = 0x1FF;
+//   canTxMsg.IDE   = CAN_ID_STD;//标准ID
+//   canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
+//   canTxMsg.DLC   = 8;//数据长度
+//   for(uint8_t i=1;i<4;i++)
+//   {
+//    canTxData[2*i]=(voltage[i-1]>>8)&0xff;
+//    canTxData[2*i+1]=(voltage[i-1])&0xff;
+//   }
+// 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
+// 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+// 	{
+// 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//发送报文
+// 	}
+// }
 
 /**************达妙电机******** */
 
 void Set_dm_mit(CAN_HandleTypeDef* hcan,int16_t ID)
 {
+	uint32_t tx_mailbox;
 	uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
@@ -213,7 +234,7 @@ void Set_dm_mit(CAN_HandleTypeDef* hcan,int16_t ID)
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
- 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+ 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//发送报文
 	}
 }
 
@@ -272,6 +293,7 @@ void Set_dm_pos(CAN_HandleTypeDef* hcan,uint16_t ID,float pos,float vel)
 
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
+  uint32_t tx_mailbox;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
 
@@ -292,12 +314,13 @@ void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//·￠?í±¨??
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//·￠?í±¨??
 	}
 }
 
 void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
+  uint32_t tx_mailbox;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
   can1TxMsg.StdId = 0x00+ID;
@@ -317,12 +340,13 @@ void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID)
 
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);
 	}
 }
 
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 {
+  uint32_t tx_mailbox;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
   can1TxMsg.StdId = CAN_ID;
@@ -341,7 +365,7 @@ void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//发送报文
 	}
 }
 
