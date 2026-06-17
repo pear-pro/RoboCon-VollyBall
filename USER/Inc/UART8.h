@@ -29,6 +29,11 @@ typedef union {
     uint8_t bytes[4];
 } float_bytes_t;
 
+typedef enum {
+    UART8_HIT_PROCESSING = 0,
+    UART8_HIT_READY,
+} uart8_hit_state_t;
+
 /* ───────────────────── 控制数据索引 ───────────────────── */
 
 #define UART8_CTRL_FORWARD   0   /* 前进速度 (m/s)            */
@@ -44,6 +49,7 @@ extern volatile uint16_t g_uart8_timTick;                  /* 10ms 定时器计�
 extern volatile uint8_t  g_uart8_reportflag;                 /* 定时发送标志 (外部置位)    */
 extern volatile uint8_t g_uart8_crtlframeflag;                 /* 当前帧解析完成标志 (协议解析器置位) */
 extern volatile uint8_t g_uart8_comm_ok;                       /* 通信正常标志 (握手回应后置1)      */
+extern volatile uart8_hit_state_t g_uart8_hitstate;           /* 击球状态 */
 
 /* ───────────────────── API 函数 ───────────────────── */
 
@@ -67,6 +73,8 @@ void UART8_StartRxDMA(void);
  *         检查 g_uart8_reportflag 标志以触发定时上报。
  */
 void UART8_Process(void);
+
+void UART8_HandShake(void);
 
 /**
  * @brief  通过 DMA 发送自定义数据帧。

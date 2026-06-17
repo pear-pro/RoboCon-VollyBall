@@ -1,5 +1,6 @@
 
 #include "N630.h"
+#include "UART8.h"
 #include "car_ctrl.h"
 #include "includes.h"
 #include "can.h"
@@ -58,6 +59,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
           can1_pitch_output=(int16_t)C620_angle.Speed_pid.out;
    
         Set_voltage(&hcan2,voltages);
+        /* 小电脑击球冷却 */
+        if(g_uart8_hitstate == UART8_HIT_PROCESSING)
+        {
+            g_uart8_timTick++;
+            if(g_uart8_timTick >= 50 && g_uart8_timTick < 100) // 0.5s击出时间
+            {
+                hit_request_release(); // 击球后收回指令，确保击球机构回零
+            }
+            else if(g_uart8_timTick >= 100) // 0.5s收回时间，强制回零并准备下一次击球
+            {
+                g_uart8_timTick = 0;
+                UART8_HandShake(); // 发送握手帧，告诉小电脑击球动作已完成，可以准备下一次击球
+                g_uart8_hitstate = UART8_HIT_READY; // 击球状态回到准备就绪，等待下一次命令
+            }
+        }
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机
 //	{
