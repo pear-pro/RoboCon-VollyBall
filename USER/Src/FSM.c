@@ -26,11 +26,11 @@ serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
-    {40.0f, -40.0f, 40.0f},
-    {25.0f, -25.0f, 25.0f},
+    {-1.25f, 1.25f, 1.25f},
+    {-1.0f, 1.0f, 1.0f},
 };
 
-static const float hit_angle_return[HIT_MOTOR_COUNT] =
+static const float hit_angle_reset[HIT_MOTOR_COUNT] =
 {
     0,0,0
 };
@@ -47,6 +47,27 @@ static int16_t limit(int32_t value, int16_t limit)
         return -limit;
     }
     return (int16_t)value;
+}
+
+static uint8_t move_to_angle_smooth(motor_info_t *motor, float target, float step_size)
+{
+    float diff = target - motor->target_angle;
+
+    if (diff > step_size)
+    {	
+        motor->target_angle += step_size;
+        return 0;
+    }
+    else if (diff < -step_size)
+    {
+        motor->target_angle -= step_size;
+        return 0;
+    }
+    else
+    {
+        motor->target_angle = target;
+        return 1;
+    }
 }
 
 //�ж����л������Ƿ���Ŀ��Ƕȸ���
@@ -176,20 +197,26 @@ void remote_control_hit_update(void)
     case HIT_PUT_ANGLE:
         for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            damiao[i].target_angle = hit_angle_table[hit_preset_index][i];
+            damiao[i].angle = hit_angle_table[hit_preset_index][i];
         }
         break;
 
     case HIT_RETURN:
+    {
+        uint8_t all_done = 1;
         for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            damiao[i].target_angle = 0.0f;
+            if (!move_to_angle_smooth(&damiao[i], hit_angle_reset[i], HIT_RETURN_STEP))
+            {
+                all_done = 0;
+            }
         }
-        if (hit_all_near(0.0f, HIT_RETURN_DONE_DEG))
+        if (all_done)
         {
             hit_stage = HIT_IDLE;
         }
         break;
+    }
 
     case HIT_IDLE:
     default:

@@ -11,40 +11,40 @@
 #include "ops.h"
 #include "FSM.h"
 
-// ·¢Çò×´Ì¬»úÔÚÒ£¿ØÆ÷Ä£¿éÖÐÍÆ½ø£¬ÕâÀï°´¹Ì¶¨ÖÜÆÚµ÷ÓÃ
+// ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï°´ï¿½Ì¶ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½
 extern void remote_control_serve_update(void);
 extern void remote_control_watchdog_update(void);
 extern uint8_t remote_control_is_timeout(void);
 extern void remote_control_enter_safe_state(void);
 
 uint16_t PID_Calc_Flag = 0;
-/************************ ¶¨Ê±Æ÷¸üÐÂÖÐ¶Ï»Øµ÷º¯Êý ************************/
+/************************ ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï»Øµï¿½ï¿½ï¿½ï¿½ï¿½ ************************/
 /**
- * @brief  ¶¨Ê±Æ÷¸üÐÂÖÐ¶Ï»Øµ÷º¯Êý£¨HAL¿âÈõº¯ÊýÖØÐ´£©
- * @note   PID¿ØÖÆÂß¼­Ð´ÔÚ´Ë´¦£¨Ô­ÖÐ¶Ï·þÎñº¯ÊýµÄÒµÎñ´úÂë£©
- * @param  htim: ¶¨Ê±Æ÷¾ä±ú
- * @retval ÎÞ
+ * @brief  ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï»Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½HALï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½
+ * @note   PIDï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½Ð´ï¿½Ú´Ë´ï¿½ï¿½ï¿½Ô­ï¿½Ð¶Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ë£©
+ * @param  htim: ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½
+ * @retval ï¿½ï¿½
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
-	    if(htim == &htim3)  // È·ÈÏÊÇPID¶¨Ê±Æ÷µÄ¸üÐÂÖÐ¶Ï
+	    if(htim == &htim3)  // È·ï¿½ï¿½ï¿½ï¿½PIDï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
     {
-		 // Ò£¿Ø³¬¹ý 150ms Î´¸üÐÂÊ±£¬½øÈëµ×ÅÌÓë·¢Çò»ú¹¹°²È«Ì¬
+		 // Ò£ï¿½Ø³ï¿½ï¿½ï¿½ 150ms Î´ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë·¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«Ì¬
 //		 remote_control_watchdog_update();
 //		 if (remote_control_is_timeout())
 //		 {
 //		     remote_control_enter_safe_state();
 //		 }
       
-		 // Ã¿ 10ms ¸üÐÂÒ»´Î·¢Çò¶¯×÷½×¶Î£¬´®¿Úµ÷²Î½Ó¹ÜÊ±²»ÍÆ½øÒ£¿Ø·¢Çò×´Ì¬»ú
+		 // Ã¿ 10ms ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Î·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¶Î£ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½Î½Ó¹ï¿½Ê±ï¿½ï¿½ï¿½Æ½ï¿½Ò£ï¿½Ø·ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½
 		 if (!DebugTune_IsActive())
          {
              remote_control_serve_update();
          }
         //  Set_dm_mit(&hcan1,0);
-//        JY901P_ReadAllData(&gyro_data);//¶ÁÈ¡ÍÓÂÝÒÇÊý¾Ý
-//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // ¼ÙÉè¿ØÖÆ½ÇËÙ¶ÈÎª0
+//        JY901P_ReadAllData(&gyro_data);//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½Ù¶ï¿½Îª0
 //        car_w=car_pid.out;
         // for(int i=0;i<MotorCount;i++)
         // {
@@ -68,13 +68,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 ////        Vofa_JustFloat(num, 3);
        Set_voltage(&hcan2,voltages);
     }
-//	if(hcan1.ErrorCode!=0)//±ÜÃâcan×ÜÏß´íÎóµ¼ÖÂËÀ»ú
+//	if(hcan1.ErrorCode!=0)//ï¿½ï¿½ï¿½ï¿½canï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //	{
 //		HAL_CAN_DeInit(&hcan1);
 //		HAL_CAN_Init(&hcan1);
 //		HAL_CAN_Start(&hcan1);
 //	}
-//    if(hcan2.ErrorCode!=0)//±ÜÃâcan×ÜÏß´íÎóµ¼ÖÂËÀ»ú
+//    if(hcan2.ErrorCode!=0)//ï¿½ï¿½ï¿½ï¿½canï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //	{
 //		HAL_CAN_DeInit(&hcan2);
 //		HAL_CAN_Init(&hcan2);
@@ -82,8 +82,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //	
 //	
 //	}	
-    //ÔÚÕâÀï¿ÉÒÔÌí¼Ó½Ç¶È»·µÄÖÐ¶Ï´¦ÀíÂß¼­
-    if(htim == &htim14)  // È·ÈÏÊÇPID¶¨Ê±Æ÷µÄ¸üÐÂÖÐ¶Ï
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó½Ç¶È»ï¿½ï¿½ï¿½ï¿½Ð¶Ï´ï¿½ï¿½ï¿½ï¿½ß¼ï¿½
+    if(htim == &htim14)  // È·ï¿½ï¿½ï¿½ï¿½PIDï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
     {
     if(DebugTune_IsActive())
     {
@@ -99,11 +99,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
 	}
 
-/************************ ´íÎó´¦Àíº¯Êý£¨¿ÉÑ¡£© ************************/
+/************************ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ ************************/
 #ifdef USE_FULL_ASSERT
 void Error_Handler(void)
 {
-    // ¿ÉÌí¼ÓLEDÉÁË¸¡¢´®¿Ú´òÓ¡µÈ´íÎóÌáÊ¾Âß¼­
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½LEDï¿½ï¿½Ë¸ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½Ó¡ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ß¼ï¿½
     while(1)
     {
     }

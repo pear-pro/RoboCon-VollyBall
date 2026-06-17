@@ -410,15 +410,15 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
-//	if(hcan==&hcan1)
-//	{
+	if(hcan==&hcan1)
+	{
 //		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
 //         uint8_t motor_id=can1RxData[0] & 0x0F; //电机ID在第一个字节的低4位
 //		if (motor_id>=0 && motor_id < MotorCount)
 //		{
 //			dm_motor_fbdata(&damiao[motor_id], can1RxData);
 //		}
-//	}
+	}
     if(hcan==&hcan2) //底盘加角度3508
 		{
 

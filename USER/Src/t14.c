@@ -397,11 +397,13 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         //模式切换
          if(KEY_SWB_UP & sbus_ctrl -> key_flag)
         {
-            serve_mode = SERVE_MODE_ANGLE;
+            //serve_mode = SERVE_MODE_ANGLE;
+            hit_set_preset(0);
         }
         else 
         {
-            serve_mode = SERVE_MODE_SPEED;
+            //serve_mode = SERVE_MODE_SPEED;
+            hit_set_preset(1);
         }
         
          // 离开下档后重新�?�填一次发球触发资�?
@@ -444,15 +446,13 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         // SA 三档选择击球角度预设
        if (KEY_SWA_UP & sbus_ctrl->key_flag)
        {
-           //hit_set_preset(0);
 		  // Pump_Off();
 		   count_flag = 0;
 		   serve_arm();
        }
        else if (KEY_SWA_DOWN & sbus_ctrl->key_flag)
        {
-           //hit_set_preset(1);
-		  //8 Pump_On();
+		  // Pump_On();
 		   if(!count_flag)
 		   {
 			   count++;

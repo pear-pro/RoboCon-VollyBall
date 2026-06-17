@@ -7,6 +7,7 @@
 #define HIT_MOTOR_COUNT 3U
 #define HIT_OUTPUT_LIMIT 20000
 #define HIT_RETURN_DONE_DEG 20.0f //20/19 ????1.05??????????
+#define HIT_RETURN_STEP 0.1f
 
 #define SERVE_LIFT_TICKS        (15U)
 #define SERVE_RETURN_TICKS      (36U)
@@ -51,7 +52,6 @@ void remote_control_hit_update(void);
 void remote_control_serve_update(void);
 void hit_angle_control(void);
 void up_angle_control(void);
-
 extern volatile uint16_t count;
 
 #endif

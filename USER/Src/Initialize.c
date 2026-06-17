@@ -12,6 +12,7 @@ void All_Init(){
 //    JY901P_Unlock();
 //    JY901P_Calibrate_Full();
 
+
        Set_dm_enable(&hcan1,0);
        Set_dm_enable(&hcan1,1);
        Set_dm_enable(&hcan1,2);
