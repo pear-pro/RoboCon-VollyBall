@@ -99,6 +99,7 @@ void All_Init(){
 		
 		HAL_Delay(500);
     HeadingHold_Init();
+    UART8_Init();
 }
 
 void All_Clear(){

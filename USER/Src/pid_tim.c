@@ -34,7 +34,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		 {
 		     remote_control_enter_safe_state();
 		 }
-		 else if (!DebugTune_IsActive())
+//		 else if (!DebugTune_IsActive())
          {
              remote_control_serve_update();
              remote_control_hit_update();
