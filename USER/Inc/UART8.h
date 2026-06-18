@@ -4,9 +4,11 @@
   * @brief   UART8 上位机通信模块 — DMA接收/发送 + 控制帧解析
   *
   *          协议帧格式: SYNC1(0x5A) | SYNC2(0xA5) | ID | LEN | PAYLOAD | CRC8
-  *          ID 0x00: 心跳帧 (上位机→下位机)
-  *          ID 0x01: 控制帧 (上位机→下位机, payload = 4×float)
-  *          ID 0xFF: 心跳响应 (下位机→上位机)
+  *          - ID 0xF0: 握手帧 (MCU上电发送→上位机回应→通信建立)
+  *          - ID 0xF1: 底盘控制帧 (上位机→下位机, payload = 4×float)
+  *          - ID 0xF2: 击球控制帧 (上位机→下位机, payload = 2×uint8)
+  *          - ID 0x00: 心跳帧 (上位机→下位机, payload = 0)
+  *          - ID 0xFF: 心跳响应 (下位机→上位机, payload = 0)
   ******************************************************************************
   */
 #ifndef __UART8_H__
@@ -45,11 +47,11 @@ typedef enum {
 /* ───────────────────── 全局变量声明 ───────────────────── */
 
 extern float_bytes_t g_control[UART8_CTRL_COUNT];   /* 解析后的控制数据           */
-extern volatile uint16_t g_uart8_timTick;                  /* 10ms 定时器计数 (外部维护)  */
+extern volatile uint16_t g_uart8_timtick;                  /* 10ms 定时器计数 (外部维护)  */
 extern volatile uint8_t  g_uart8_reportflag;                 /* 定时发送标志 (外部置位)    */
-extern volatile uint8_t g_uart8_crtlframeflag;                 /* 当前帧解析完成标志 (协议解析器置位) */
 extern volatile uint8_t g_uart8_comm_ok;                       /* 通信正常标志 (握手回应后置1)      */
 extern volatile uart8_hit_state_t g_uart8_hitstate;           /* 击球状态 */
+extern volatile uint16_t g_uart8_norx_tick; /* 未收到数据计时 */
 
 /* ───────────────────── API 函数 ───────────────────── */
 

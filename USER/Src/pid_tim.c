@@ -26,15 +26,15 @@ uint16_t PID_Calc_Flag = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static int16_t voltages[4];
-	 static int16_t can1_pitch_output = 0;
+	static int16_t can1_pitch_output = 0;
 	    if(htim == &htim3)  // 确认是PID定时器的更新中断
     {
-		 // 遥控超过 设定时间 未更新时，进入底盘与发球机构安全态
-		 remote_control_watchdog_update();
-		 if (remote_control_is_timeout())
-		 {
-		     remote_control_enter_safe_state();
-		 }
+		// 遥控超过 设定时间 未更新时，进入底盘与发球机构安全态
+		//  remote_control_watchdog_update();
+		//  if (remote_control_is_timeout())
+		//  {
+		//      remote_control_enter_safe_state();
+		//  }
 //		 else if (!DebugTune_IsActive())
          {
              remote_control_serve_update();
@@ -62,17 +62,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         /* 小电脑击球冷却 */
         if(g_uart8_hitstate == UART8_HIT_PROCESSING)
         {
-            g_uart8_timTick++;
-            if(g_uart8_timTick >= 50 && g_uart8_timTick < 100) // 0.5s击出时间
+            g_uart8_timtick++;
+            if(g_uart8_timtick >= 100 && g_uart8_timtick < 200) // 0.5s击出时间
             {
                 hit_request_release(); // 击球后收回指令，确保击球机构回零
             }
-            else if(g_uart8_timTick >= 100) // 0.5s收回时间，强制回零并准备下一次击球
+            else if(g_uart8_timtick >= 200) // 0.5s收回时间，强制回零并准备下一次击球
             {
-                g_uart8_timTick = 0;
-                UART8_HandShake(); // 发送握手帧，告诉小电脑击球动作已完成，可以准备下一次击球
+                g_uart8_timtick = 0;
+                // UART8_HandShake(); // 发送握手帧，告诉小电脑击球动作已完成
+                g_uart8_comm_ok  = 0;   // 强制掉线，进入重连流程
                 g_uart8_hitstate = UART8_HIT_READY; // 击球状态回到准备就绪，等待下一次命令
             }
+        }
+        if(g_uart8_norx_tick <= 1000) // 10s未收到数据则认为通信异常，进入重连流程
+            g_uart8_norx_tick++;
+        else
+        {
+            g_uart8_norx_tick = 0;
+            g_uart8_comm_ok = 0; // 强制掉线，进入重连流程
         }
     }
 //	if(hcan1.ErrorCode!=0)//避免can总线错误导致死机

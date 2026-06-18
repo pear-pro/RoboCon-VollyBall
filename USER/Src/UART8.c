@@ -14,6 +14,8 @@
 
 #include "UART8.h"
 #include "FSM.h"
+#include "car_ctrl.h"
+#include "includes.h"
 
 /* ========================= 全局变量 ========================= */
 
@@ -24,18 +26,28 @@ static uint8_t  g_rxDMABuf[UART_RX_BUF_SIZE];       /* DMA 接收目标缓冲   
 static uint16_t g_rxDMALen = 0;                      /* 上一次 DMA 接收到的字节数    */
 
 /* ── 定时发送 ── */
-volatile uint16_t g_uart8_timTick  = 0;                    /* 5ms 定时器计数 (TIM回调维护) （暂时保留）*/
-volatile uint8_t  g_uart8_reportflag = 0;                    /* 定时发送标志 (TIM回调置位)   （暂时保留）*/
+volatile uint16_t g_uart8_timtick  = 0;                    /* 10ms 定时器计数 (TIM3回调维护) */
+volatile uint8_t  g_uart8_reportflag = 0;                    /* 定时发送标志 （暂时保留）*/
 
-volatile uint8_t g_uart8_crtlframeflag = 0;                    /* 当前帧解析完成标志 (协议解析器置位) */
 volatile uint8_t g_uart8_comm_ok      = 0;                    /* 通信正常标志 (握手回应后置1)      */
 volatile uart8_hit_state_t g_uart8_hitstate = UART8_HIT_READY; /* 击球状态 */
 
 /* ── 握手重试 ── */
-#define UART8_HANDSHAKE_TIMEOUT_MS  500U    /* 握手超时间隔 (ms)         */
-#define UART8_HANDSHAKE_MAX_RETRY   5U      /* 最大重试次数              */
-static uint8_t  hs_retry_count = 0;         /* 当前重试计数              */
+#define UART8_HANDSHAKE_TIMEOUT_MS  500U    /* 握手超时重试间隔 (ms)         */
 static uint32_t hs_last_tick   = 0;         /* 上次握手发送时刻          */
+volatile uint16_t g_uart8_norx_tick = 0; /* 未收到数据计时 */
+
+#define xUART8_DEBUG  /* 调试模式: 不强制通信正常，允许直接处理命令 */
+
+static void Is_Comm_OK(void)
+{
+    #ifdef UART8_DEBUG
+    // 在调试模式下不强制通信正常，允许直接处理命令以测试控制逻辑
+    #else
+        if(!g_uart8_comm_ok)
+            return;
+    #endif
+}
 
 /* ==================== 命令回调函数 ==================== */
 
@@ -49,6 +61,7 @@ static void Cmd_HeartBeat_Response(uint8_t id, uint8_t *payload, uint8_t len)
     (void)payload;
     (void)len;
     UART_SendFrame(0xFF, NULL, 0);
+    g_uart8_norx_tick = 0; /* 收到数据，重置未收到数据计时 */
 }
 
 /**
@@ -62,6 +75,7 @@ static void Cmd_HandShake_Response(uint8_t id, uint8_t *payload, uint8_t len)
     (void)payload;
     (void)len;
     g_uart8_comm_ok = 1;  /* 收到上位机握手回应，通信正常 */
+    g_uart8_norx_tick = 0; /* 重置未收到数据计时 */
 }
 
 /**
@@ -71,10 +85,8 @@ static void Cmd_HandShake_Response(uint8_t id, uint8_t *payload, uint8_t len)
  */
 static void Cmd_ControlFrame_Analyze(uint8_t id, uint8_t *payload, uint8_t len)
 {
-   if (!g_uart8_comm_ok)
-       return;
+   Is_Comm_OK();
     (void)id;
-
     if (payload == NULL || len == 0)
         return;
 
@@ -91,7 +103,9 @@ static void Cmd_ControlFrame_Analyze(uint8_t id, uint8_t *payload, uint8_t len)
         g_control[idx].bytes[2] = payload[i + 2];
         g_control[idx].bytes[3] = payload[i + 3];
     }
-    g_uart8_crtlframeflag = 1;  // 设置控制帧解析完成标志
+    car_tary = g_control[0].f*1000.0/5.0; // 前进速度
+    car_tarx = -g_control[1].f*1000.0/5.0; // 左右速度
+    g_uart8_norx_tick = 0; /* 收到数据，重置未收到数据计时 */
 }
 
 /**
@@ -104,8 +118,7 @@ static void Cmd_ControlFrame_Analyze(uint8_t id, uint8_t *payload, uint8_t len)
  */
 static void Cmd_HitFrame_Analyze(uint8_t id, uint8_t *payload, uint8_t len)
 {
-    if(!g_uart8_comm_ok)
-        return;
+    Is_Comm_OK();
     (void)id;
     if(payload == NULL || len < 2)
         return;
@@ -121,6 +134,7 @@ static void Cmd_HitFrame_Analyze(uint8_t id, uint8_t *payload, uint8_t len)
     else
         hit_request_release();
     g_uart8_hitstate = UART8_HIT_PROCESSING; // 设置击球状态为处理中
+    g_uart8_norx_tick = 0; /* 收到数据，重置未收到数据计时 */
 }
 
 /* ==================== DMA 接收 ==================== */
@@ -208,14 +222,13 @@ void UART8_Init(void)
     UART_RegisterCmd(0x00, Cmd_HeartBeat_Response);
     UART_RegisterCmd(0xF0, Cmd_HandShake_Response);
     UART_RegisterCmd(0xF1, Cmd_ControlFrame_Analyze);
-    UART_RegisterCmd(0xF2, Cmd_HitFrame_Analyze);
+    // UART_RegisterCmd(0xF2, Cmd_HitFrame_Analyze);
 
     /* 3. 启动 DMA 空闲接收 */
     UART8_StartRxDMA();
 
     /* 4. 初始化握手重试状态并发送首次握手 */
-    hs_retry_count = 0;
-    hs_last_tick   = HAL_GetTick();
+    hs_last_tick = HAL_GetTick();
     UART8_HandShake();
 }
 
@@ -231,13 +244,12 @@ void UART8_Process(void)
     /* 排空协议接收缓冲区并解析 */
     UART_Process();
 
-    /* 握手超时重试：通信未建立 + 未超过最大重试次数 */
-    if (!g_uart8_comm_ok && hs_retry_count < UART8_HANDSHAKE_MAX_RETRY)
+    /* 握手超时重试：通信未建立时无限重试，每 500ms 发送一次 */
+    if (!g_uart8_comm_ok)
     {
         if ((HAL_GetTick() - hs_last_tick) >= UART8_HANDSHAKE_TIMEOUT_MS)
         {
             UART8_HandShake();
-            hs_retry_count++;
             hs_last_tick = HAL_GetTick();
         }
     }
