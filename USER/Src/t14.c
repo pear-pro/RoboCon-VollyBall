@@ -372,6 +372,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         sbus_ctrl-> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
         sbus_ctrl ->ch[8] = ((sbus_buffer[12])| (sbus_buffer[13] << 8 )) & 0x07ff;//SE
         sbus_ctrl ->ch[9] = ((sbus_buffer[13] >> 3 )| (sbus_buffer[14] << 5 )) & 0x07ff;//SF
+		
 
        //数据偏移
         for(int i = 0;i<10;i++)
@@ -462,10 +463,11 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        }
 
        // SF 按下击球，松手回零
-       if (detect_switch_position(sbus_ctrl->ch[9]) == POS_DOWN)
+       if (detect_switch_position(sbus_ctrl -> ch[9]) == POS_DOWN)
        {
            hit_request_press();
        }
+	  
        else
        {
            hit_request_release();

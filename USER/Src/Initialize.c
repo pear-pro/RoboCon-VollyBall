@@ -35,23 +35,28 @@ void All_Init(){
             INIT);
 
     }
-	damiao[0].KP = 150.0f;//150.0f;
-	damiao[0].KD = 0.2f;
-	damiao[0].tor = -0.25f;//-1.65
-	damiao[0].angle=0.0f;
-  C620_up_angle.target_angle = -3420.0f;
+	
+  C620_up_angle.target_angle = 3420.0f;
 	Pump_Off();
-        PID_Struct_Init(&damiao[0].Angle_pid,
+        
+    
+	for(uint8_t i=0;i<=2;i++)
+	{
+		damiao[i].KP = 150.0f;//150.0f;
+		damiao[i].KD = 0.2f;
+		damiao[i].tor = -0.25f;//-1.65
+		damiao[i].angle=0.0f;
+		
+		PID_Struct_Init(&damiao[i].Angle_pid,
             15.0f,
             0.0f,
             80.0f,
             10000,
             500,
             INIT);
-		damiao[0].Angle_pid.set = 0.0f;
-    damiao[0].target_speed=0.0f;
-    
-
+		damiao[i].Angle_pid.set = 0.0f;
+		damiao[i].target_speed=0.0f;
+	}
    
     PID_Struct_Init(&car_pid,
                     10.0f,0.0f, 0.0f,

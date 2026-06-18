@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>7</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -437,14 +437,14 @@
               <FilePath>..\USER\Src\car_ctrl.c</FilePath>
             </File>
             <File>
-              <FileName>Initialize.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Src\Initialize.c</FilePath>
-            </File>
-            <File>
               <FileName>N630.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Src\N630.c</FilePath>
+            </File>
+            <File>
+              <FileName>Initialize.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\Initialize.c</FilePath>
             </File>
             <File>
               <FileName>ht_10a_remote_control.c</FileName>

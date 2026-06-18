@@ -1,10 +1,12 @@
 #include "debug_uart.h"
 #include "ops.h"
 #include "usart.h"
+//#include "imu.h"
 #include <stdlib.h>
 
 #define DEBUG_TUNE_LINE_MAX 128U
 #define DEBUG_TUNE_TX_MAX 192U
+#define DEBUG_TUNE_TX_TIMEOUT_MS 50U
 
 typedef struct
 {
@@ -30,6 +32,42 @@ static volatile uint8_t tune_snapshot_pending;
 static volatile uint8_t tune_control_active;
 static volatile uint32_t tune_ms;
 static debug_tune_snapshot_t tune_snapshot;
+static uint8_t tune_rx_dma_byte;
+
+static HAL_StatusTypeDef tune_uart6_dma_send_blocking(uint8_t *data, uint16_t len, uint32_t timeout_ms)
+{
+    uint32_t start = HAL_GetTick();
+
+    if (len == 0U)
+    {
+        return HAL_OK;
+    }
+
+    while (huart6.gState != HAL_UART_STATE_READY)
+    {
+        if ((HAL_GetTick() - start) > timeout_ms)
+        {
+            return HAL_TIMEOUT;
+        }
+    }
+
+    if (HAL_UART_Transmit_DMA(&huart6, data, len) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    start = HAL_GetTick();
+    while (huart6.gState != HAL_UART_STATE_READY)
+    {
+        if ((HAL_GetTick() - start) > timeout_ms)
+        {
+            (void)HAL_UART_AbortTransmit(&huart6);
+            return HAL_TIMEOUT;
+        }
+    }
+
+    return HAL_OK;
+}
 
 void Vofa_JustFloat(float *_data, uint8_t _num)
 {
@@ -40,7 +78,7 @@ void Vofa_JustFloat(float *_data, uint8_t _num)
     memcpy(&temp_copy, _data, sizeof(float) * _num);
     memcpy(tempData, (uint8_t *)&temp_copy, sizeof(temp_copy));
     memcpy(&tempData[_num * 4], &temp_end[0], 4);
-    HAL_UART_Transmit_DMA(&huart6, tempData, (_num + 1U) * 4U);
+    (void)tune_uart6_dma_send_blocking(tempData, (_num + 1U) * 4U, DEBUG_TUNE_TX_TIMEOUT_MS);
 }
 
 static int32_t tune_scale_float(float value, float scale)
@@ -51,7 +89,7 @@ static int32_t tune_scale_float(float value, float scale)
 
 static void tune_send_text(const char *text)
 {
-    HAL_UART_Transmit(&huart6, (uint8_t *)text, (uint16_t)strlen(text), 50U);
+    (void)tune_uart6_dma_send_blocking((uint8_t *)text, (uint16_t)strlen(text), DEBUG_TUNE_TX_TIMEOUT_MS);
 }
 
 static void tune_rx_feed_byte(uint8_t ch)
@@ -76,11 +114,11 @@ static void tune_rx_feed_byte(uint8_t ch)
     }
 }
 
-static void tune_poll_uart_rx(void)
+static void tune_start_rx_dma(void)
 {
-    while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_RXNE) != RESET)
+    if (huart6.RxState == HAL_UART_STATE_READY)
     {
-        tune_rx_feed_byte((uint8_t)(huart6.Instance->DR & 0xFFU));
+        (void)HAL_UART_Receive_DMA(&huart6, &tune_rx_dma_byte, 1U);
     }
 }
 
@@ -367,6 +405,7 @@ void DebugTune_Init(void)
     tune_report_tick = 0U;
     tune_snapshot_pending = 0U;
     tune_ms = 0U;
+    tune_start_rx_dma();
     tune_send_text("OK DEBUG_TUNE USART6 115200\r\n");
 }
 
@@ -376,8 +415,6 @@ void DebugTune_Task(void)
     debug_tune_snapshot_t snapshot;
     uint8_t has_command = 0U;
     uint8_t has_snapshot = 0U;
-
-    tune_poll_uart_rx();
 
     __disable_irq();
     if (tune_cmd_ready)
@@ -396,6 +433,7 @@ void DebugTune_Task(void)
 
     if (has_command)
     {
+        has_snapshot = 0U;
         tune_process_command(line);
     }
 
@@ -457,5 +495,13 @@ void DebugTune_OnControlTick(int16_t control_out)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    (void)huart;
+    if (huart->Instance == USART6)
+    {
+        tune_rx_feed_byte(tune_rx_dma_byte);
+        tune_start_rx_dma();
+    }
+    else if (huart->Instance == UART7)
+    {
+       // IMU_UART_RxCpltCallback(huart);
+    }
 }

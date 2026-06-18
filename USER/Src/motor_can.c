@@ -442,7 +442,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					C620_angle.Rxmsg.Temp=can2RxData[6];
 					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
 				}			//HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-			if(can2RxMsg.StdId==0x206){
+			if(can2RxMsg.StdId==0x205){
 				C620_up_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
 				C620_up_angle.Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
 				C620_up_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);

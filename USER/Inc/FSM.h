@@ -7,7 +7,7 @@
 #define HIT_MOTOR_COUNT 3U
 #define HIT_OUTPUT_LIMIT 20000
 #define HIT_RETURN_DONE_DEG 20.0f //20/19 ????1.05??????????
-#define HIT_RETURN_STEP 0.1f
+#define HIT_RETURN_STEP 0.01f
 
 #define SERVE_LIFT_TICKS        (15U)
 #define SERVE_RETURN_TICKS      (36U)

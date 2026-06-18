@@ -150,34 +150,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>409</LineNumber>
+          <LineNumber>200</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134226184</Address>
+          <Address>134249988</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>E:\RC\RC鎺掔悆\RoboCon-VollyBall\USER\Src\motor_can.c</Filename>
+          <Filename>E:\RC\RC鎺掔悆\RoboCon-VollyBall\USER\Src\FSM.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\DJ_A_wheel\../USER/Src/motor_can.c\409</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>408</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\USER\Src\motor_can.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\DJ_A_wheel\../USER/Src/FSM.c\200</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -200,6 +184,11 @@
           <count>3</count>
           <WinNumber>1</WinNumber>
           <ItemText>can1TxMsg</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>hcan1</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -392,8 +381,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\USER\Src\Initialize.c</PathWithFileName>
-      <FilenameWithoutPath>Initialize.c</FilenameWithoutPath>
+      <PathWithFileName>..\USER\Src\N630.c</PathWithFileName>
+      <FilenameWithoutPath>N630.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -404,8 +393,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\USER\Src\N630.c</PathWithFileName>
-      <FilenameWithoutPath>N630.c</FilenameWithoutPath>
+      <PathWithFileName>..\USER\Src\Initialize.c</PathWithFileName>
+      <FilenameWithoutPath>Initialize.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

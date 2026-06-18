@@ -54,49 +54,6 @@ void HardFault_Handler_C(uint32_t *stacked_regs, uint32_t exc_return);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void HardFault_USART6_WriteChar(char ch)
-{
-    uint32_t timeout = 1000000U;
-
-    while (((USART6->SR & USART_SR_TXE) == 0U) && (timeout > 0U))
-    {
-        timeout--;
-    }
-    if (timeout == 0U)
-    {
-        return;
-    }
-
-    USART6->DR = (uint8_t)ch;
-}
-
-static void HardFault_USART6_WriteString(const char *text)
-{
-    while (*text != '\0')
-    {
-        HardFault_USART6_WriteChar(*text++);
-    }
-}
-
-static void HardFault_USART6_WriteHex(uint32_t value)
-{
-    static const char hex[] = "0123456789ABCDEF";
-
-    HardFault_USART6_WriteString("0x");
-    for (int8_t shift = 28; shift >= 0; shift -= 4)
-    {
-        HardFault_USART6_WriteChar(hex[(value >> shift) & 0x0FU]);
-    }
-}
-
-static void HardFault_USART6_WriteReg(const char *name, uint32_t value)
-{
-    HardFault_USART6_WriteString(name);
-    HardFault_USART6_WriteString(" = ");
-    HardFault_USART6_WriteHex(value);
-    HardFault_USART6_WriteString("\r\n");
-}
-
 #ifdef __CC_ARM
 __asm void HardFault_Handler(void)
 {
@@ -123,45 +80,57 @@ void __attribute__((naked)) HardFault_Handler(void)
 }
 #endif
 
-//¹ÊÕÏ½âÎöº¯Êý
+//????????????
 void HardFault_Handler_C(uint32_t *stacked_regs, uint32_t exc_return)
 {
     __disable_irq();
-    USART6->CR3 &= ~USART_CR3_DMAT;
 
-    HardFault_USART6_WriteString("\r\nHardFault!\r\n");
-    HardFault_USART6_WriteString("Stack = ");
-    HardFault_USART6_WriteString((exc_return & 0x04U) ? "PSP" : "MSP");
-    HardFault_USART6_WriteString("\r\n");
-    HardFault_USART6_WriteReg("SP", (uint32_t)stacked_regs);
-    HardFault_USART6_WriteReg("EXC_RETURN", exc_return);
-    HardFault_USART6_WriteReg("R0", stacked_regs[0]);
-    HardFault_USART6_WriteReg("R1", stacked_regs[1]);
-    HardFault_USART6_WriteReg("R2", stacked_regs[2]);
-    HardFault_USART6_WriteReg("R3", stacked_regs[3]);
-    HardFault_USART6_WriteReg("R12", stacked_regs[4]);
-    HardFault_USART6_WriteReg("LR", stacked_regs[5]);
-    HardFault_USART6_WriteReg("PC", stacked_regs[6]);
-    HardFault_USART6_WriteReg("xPSR", stacked_regs[7]);
-    HardFault_USART6_WriteReg("CFSR", SCB->CFSR);
-    HardFault_USART6_WriteReg("HFSR", SCB->HFSR);
-    HardFault_USART6_WriteReg("DFSR", SCB->DFSR);
-    HardFault_USART6_WriteReg("AFSR", SCB->AFSR);
-    HardFault_USART6_WriteReg("MMFAR", SCB->MMFAR);
-    HardFault_USART6_WriteReg("BFAR", SCB->BFAR);
-    HardFault_USART6_WriteReg("SHCSR", SCB->SHCSR);
+    
+    USART6->CR3 &= ~(USART_CR3_DMAT | USART_CR3_DMAR);
 
+    printf("\r\nHardFault!\r\n");
+    printf("Stack = %s  SP = 0x%08X  EXC_RETURN = 0x%08X\r\n",
+           (exc_return & 0x04U) ? "PSP" : "MSP",
+           (uint32_t)stacked_regs,
+           exc_return);
+
+    printf("R0  = 0x%08X  R1  = 0x%08X  R2  = 0x%08X  R3  = 0x%08X\r\n",
+           stacked_regs[0], stacked_regs[1], stacked_regs[2], stacked_regs[3]);
+    printf("R12 = 0x%08X  LR  = 0x%08X  PC  = 0x%08X  xPSR = 0x%08X\r\n",
+           stacked_regs[4], stacked_regs[5], stacked_regs[6], stacked_regs[7]);
+
+    printf("CFSR = 0x%08X  HFSR = 0x%08X  DFSR = 0x%08X  AFSR = 0x%08X\r\n",
+           SCB->CFSR, SCB->HFSR, SCB->DFSR, SCB->AFSR);
+    printf("MMFAR = 0x%08X  BFAR = 0x%08X  SHCSR = 0x%08X\r\n",
+           SCB->MMFAR, SCB->BFAR, SCB->SHCSR);
+
+    if ((SCB->CFSR & SCB_CFSR_DIVBYZERO_Msk) != 0U)
+    {
+        printf("UsageFault: divide by zero\r\n");
+    }
+    if ((SCB->CFSR & SCB_CFSR_UNALIGNED_Msk) != 0U)
+    {
+        printf("UsageFault: unaligned access\r\n");
+    }
+    if ((SCB->CFSR & SCB_CFSR_INVSTATE_Msk) != 0U)
+    {
+        printf("UsageFault: invalid state\r\n");
+    }
     if ((SCB->CFSR & SCB_CFSR_PRECISERR_Msk) != 0U)
     {
-        HardFault_USART6_WriteString("BusFault: precise data bus error\r\n");
+        printf("BusFault: precise data bus error, BFAR is valid if BFARVALID is set\r\n");
     }
     if ((SCB->CFSR & SCB_CFSR_IMPRECISERR_Msk) != 0U)
     {
-        HardFault_USART6_WriteString("BusFault: imprecise data bus error\r\n");
+        printf("BusFault: imprecise data bus error\r\n");
     }
-    if ((SCB->CFSR & SCB_CFSR_DIVBYZERO_Msk) != 0U)
+    if ((SCB->CFSR & SCB_CFSR_IACCVIOL_Msk) != 0U)
     {
-        HardFault_USART6_WriteString("UsageFault: divide by zero\r\n");
+        printf("MemManage: instruction access violation\r\n");
+    }
+    if ((SCB->CFSR & SCB_CFSR_DACCVIOL_Msk) != 0U)
+    {
+        printf("MemManage: data access violation\r\n");
     }
 
     while(1);
@@ -175,7 +144,9 @@ extern I2C_HandleTypeDef hi2c2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim14;
 extern DMA_HandleTypeDef hdma_usart1_rx;
+extern DMA_HandleTypeDef hdma_usart6_rx;
 extern DMA_HandleTypeDef hdma_usart6_tx;
+extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart6;
 /* USER CODE BEGIN EV */
@@ -205,14 +176,18 @@ void NMI_Handler(void)
   */
 //void HardFault_Handler(void)
 //{
-//  /* USER CODE BEGIN HardFault_IRQn 0 */
-
-//  /* USER CODE END HardFault_IRQn 0 */
-//  while (1)
-//  {
-//    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-//    /* USER CODE END W1_HardFault_IRQn 0 */
-//  }
+////  /* USER CODE BEGIN HardFault_IRQn 0 */
+////  /**
+////  * @brief  This function handles Hard Fault exception.
+////  * @param  None
+////  * @retval None
+////  */
+////  /* USER CODE END HardFault_IRQn 0 */
+////  while (1)
+////  {
+////    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+////    /* USER CODE END W1_HardFault_IRQn 0 */
+////  }
 //}
 
 /**
@@ -406,6 +381,19 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles DMA2 stream1 global interrupt.
+  */
+void DMA2_Stream1_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream1_IRQn 0 */
+
+  /* USER CODE END DMA2_Stream1_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart6_rx);
+  /* USER CODE BEGIN DMA2_Stream1_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream1_IRQn 1 */
+}
+/**
   * @brief This function handles DMA2 stream2 global interrupt.
   */
 void DMA2_Stream2_IRQHandler(void)
@@ -459,6 +447,20 @@ void USART6_IRQHandler(void)
   /* USER CODE BEGIN USART6_IRQn 1 */
 
   /* USER CODE END USART6_IRQn 1 */
+}
+
+/**
+  * @brief This function handles UART7 global interrupt.
+  */
+void UART7_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART7_IRQn 0 */
+
+  /* USER CODE END UART7_IRQn 0 */
+  HAL_UART_IRQHandler(&huart7);
+  /* USER CODE BEGIN UART7_IRQn 1 */
+
+  /* USER CODE END UART7_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

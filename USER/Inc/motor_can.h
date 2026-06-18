@@ -12,7 +12,7 @@
 
 */
 #define NORMALIZE_ANGLE180(angle) angle = ((angle) > 180) ? ((angle) - 360) : (((angle) < -180) ? (angle) + 360 : angle)
-#define MotorCount 4
+#define MotorCount 5
 #define C620_UP_REDUCTION_RATIO 19.0f
 #define DM_MIT_ID_BASE 0x140U
 #define DM_MIT_FIRST_ID 1U

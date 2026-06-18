@@ -42,6 +42,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
          {
              remote_control_serve_update();
          }
+		 remote_control_hit_update();
         //  Set_dm_mit(&hcan1,0);
 //        JY901P_ReadAllData(&gyro_data);//��ȡ����������
 //        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // ������ƽ��ٶ�Ϊ0
@@ -68,20 +69,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 ////        Vofa_JustFloat(num, 3);
        Set_voltage(&hcan2,voltages);
     }
-//	if(hcan1.ErrorCode!=0)//����can���ߴ���������
-//	{
-//		HAL_CAN_DeInit(&hcan1);
-//		HAL_CAN_Init(&hcan1);
-//		HAL_CAN_Start(&hcan1);
-//	}
-//    if(hcan2.ErrorCode!=0)//����can���ߴ���������
-//	{
-//		HAL_CAN_DeInit(&hcan2);
-//		HAL_CAN_Init(&hcan2);
-//		HAL_CAN_Start(&hcan2);
-//	
-//	
-//	}	
+	if(hcan1.ErrorCode!=0)//����can���ߴ���������
+	{
+		HAL_CAN_DeInit(&hcan1);
+		HAL_CAN_Init(&hcan1);
+		HAL_CAN_Start(&hcan1);
+	}
+    if(hcan2.ErrorCode!=0)//����can���ߴ���������
+	{
+		HAL_CAN_DeInit(&hcan2);
+		HAL_CAN_Init(&hcan2);
+		HAL_CAN_Start(&hcan2);
+	
+	
+	}	
     //������������ӽǶȻ����жϴ����߼�
     if(htim == &htim14)  // ȷ����PID��ʱ���ĸ����ж�
     {
