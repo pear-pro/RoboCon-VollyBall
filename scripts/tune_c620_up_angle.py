@@ -12,6 +12,7 @@ Firmware protocol on USART6, 115200:
   TARGET motor_deg
   ZERO
   STOP
+  EXIT
   LOG 0|1 [divider]
   STATUS
 
@@ -489,7 +490,12 @@ def main() -> int:
         apply_pid(link, best_pid)
         link.command_expect("LOG 0", "OK LOG", wait=0.5)
         link.command_expect("STOP", "OKS", wait=0.5)
+        link.command_expect("EXIT", "OK EXIT", wait=0.5)
     finally:
+        try:
+            link.command_expect("EXIT", "OK EXIT", wait=0.5)
+        except Exception:
+            pass
         vofa.close()
         link.close()
 

@@ -85,7 +85,8 @@ void HardFault_Handler_C(uint32_t *stacked_regs, uint32_t exc_return)
 {
     __disable_irq();
 
-    
+    DebugTune_EnterFaultLock();
+
     USART6->CR3 &= ~(USART_CR3_DMAT | USART_CR3_DMAR);
 
     printf("\r\nHardFault!\r\n");

@@ -95,11 +95,7 @@ void All_Init(){
             20000, 16000, INIT);
 		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 
             20000, 16000, INIT);
-    IMU_UART_Init(&huart7);
-		
-		HAL_Delay(500);
-    HeadingHold_Init();
-    UART8_Init();
+  
 }
 
 void All_Clear(){
