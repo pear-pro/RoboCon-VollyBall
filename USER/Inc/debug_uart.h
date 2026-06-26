@@ -34,5 +34,6 @@ void DebugTune_Init(void);
 void DebugTune_Task(void);
 void DebugTune_OnControlTick(int16_t control_out);
 uint8_t DebugTune_IsActive(void);
+void DebugTune_EnterFaultLock(void);
 
 #endif /* __DEBUG_UART_H */

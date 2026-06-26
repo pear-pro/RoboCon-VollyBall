@@ -28,6 +28,7 @@ static volatile uint8_t tune_report_divider = 5U;
 static volatile uint8_t tune_report_tick;
 static volatile uint8_t tune_snapshot_pending;
 static volatile uint8_t tune_control_active;
+static volatile uint8_t tune_fault_locked;
 static volatile uint32_t tune_ms;
 static debug_tune_snapshot_t tune_snapshot;
 
@@ -39,8 +40,11 @@ void Vofa_JustFloat(float *_data, uint8_t _num)
 
     memcpy(&temp_copy, _data, sizeof(float) * _num);
     memcpy(tempData, (uint8_t *)&temp_copy, sizeof(temp_copy));
-    memcpy(&tempData[_num * 4], &temp_end[0], 4);
-    HAL_UART_Transmit_DMA(&huart6, tempData, (_num + 1U) * 4U);
+    if (!tune_fault_locked)
+    {
+        memcpy(&tempData[_num * 4], &temp_end[0], 4);
+        HAL_UART_Transmit_DMA(&huart6, tempData, (_num + 1U) * 4U);
+    }
 }
 
 static int32_t tune_scale_float(float value, float scale)
@@ -51,6 +55,11 @@ static int32_t tune_scale_float(float value, float scale)
 
 static void tune_send_text(const char *text)
 {
+    if (tune_fault_locked)
+    {
+        return;
+    }
+
     HAL_UART_Transmit(&huart6, (uint8_t *)text, (uint16_t)strlen(text), 50U);
 }
 
@@ -78,10 +87,28 @@ static void tune_rx_feed_byte(uint8_t ch)
 
 static void tune_poll_uart_rx(void)
 {
+    if (tune_fault_locked)
+    {
+        return;
+    }
+
     while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_RXNE) != RESET)
     {
         tune_rx_feed_byte((uint8_t)(huart6.Instance->DR & 0xFFU));
     }
+}
+
+static void tune_exit_control(void)
+{
+    if (tune_control_active)
+    {
+        ops_stop();
+    }
+
+    tune_control_active = 0U;
+    tune_log_enabled = 0U;
+    tune_snapshot_pending = 0U;
+    tune_report_tick = 0U;
 }
 
 static char *tune_next_token(char **cursor)
@@ -286,6 +313,12 @@ static void tune_process_command(char *line)
         ops_stop();
         tune_send_text("OKS\r\n");
     }
+    else if (strcmp(cmd, "EXIT") == 0 || strcmp(cmd, "exit") == 0 ||
+             strcmp(cmd, "QUIT") == 0 || strcmp(cmd, "quit") == 0)
+    {
+        tune_exit_control();
+        tune_send_text("OK EXIT\r\n");
+    }
     else if (strcmp(cmd, "LOG") == 0)
     {
         if (!tune_parse_int(&cursor, &i0))
@@ -332,7 +365,6 @@ static void tune_process_command(char *line)
             tune_send_text("ERR SELECT unknown target\r\n");
             return;
         }
-        tune_control_active = 1U;
         tune_send_text("OKSEL\r\n");
     }
     else if (strcmp(cmd, "MODE") == 0)
@@ -344,13 +376,12 @@ static void tune_process_command(char *line)
             tune_send_text("ERR MODE needs SPEED|POSITION\r\n");
             return;
         }
-        tune_control_active = 1U;
         ops_set_mode(mode);
         tune_send_text("OKMODE\r\n");
     }
     else if (strcmp(cmd, "HELP") == 0)
     {
-        tune_send_text("OK CMDS: LIST; SELECT name|idx; MODE SPEED|POSITION; PID akp aki akd skp ski skd [amax smax]; LIMIT amax smax; TARGET motor_deg; GOTO output_deg; SPEED rpm; ZERO; STOP; LOG 0|1 [divider]; STATUS\r\n");
+        tune_send_text("OK CMDS: LIST; SELECT name|idx; MODE SPEED|POSITION; PID akp aki akd skp ski skd [amax smax]; LIMIT amax smax; TARGET motor_deg; GOTO output_deg; SPEED rpm; ZERO; STOP; EXIT; LOG 0|1 [divider]; STATUS\r\n");
     }
     else
     {
@@ -366,6 +397,8 @@ void DebugTune_Init(void)
     tune_report_divider = 5U;
     tune_report_tick = 0U;
     tune_snapshot_pending = 0U;
+    tune_control_active = 0U;
+    tune_fault_locked = 0U;
     tune_ms = 0U;
     tune_send_text("OK DEBUG_TUNE USART6 115200\r\n");
 }
@@ -376,6 +409,11 @@ void DebugTune_Task(void)
     debug_tune_snapshot_t snapshot;
     uint8_t has_command = 0U;
     uint8_t has_snapshot = 0U;
+
+    if (tune_fault_locked)
+    {
+        return;
+    }
 
     tune_poll_uart_rx();
 
@@ -422,13 +460,18 @@ void DebugTune_Task(void)
 
 uint8_t DebugTune_IsActive(void)
 {
-    return tune_control_active;
+    return (tune_fault_locked == 0U) ? tune_control_active : 0U;
 }
 
 void DebugTune_OnControlTick(int16_t control_out)
 {
     ops_control_t *target = ops_get_current();
     motor_info_t *motor = target->motor;
+
+    if (tune_fault_locked)
+    {
+        return;
+    }
 
     tune_ms += 10U;
     if (!tune_log_enabled)
@@ -458,4 +501,15 @@ void DebugTune_OnControlTick(int16_t control_out)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     (void)huart;
+}
+
+void DebugTune_EnterFaultLock(void)
+{
+    tune_fault_locked = 1U;
+    tune_control_active = 0U;
+    tune_log_enabled = 0U;
+    tune_cmd_ready = 0U;
+    tune_snapshot_pending = 0U;
+
+    USART6->CR3 &= ~(USART_CR3_DMAT | USART_CR3_DMAR);
 }
