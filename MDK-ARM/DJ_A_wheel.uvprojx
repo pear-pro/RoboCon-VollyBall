@@ -484,6 +484,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Src\imu.c</FilePath>
             </File>
+            <File>
+              <FileName>watch_dog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Src\watch_dog.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -588,6 +593,11 @@
               <FileName>imu.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\Inc\imu.h</FilePath>
+            </File>
+            <File>
+              <FileName>watch_dog.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\Inc\watch_dog.h</FilePath>
             </File>
           </Files>
         </Group>

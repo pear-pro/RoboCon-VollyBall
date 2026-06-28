@@ -3,46 +3,55 @@
 #include "motor_can.h"
 #include "pid.h"
 #include <stdint.h>
+#include "imu.h"
+#include "heading_hold.h"
+
 extern motor_info_t damiao[MotorCount];
 void All_Init(){
 
     can1_filter_init();
     can2_fliter_init();
     sbus_remote_control_init();
-	   
-       Set_dm_enable(&hcan1,0);
+//    JY901P_Unlock();
+//    JY901P_Calibrate_Full();
 
-	        PID_Struct_Init(&C620[0].Speed_pid,   
-            3.0f, 
-            0.3f,
-            0.75f, 
-            10000, 
-            16000,
-            INIT);
-            PID_Struct_Init(&C620[1].Speed_pid,   
+
+       Set_dm_enable(&hcan1,0);
+       Set_dm_enable(&hcan1,1);
+       Set_dm_enable(&hcan1,2);
+	
+
+	 PID_Struct_Init(&C620[0].Speed_pid, //右后
             2.0f, 
             0.3f,
-            0.75f, 
+            0.0f, 
             10000, 
             16000,
             INIT);
-			PID_Struct_Init(&C620[2].Speed_pid,   
-            3.0f, 
+	 PID_Struct_Init(&C620[1].Speed_pid, //右前
+            3.5f, 
             0.3f,
-            0.75f, 
+            0.0f, 
             10000, 
             16000,
             INIT);
-			PID_Struct_Init(&C620[3].Speed_pid,   
+	PID_Struct_Init(&C620[2].Speed_pid, //左前
             2.0f, 
             0.3f,
-            0.75f, 
+            0.0f, 
+            10000, 
+            16000,
+            INIT);
+	 PID_Struct_Init(&C620[3].Speed_pid, //左后
+            2.0f, 
+            0.3f,
+            0.0f, 
             10000, 
             16000,
             INIT);
     for(int i=0;i<MotorCount;i++){
 			
-
+       
         PID_Struct_Init(&C620[i].Angle_pid,
             10.0f,
             0.0f,
@@ -51,32 +60,13 @@ void All_Init(){
             300,
             INIT);
 
-        //����3508
-        PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
-            10.5f, 
-            0.0f,
-            0.15f, 
-            20000, 
-            16000,
-            INIT);
-        PID_Struct_Init(&C620_hit_angle[i].Angle_pid,
-            7.0f,
-            0.0f,
-            0.02f,
-            30000,
-            16000,
-            INIT);
-          //  
-
     }
-		C620_hit_angle[0].target_angle = -10.0f * SCALE;
-		C620_hit_angle[1].target_angle = -10.0f * SCALE;
-		C620_hit_angle[2].target_angle = 10.0f * SCALE;
 	damiao[0].KP = 150.0f;//150.0f;
 	damiao[0].KD = 0.2f;
 	damiao[0].tor = -0.25f;//-1.65
 	damiao[0].angle=0.0f;
   C620_up_angle.target_angle = -3420.0f;
+	Pump_Off();
         PID_Struct_Init(&damiao[0].Angle_pid,
             15.0f,
             0.0f,
@@ -89,16 +79,13 @@ void All_Init(){
     
 
    
-        PID_Struct_Init(&C620_angle.Speed_pid, 10.0f, 0.3f, 0.0f, 
-            10000, 16000, INIT);
-		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.02f, 
-            20000, 16000, INIT);
-		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 
-            20000, 16000, INIT);
-    IMU_UART_Init(&huart7);
-		
-		HAL_Delay(500);
-    HeadingHold_Init();
+	PID_Struct_Init(&C620_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);
+	PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
+	PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
+		IMU_UART_Init(&huart7);
+		HAL_Delay(1000);
+		HeadingHold_Init();
+	
 }
 
 void All_Clear(){

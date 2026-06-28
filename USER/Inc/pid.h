@@ -64,4 +64,5 @@ void PID_Struct_Init(pid_t *pid,
 					 int32_t integral_limit,
 					 INIT_STATUS init_status);
 int16_t PID_PROCESS_Double(pid_t *pid_Angle,pid_t *pid_speed,float target, float Angle_get, float speed_get);
+int16_t PID_PROCESS_Speed(pid_t *pid_speed,float target_speed,float speed_get);
 #endif
