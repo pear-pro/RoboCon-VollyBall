@@ -21,28 +21,28 @@ void All_Init(){
        Set_dm_enable(&hcan1,2);
 	
 
-	 PID_Struct_Init(&C620[0].Speed_pid, //鍙冲悗
+	 PID_Struct_Init(&C620[0].Speed_pid, //右后
             2.0f, 
             0.3f,
             0.0f, 
             10000, 
             16000,
             INIT);
-	 PID_Struct_Init(&C620[1].Speed_pid, //鍙冲墠
+	 PID_Struct_Init(&C620[1].Speed_pid, //右前
             3.5f, 
             0.3f,
             0.0f, 
             10000, 
             16000,
             INIT);
-	PID_Struct_Init(&C620[2].Speed_pid, //宸﹀墠
+	PID_Struct_Init(&C620[2].Speed_pid, //左前
             2.0f, 
             0.3f,
             0.0f, 
             10000, 
             16000,
             INIT);
-	 PID_Struct_Init(&C620[3].Speed_pid, //宸﹀悗
+	 PID_Struct_Init(&C620[3].Speed_pid, //左后
             2.0f, 
             0.3f,
             0.0f, 

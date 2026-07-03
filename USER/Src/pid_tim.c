@@ -24,8 +24,8 @@ uint16_t PID_Calc_Flag = 0;
 /************************ ��ʱ�������жϻص����� ************************/
 /**
  * @brief  ��ʱ�������жϻص�������HAL����������д��
- * @note   PID�����߼�д�ڴ˴���ԭ�жϷ�������ҵ�����?
- * @param  htim: ��ʱ�����?
+ * @note   PID�����߼�д�ڴ˴���ԭ�жϷ�������ҵ����룩
+ * @param  htim: ��ʱ�����
  * @retval ��
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -59,9 +59,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         MecanumWheel_Move(car_x, car_y, car_w);
 		 IMU_GetData(&imu);
 		 
+		 
         //  Set_dm_mit(&hcan1,0);
 //        JY901P_ReadAllData(&gyro_data);//��ȡ����������
-//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // ������ƽ��ٶ��?
+//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // ������ƽ��ٶ�Ϊ0
 //        car_w=car_pid.out;
          for(int i=0;i<MotorCount;i++)
          {
@@ -99,7 +100,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //	
 //	
 //	}	
-    //������������ӽǶȻ����жϴ����߼�?
+    //������������ӽǶȻ����жϴ����߼�
     if(htim == &htim14)  // ȷ����PID��ʱ���ĸ����ж�
     {
     if(DebugTune_IsActive())

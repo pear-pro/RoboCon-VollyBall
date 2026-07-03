@@ -1,7 +1,6 @@
 #include "debug_uart.h"
 #include "ops.h"
 #include "usart.h"
-#include "imu.h"
 #include <stdlib.h>
 
 #define DEBUG_TUNE_LINE_MAX 128U
@@ -31,7 +30,6 @@ static volatile uint8_t tune_snapshot_pending;
 static volatile uint8_t tune_control_active;
 static volatile uint32_t tune_ms;
 static debug_tune_snapshot_t tune_snapshot;
-static uint8_t tune_rx_dma_byte;
 
 void Vofa_JustFloat(float *_data, uint8_t _num)
 {
@@ -78,11 +76,11 @@ static void tune_rx_feed_byte(uint8_t ch)
     }
 }
 
-static void tune_start_rx_dma(void)
+static void tune_poll_uart_rx(void)
 {
-    if (huart6.RxState == HAL_UART_STATE_READY)
+    while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_RXNE) != RESET)
     {
-        (void)HAL_UART_Receive_DMA(&huart6, &tune_rx_dma_byte, 1U);
+        tune_rx_feed_byte((uint8_t)(huart6.Instance->DR & 0xFFU));
     }
 }
 
@@ -231,7 +229,7 @@ static void tune_process_command(char *line)
         {
             ops_set_limit((int32_t)f[6], (int32_t)f[7]);
         }
-        tune_send_status("OKP");
+        tune_send_text("OKP\r\n");
     }
     else if (strcmp(cmd, "LIMIT") == 0)
     {
@@ -241,7 +239,7 @@ static void tune_process_command(char *line)
             return;
         }
         ops_set_limit((int32_t)f[0], (int32_t)f[1]);
-        tune_send_status("OKL");
+        tune_send_text("OKL\r\n");
     }
     else if (strcmp(cmd, "TARGET") == 0)
     {
@@ -252,7 +250,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_target_motor(f[0]);
-        tune_send_status("OKT");
+        tune_send_text("OKT\r\n");
     }
     else if (strcmp(cmd, "GOTO") == 0)
     {
@@ -263,7 +261,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_target_output(f[0]);
-        tune_send_status("OKG");
+        tune_send_text("OKG\r\n");
     }
     else if (strcmp(cmd, "SPEED") == 0)
     {
@@ -274,19 +272,19 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_speed(f[0]);
-        tune_send_status("OKV");
+        tune_send_text("OKV\r\n");
     }
     else if (strcmp(cmd, "ZERO") == 0)
     {
         tune_control_active = 1U;
         ops_zero();
-        tune_send_status("OKZ");
+        tune_send_text("OKZ\r\n");
     }
     else if (strcmp(cmd, "STOP") == 0)
     {
         tune_control_active = 1U;
         ops_stop();
-        tune_send_status("OKS");
+        tune_send_text("OKS\r\n");
     }
     else if (strcmp(cmd, "LOG") == 0)
     {
@@ -335,7 +333,7 @@ static void tune_process_command(char *line)
             return;
         }
         tune_control_active = 1U;
-        tune_send_status("OKSEL");
+        tune_send_text("OKSEL\r\n");
     }
     else if (strcmp(cmd, "MODE") == 0)
     {
@@ -348,7 +346,7 @@ static void tune_process_command(char *line)
         }
         tune_control_active = 1U;
         ops_set_mode(mode);
-        tune_send_status("OKMODE");
+        tune_send_text("OKMODE\r\n");
     }
     else if (strcmp(cmd, "HELP") == 0)
     {
@@ -369,7 +367,6 @@ void DebugTune_Init(void)
     tune_report_tick = 0U;
     tune_snapshot_pending = 0U;
     tune_ms = 0U;
-    tune_start_rx_dma();
     tune_send_text("OK DEBUG_TUNE USART6 115200\r\n");
 }
 
@@ -379,6 +376,8 @@ void DebugTune_Task(void)
     debug_tune_snapshot_t snapshot;
     uint8_t has_command = 0U;
     uint8_t has_snapshot = 0U;
+
+    tune_poll_uart_rx();
 
     __disable_irq();
     if (tune_cmd_ready)
@@ -397,7 +396,6 @@ void DebugTune_Task(void)
 
     if (has_command)
     {
-        has_snapshot = 0U;
         tune_process_command(line);
     }
 
@@ -459,15 +457,5 @@ void DebugTune_OnControlTick(int16_t control_out)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if (huart->Instance == USART6)
-    {
-        tune_rx_feed_byte(tune_rx_dma_byte);
-        tune_start_rx_dma();
-    }
-    else if (huart->Instance == UART7)
-    {
-        IMU_UART_RxCpltCallback(huart);
-    }
+    (void)huart;
 }
-
-

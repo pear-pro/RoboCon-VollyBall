@@ -37,9 +37,6 @@ extern I2C_HandleTypeDef hi2c2;
 
 // 核心函数：逐个读取寄存器数据到结构体
 void JY901P_ReadAllData(JY901P_DataStruct *pData);
-uint8_t JY901P_ReadAllDataSafe(JY901P_DataStruct *pData);
-uint8_t JY901P_ReadYawDeg(float *yaw_deg);
-void JY901P_Recover(void);
 
 // 声明DMA接收缓冲区和读取函数
 extern uint8_t jy901p_i2c2_dma_rx_buf[18];

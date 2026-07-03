@@ -19,7 +19,10 @@
 #include "pid_tim.h"
 #include "stm32f4xx_hal_can.h"
 #include <stdint.h>
-motor_info_t C620[MotorCount];
+
+motor_info_t DM4310_angle;
+motor_info_t DM4310_up_angle;
+motor_info_t DM4310_hit_angle[3];
 motor_info_t C620_angle;
 motor_info_t C620_up_angle;
 motor_info_t C620_hit_angle[3];
@@ -107,7 +110,6 @@ void Set_voltage(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
-//忘记搞那个的了，应该是俯仰角
 void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
 	uint32_t tx_mailbox;
@@ -126,7 +128,6 @@ void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 	}
 }
 
-//发球3508 id=6
 void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
 	uint32_t tx_mailbox;
@@ -411,51 +412,13 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   CAN_RxHeaderTypeDef can2RxMsg;
 	if(hcan==&hcan1)
 	{
-		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData); 
-					//俯仰角3508
-				if(can1RxMsg.StdId==0x205){
-					C620_angle.Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-					C620_angle.Rxmsg.Speed= dji_motor_decode_int16(can1RxData[2], can1RxData[3]);
-					C620_angle.Rxmsg.Torque= dji_motor_decode_int16(can1RxData[4], can1RxData[5]);
-					C620_angle.Rxmsg.Temp=can1RxData[6];
-					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
-				}
-		for(uint8_t i=0;i<3;i++)
-	  {
-		  if(can1RxMsg.StdId==0x206+i){
-					C620_hit_angle[i].Rxmsg.Angle= ((can1RxData[0] << 8) | can1RxData[1])*360/8192.0f;
-					C620_hit_angle[i].Rxmsg.Speed= dji_motor_decode_int16(can1RxData[2], can1RxData[3]);
-					C620_hit_angle[i].Rxmsg.Torque= dji_motor_decode_int16(can1RxData[4], can1RxData[5]);
-					C620_hit_angle[i].Rxmsg.Temp=can1RxData[6];
-					C620_hit_angle[i].currentRead=C620_hit_angle[i].Rxmsg.Angle;
-					C620_hit_angle[i].Speed_pid.get=C620_hit_angle[i].Rxmsg.Speed;
-				if(C620_hit_angle[i].FirstEntre==0)
-				{
-					C620_hit_angle[i].Zero=C620_hit_angle[i].currentRead;
-					C620_hit_angle[i].FirstEntre=1;
-					C620_hit_angle[i].lastRead=C620_hit_angle[i].currentRead;
-					C620_hit_angle[i].totalAngle=0;
-				}
-				float delta=C620_hit_angle[i].currentRead-C620_hit_angle[i].lastRead;
-				if(delta>180)
-				{
-					delta=delta-360;
-				}
-				else if(delta<-180)
-				{
-					delta=delta+360;
-				}
-				else
-				{
-					delta=delta+0;
-				}
-				C620_hit_angle[i].totalAngle+=delta;
-				C620_hit_angle[i].Angle_pid.get=C620_hit_angle[i].totalAngle;
-				C620_hit_angle[i].lastRead=C620_hit_angle[i].currentRead;
-			//Vofa_JustFloat(&C620_hit_angle[i].Angle_pid.set, 1);
-		  }
-	  }
-  }
+//		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
+//         uint8_t motor_id=can1RxData[0] & 0x0F; //电机ID在第一个字节的低4位
+//		if (motor_id>=0 && motor_id < MotorCount)
+//		{
+//			dm_motor_fbdata(&damiao[motor_id], can1RxData);
+//		}
+	}
     if(hcan==&hcan2) //底盘加角度3508
 		{
 
@@ -471,7 +434,46 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					flag=1;
 				}
 			}
-		
-
-		}
-}
+			//俯仰角3508
+				if(can2RxMsg.StdId==0x205){
+					C620_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+					C620_angle.Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
+					C620_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
+					C620_angle.Rxmsg.Temp=can2RxData[6];
+					C620_angle.Speed_pid.get=C620_angle.Rxmsg.Speed;
+				}			//HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+			if(can2RxMsg.StdId==0x206){
+				C620_up_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+				C620_up_angle.Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
+				C620_up_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
+				C620_up_angle.Rxmsg.Temp=can2RxData[6];
+				C620_up_angle.currentRead=C620_up_angle.Rxmsg.Angle;
+				C620_up_angle.Speed_pid.get=C620_up_angle.Rxmsg.Speed;
+				//计算相对零点转了多少度
+				if(C620_up_angle.FirstEntre==0)
+				{
+					C620_up_angle.Zero=C620_up_angle.currentRead;
+					C620_up_angle.FirstEntre=1;
+					C620_up_angle.lastRead=C620_up_angle.currentRead;
+					C620_up_angle.totalAngle=0;
+				}
+				float delta=C620_up_angle.currentRead-C620_up_angle.lastRead;
+				if(delta>180)
+				{
+					delta=delta-360;
+				}
+				else if(delta<-180)
+				{
+					delta=delta+360;
+				}
+				else
+				{
+					delta=delta+0;
+				}
+				C620_up_angle.totalAngle+=delta;
+				C620_up_angle.Angle_pid.get=C620_up_angle.totalAngle;
+				C620_up_angle.lastRead=C620_up_angle.currentRead;
+				//Vofa_JustFloat(&C620_up_angle.Angle_pid.set, 1);
+			}
+				}
+			}

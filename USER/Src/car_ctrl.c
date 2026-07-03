@@ -1,6 +1,7 @@
 #include "includes.h"
 #include "pid.h"
-  pid_t car_pid;
+ motor_info_t C620[MotorCount];
+ pid_t car_pid;
 /************************ 麦轮机器人参数配置 ************************/
 // 物理参数（根据实际机器人修改）
 #define WHEEL_RADIUS    0.077f     // 轮子半径（米），示例：5cm
