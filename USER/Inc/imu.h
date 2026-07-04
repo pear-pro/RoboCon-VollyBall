@@ -6,7 +6,7 @@
 #include <string.h>
 
 /************************************************************
- * ÂÆèÂÆö‰π?
+ * ???????1?
 ************************************************************/
 
 #define IMU_FRAME_HEAD              0x55
@@ -32,7 +32,7 @@
 #define IMU_FLAG_QUAT               (1U << 4)
 
 /************************************************************
- * Êï∞ÊçÆÁªìÊûÑ
+ * ??°„?????°∞???
 ************************************************************/
 
 typedef struct
@@ -73,21 +73,21 @@ typedef struct
     IMU_Raw3Axis_t mag_raw;
     int16_t quat_raw[4];
 
-    IMU_Float3Axis_t acc_g;        /* Âä†ÈÄüÂ∫¶ÔºåÂçï‰Ω?g */
-    IMU_Float3Axis_t gyro_dps;     /* ËßíÈÄüÂ∫¶ÔºåÂçï‰Ω?¬∞/s */
+    IMU_Float3Axis_t acc_g;        /* ???®¶???o|?????????g */
+    IMU_Float3Axis_t gyro_dps;     /* ®®°Ï°Ø®¶???o|??????????°„/s */
     IMU_Float3Axis_t gyro_dps_fused;
     IMU_Float3Axis_t gyro_bias_dps;
-    IMU_Angle_t angle_deg;         /* Ê¨ßÊãâËßíÔºåÂçï‰Ωç ¬∞ */
+    IMU_Angle_t angle_deg;         /* ??°Ï??°Î®®°Ï°Ø????????? ?°„ */
     IMU_Angle_t angle_fused_deg;
-    IMU_Float3Axis_t mag;          /* Á£ÅÂú∫ÔºåÂéüÂßãÂÄ?*/
-    IMU_Quat_t quat;               /* ÂõõÂÖÉÊï?*/
+    IMU_Float3Axis_t mag;          /* ?°Í???o???????°Ï????*/
+    IMU_Quat_t quat;               /* ????°≠????*/
 
     uint32_t frame_count;
     uint32_t crc_error_count;
 } IMU_Data_t;
 
 /************************************************************
- * ÂáΩÊï∞Â£∞Êòé
+ * ?????°„?°Í°„???
 ************************************************************/
 
 void IMU_UART_Init(UART_HandleTypeDef *huart);
