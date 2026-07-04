@@ -28,8 +28,8 @@ uint16_t PID_Calc_Flag = 0;
 /************************ ��ʱ�������жϻص����� ************************/
 /**
  * @brief  ��ʱ�������жϻص�������HAL����������д��
- * @note   PID�����߼�д�ڴ˴���ԭ�жϷ�������ҵ����룩
- * @param  htim: ��ʱ�����
+ * @note   PID�����߼�д�ڴ˴���ԭ�жϷ�������ҵ�����?
+ * @param  htim: ��ʱ�����?
  * @retval ��
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -38,7 +38,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	    if(htim == &htim3)  // ȷ����PID��ʱ���ĸ����ж�
     {
 
-		 // ң�س��� 150ms δ����ʱ����������뷢�������ȫ̬
+		// ң�س��� 150ms δ����ʱ����������뷢�������ȫ̬
 		 remote_control_watchdog_update();
 		 if (remote_control_is_timeout())
 		 {
@@ -57,6 +57,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
          {
              remote_control_serve_update();
          }
+        remote_control_hit_update();
 		car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
         car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
 
@@ -100,7 +101,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		 
         //  Set_dm_mit(&hcan1,0);
 //        JY901P_ReadAllData(&gyro_data);//��ȡ����������
-//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // ������ƽ��ٶ�Ϊ0
+//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // ������ƽ��ٶ��?
 //        car_w=car_pid.out;
          for(int i=0;i<MotorCount;i++)
          {
@@ -138,7 +139,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //	
 //	
 //	}	
-    //������������ӽǶȻ����жϴ����߼�
+    //������������ӽǶȻ����жϴ����߼�?
     if(htim == &htim14)  // ȷ����PID��ʱ���ĸ����ж�
     {
     if(DebugTune_IsActive())
@@ -149,7 +150,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         Set_dm_mit(&hcan1,0);
         Set_dm_mit(&hcan1,1);
         Set_dm_mit(&hcan1,2);
-		up_angle_control();
+		
     }	
 	
     }

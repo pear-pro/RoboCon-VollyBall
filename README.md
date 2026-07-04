@@ -54,3 +54,20 @@ python scripts/tune_c620_up_angle.py COM3 --select pitch_speed --mode speed --ta
 --mode position|speed：选择双环控角度或单速度环
 --target：position 下是输出轴角度，speed 下是 rpm
 --ratio：位置模式评分和 VOFA 显示用的减速比，默认 19
+
+
+2026.7.5
+发球机整机问题解决
+1.can1和2优先级均为1
+遥控 USART1   2
+TIM3/TIM14   3
+IMU UART7     4
+I2C2          5
+DMA/调试串口  6
+2.can1.2filter_init 也进行了微调
+3.motor_can.c里对DM的发送函数的发送邮箱进行了调整
+4.can1加回了对DM的接收反馈(可能没用，没招了用AI加的，懒得控制变量了)
+
+尚存问题
+1.DM的控制，三个电机不同步，可能是接线问题，等下一班再看了
+2.右下角电机存在与地面接触不充分，空转，联系机械必须解决

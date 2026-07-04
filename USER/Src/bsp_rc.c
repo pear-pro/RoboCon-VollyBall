@@ -35,6 +35,7 @@ void RC_init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
     //enable double memory buffer
     //使能双缓冲区
     SET_BIT(hdma_usart1_rx.Instance->CR, DMA_SxCR_DBM);
+    CLEAR_BIT(hdma_usart1_rx.Instance->CR, DMA_SxCR_CT);
 
     //enable DMA
     //使能DMA

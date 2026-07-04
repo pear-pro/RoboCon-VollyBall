@@ -52,7 +52,7 @@ void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 /*滤波器配置及can初始化*/
 void can1_filter_init(void)
 {
-	CAN_FilterTypeDef can1_filter_structure;
+	CAN_FilterTypeDef can1_filter_structure = {0};
 	can1_filter_structure.SlaveStartFilterBank=14;
 	can1_filter_structure.FilterActivation = ENABLE;//使能滤波器
 	can1_filter_structure.FilterMode = CAN_FILTERMODE_IDMASK;//掩码模式
@@ -73,7 +73,8 @@ void can1_filter_init(void)
 
 void can2_fliter_init(void)
 {
-	CAN_FilterTypeDef can2_filter_structure;
+	CAN_FilterTypeDef can2_filter_structure = {0};
+	can2_filter_structure.SlaveStartFilterBank=14;
 	can2_filter_structure.FilterActivation = ENABLE;//使能滤波器
 	can2_filter_structure.FilterMode = CAN_FILTERMODE_IDMASK;//掩码模式
 	can2_filter_structure.FilterScale = CAN_FILTERSCALE_32BIT;
@@ -172,6 +173,7 @@ void Set_voltage_hit(CAN_HandleTypeDef* hcan,int16_t voltage[])
 
 void Set_dm_mit(CAN_HandleTypeDef* hcan,int16_t ID)
 {
+	uint32_t tx_mailbox;
 	uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
@@ -214,7 +216,7 @@ void Set_dm_mit(CAN_HandleTypeDef* hcan,int16_t ID)
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
- 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//发送报文
 	}
 }
 
@@ -273,6 +275,7 @@ void Set_dm_pos(CAN_HandleTypeDef* hcan,uint16_t ID,float pos,float vel)
 
 void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
+  uint32_t tx_mailbox;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
 
@@ -293,12 +296,13 @@ void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
 
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//·￠?í±¨??
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//·￠?í±¨??
 	}
 }
 
 void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID)
 {
+  uint32_t tx_mailbox;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
   can1TxMsg.StdId = 0x00+ID;
@@ -318,12 +322,13 @@ void Set_dm_disable(CAN_HandleTypeDef* hcan,uint8_t ID)
 
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);
 	}
 }
 
 void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 {
+  uint32_t tx_mailbox;
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
   can1TxMsg.StdId = CAN_ID;
@@ -342,7 +347,7 @@ void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
-			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, (uint32_t*)CAN_TX_MAILBOX0);//发送报文
+			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//发送报文
 	}
 }
 
@@ -407,17 +412,29 @@ void dm_circle_test()
 //接收中断回调函数
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-  uint8_t flag=0;
   CAN_RxHeaderTypeDef can1RxMsg;
   CAN_RxHeaderTypeDef can2RxMsg;
 	if(hcan==&hcan1)
 	{
-//		 HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData);
-//         uint8_t motor_id=can1RxData[0] & 0x0F; //电机ID在第一个字节的低4位
-//		if (motor_id>=0 && motor_id < MotorCount)
-//		{
-//			dm_motor_fbdata(&damiao[motor_id], can1RxData);
-//		}
+		/* Drain at most the three hardware FIFO slots per IRQ so CAN1
+		 * feedback is consumed without making the ISR unbounded. */
+		for (uint8_t message_count = 0U;
+		     (message_count < 3U) &&
+		     (HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0) > 0U);
+		     message_count++)
+		{
+			if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0,
+			                         &can1RxMsg, can1RxData) != HAL_OK)
+			{
+				break;
+			}
+
+			uint8_t motor_id = can1RxData[0] & 0x0FU;
+			if (motor_id < MotorCount)
+			{
+				dm_motor_fbdata(&damiao[motor_id], can1RxData);
+			}
+		}
 	}
     if(hcan==&hcan2) //底盘加角度3508
 		{
@@ -431,7 +448,6 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					C620[i].Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
 					C620[i].Rxmsg.Temp=can2RxData[6];
 					C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
-					flag=1;
 				}
 			}
 			//俯仰角3508

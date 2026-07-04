@@ -51,21 +51,21 @@ static int16_t limit(int32_t value, int16_t limit)
 
 static uint8_t move_to_angle_smooth(motor_info_t *motor, float target, float step_size)
 {
-    float diff = target - motor->target_angle;
+    float diff = target - motor->angle;
 
     if (diff > step_size)
     {	
-        motor->target_angle += step_size;
+        motor->angle += step_size;
         return 0;
     }
     else if (diff < -step_size)
     {
-        motor->target_angle -= step_size;
+        motor->angle -= step_size;
         return 0;
     }
     else
     {
-        motor->target_angle = target;
+        motor->angle = target;
         return 1;
     }
 }

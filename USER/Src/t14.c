@@ -119,6 +119,10 @@ void USART1_IRQHandlerCallBack(void)
             //disable DMA
             //失效DMA
             __HAL_DMA_DISABLE(&hdma_usart1_rx);
+            while ((hdma_usart1_rx.Instance->CR & DMA_SxCR_EN) != RESET)
+            {
+                __HAL_DMA_DISABLE(&hdma_usart1_rx);
+            }
 
             //get receive data length, length = set_data_length - remain_length
             //获取接收数据长度,长度 = 设定长度 - 剩余长度
@@ -148,6 +152,10 @@ void USART1_IRQHandlerCallBack(void)
             //disable DMA
             //失效DMA
             __HAL_DMA_DISABLE(&hdma_usart1_rx);
+            while ((hdma_usart1_rx.Instance->CR & DMA_SxCR_EN) != RESET)
+            {
+                __HAL_DMA_DISABLE(&hdma_usart1_rx);
+            }
 
             //get receive data length, length = set_data_length - remain_length
             //获取接收数据长度,长度 = 设定长度 - 剩余长度
@@ -159,7 +167,7 @@ void USART1_IRQHandlerCallBack(void)
 
             //set memory buffer 0
             //设定缓冲�?0
-            DMA1_Stream1->CR &= ~(DMA_SxCR_CT);
+            hdma_usart1_rx.Instance->CR &= ~(DMA_SxCR_CT);
             
             //enable DMA
             //使能DMA

@@ -63,8 +63,16 @@ void All_Init(){
     }
 	damiao[0].KP = 150.0f;//150.0f;
 	damiao[0].KD = 0.2f;
-	damiao[0].tor = -0.25f;//-1.65
+	damiao[0].tor = -1.65f;//-1.65
 	damiao[0].angle=0.0f;
+			damiao[1].KP = 150.0f;//150.0f;
+	damiao[1].KD = 0.2f;
+	damiao[1].tor = -1.65f;//-1.65
+	damiao[1].angle=0.0f;
+			damiao[2].KP = 150.0f;//150.0f;
+	damiao[2].KD = 0.2f;
+	damiao[2].tor = -1.65f;//-1.65
+	damiao[2].angle=0.0f;
   C620_up_angle.target_angle = -3420.0f;
 	Pump_Off();
         PID_Struct_Init(&damiao[0].Angle_pid,
@@ -82,9 +90,6 @@ void All_Init(){
 	PID_Struct_Init(&C620_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);
 	PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
 	PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
-		IMU_UART_Init(&huart7);
-		HAL_Delay(1000);
-		HeadingHold_Init();
 	
 }
 

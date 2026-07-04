@@ -16,10 +16,9 @@
 #include "Initialize.h"
 #include "remote_control.h"
 #include "math_utils.h"
-#include "jy901p.h"
+#include "heading_hold.h"
 #include "debug_uart.h"
-#include "JY901P_Calibrate.h"
-#include "ht_10a_remote_control.h"
+
 #include "jumper_t15_rc.h"
 #include "t14.h"
 
@@ -43,7 +42,7 @@ extern motor_info_t DM4310_up_angle;
 extern uint16_t PID_Calc_Flag;
 extern float car_x,car_y,car_w;
 extern float car_tarx,car_tary,car_tarw;
-extern JY901P_DataStruct gyro_data;
+
 extern int16_t Z_zeropoint;
 
 
