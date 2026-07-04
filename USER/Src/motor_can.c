@@ -137,8 +137,8 @@ void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
   canTxMsg.IDE   = CAN_ID_STD;//标准ID
   canTxMsg.RTR   = CAN_RTR_DATA;//数据帧
   canTxMsg.DLC   = 8;//数据长度
-   canTxData[2]=(voltage[0]>>8)&0xff;
-   canTxData[3]=(voltage[0])&0xff;
+   canTxData[0]=(voltage[0]>>8)&0xff;
+   canTxData[1]=(voltage[0])&0xff;
 	/* 先检查是否有空的 TX mailbox，只有有空位才发送报文 */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
@@ -435,7 +435,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				}
 			}
 			//俯仰角3508
-				if(can2RxMsg.StdId==0x205){
+				if(can2RxMsg.StdId==0x206){
 					C620_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
 					C620_angle.Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
 					C620_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);

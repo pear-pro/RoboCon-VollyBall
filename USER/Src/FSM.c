@@ -20,7 +20,7 @@ static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
 //����״̬����ر���
 static volatile hit_state_t hit_stage = HIT_IDLE;
 static uint8_t hit_preset_index = 0;
-double set_angle = -170.0f;
+double set_angle = 170.0f;
 volatile uint16_t count = 0;
 serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 
@@ -158,6 +158,7 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_LIFT_RETURN:
+		Pump_On();
         if (++serve_tick >= SERVE_RETURN_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT;
@@ -167,7 +168,6 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_HIT:
         C620_up_angle.target_angle = (set_angle + 360 * count) * 19;
-		Pump_On();
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -178,6 +178,8 @@ void remote_control_serve_update(void)
     case SERVE_STAGE_HIT_RETURN:
     default:
         //C620_up_angle.target_angle = ;
+	
+	
 	    Pump_Off();
         if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
         {

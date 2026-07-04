@@ -78,16 +78,13 @@ void Vofa_JustFloat(float *_data, uint8_t _num)
 
     memcpy(&temp_copy, _data, sizeof(float) * _num);
     memcpy(tempData, (uint8_t *)&temp_copy, sizeof(temp_copy));
-<<<<<<< HEAD
     memcpy(&tempData[_num * 4], &temp_end[0], 4);
     (void)tune_uart6_dma_send_blocking(tempData, (_num + 1U) * 4U, DEBUG_TUNE_TX_TIMEOUT_MS);
-=======
     if (!tune_fault_locked)
     {
         memcpy(&tempData[_num * 4], &temp_end[0], 4);
         HAL_UART_Transmit_DMA(&huart6, tempData, (_num + 1U) * 4U);
     }
->>>>>>> 72c5a7a73615f53c2bc683c3fd3d58c910b5cce6
 }
 
 static int32_t tune_scale_float(float value, float scale)
@@ -98,16 +95,13 @@ static int32_t tune_scale_float(float value, float scale)
 
 static void tune_send_text(const char *text)
 {
-<<<<<<< HEAD
     (void)tune_uart6_dma_send_blocking((uint8_t *)text, (uint16_t)strlen(text), DEBUG_TUNE_TX_TIMEOUT_MS);
-=======
     if (tune_fault_locked)
     {
         return;
     }
 
     HAL_UART_Transmit(&huart6, (uint8_t *)text, (uint16_t)strlen(text), 50U);
->>>>>>> 72c5a7a73615f53c2bc683c3fd3d58c910b5cce6
 }
 
 static void tune_rx_feed_byte(uint8_t ch)
@@ -134,19 +128,18 @@ static void tune_rx_feed_byte(uint8_t ch)
 
 static void tune_start_rx_dma(void)
 {
-<<<<<<< HEAD
     if (huart6.RxState == HAL_UART_STATE_READY)
-=======
+	{
     if (tune_fault_locked)
     {
         return;
     }
 
     while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_RXNE) != RESET)
->>>>>>> 72c5a7a73615f53c2bc683c3fd3d58c910b5cce6
     {
         (void)HAL_UART_Receive_DMA(&huart6, &tune_rx_dma_byte, 1U);
     }
+}
 }
 
 static void tune_exit_control(void)
@@ -462,16 +455,13 @@ void DebugTune_Task(void)
     uint8_t has_command = 0U;
     uint8_t has_snapshot = 0U;
 
-<<<<<<< HEAD
-=======
     if (tune_fault_locked)
     {
         return;
     }
 
-    tune_poll_uart_rx();
+//    tune_poll_uart_rx();
 
->>>>>>> 72c5a7a73615f53c2bc683c3fd3d58c910b5cce6
     __disable_irq();
     if (tune_cmd_ready)
     {
@@ -556,7 +546,6 @@ void DebugTune_OnControlTick(int16_t control_out)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-<<<<<<< HEAD
     if (huart->Instance == USART6)
     {
         tune_rx_feed_byte(tune_rx_dma_byte);
@@ -567,9 +556,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
        // IMU_UART_RxCpltCallback(huart);
     }
 }
-=======
-    (void)huart;
-}
+//    (void)huart;
+//}
 
 void DebugTune_EnterFaultLock(void)
 {
@@ -581,4 +569,3 @@ void DebugTune_EnterFaultLock(void)
 
     USART6->CR3 &= ~(USART_CR3_DMAT | USART_CR3_DMAR);
 }
->>>>>>> 72c5a7a73615f53c2bc683c3fd3d58c910b5cce6

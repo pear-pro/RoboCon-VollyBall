@@ -84,11 +84,8 @@ void __attribute__((naked)) HardFault_Handler(void)
 void HardFault_Handler_C(uint32_t *stacked_regs, uint32_t exc_return)
 {
     __disable_irq();
-<<<<<<< HEAD
-=======
     DebugTune_EnterFaultLock();
     USART6->CR3 &= ~(USART_CR3_DMAT | USART_CR3_DMAR);
->>>>>>> 72c5a7a73615f53c2bc683c3fd3d58c910b5cce6
 
     
     USART6->CR3 &= ~(USART_CR3_DMAT | USART_CR3_DMAR);

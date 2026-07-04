@@ -38,7 +38,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //		 }
       
 		 // ÿ 10ms ����һ�η������׶Σ����ڵ��νӹ�ʱ���ƽ�ң�ط���״̬��
-		 if (!DebugTune_IsActive())
+	//	 if (!DebugTune_IsActive())
          {
              remote_control_serve_update();
          }
