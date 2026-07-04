@@ -102,17 +102,17 @@ int main(void)
   MX_TIM14_Init();
   MX_USART6_UART_Init();
   MX_I2C2_Init();
+  MX_UART7_Init();
   /* USER CODE BEGIN 2 */
   
 
   All_Init();
-  DebugTune_Init();
+ // DebugTune_Init();
   
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_Delay(2000);
 
   while (1)
   {
@@ -120,7 +120,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    DebugTune_Task();
+   // DebugTune_Task();
   }
   /* USER CODE END 3 */
 }

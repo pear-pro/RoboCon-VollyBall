@@ -2,7 +2,8 @@
 #include "FSM.h"
 #include "includes.h"
 #include "main.h"
-
+#include "watch_dog.h"
+#include "heading_hold.h"
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
@@ -81,22 +82,22 @@ const SBUS_ctrl_t *get_sbus_remote_control_point(void)//获取SBUS遥控器指�
 //    damiao0_tarangle = 0.0f;
 //}
 
-// float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
-// {
-//     float delat = target - input;
-//     if (fabsf(delat) < 20.0f) {
-//         return target; // 已经非常接近�?标值，直接返回�?标�?
-//     }
-//     if (delat > 0) {
-//         // 需要加�?
-//         float step = max_speed / up_ticks; // 每个周期的加速�?�长
-//         return input + fminf(step, delat); // 不�?�超过目标�?
-//     } else {
-//         // 需要减�?
-//         float step = max_speed / down_ticks; // 每个周期的减速�?�长
-//         return input + fmaxf(-step, delat); // 不�?�超过目标�?
-//     }
-// }
+ float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
+ {
+     float delat = target - input;
+     if (fabsf(delat) < 20.0f) {
+         return target; // 已经非常接近�?标值，直接返回�?标�?
+     }
+     if (delat > 0) {
+         // 需要加�?
+         float step = max_speed / up_ticks; // 每个周期的加速�?�长
+         return input + fminf(step, delat); // 不�?�超过目标�?
+     } else {
+         // 需要减�?
+         float step = max_speed / down_ticks; // 每个周期的减速�?�长
+         return input + fmaxf(-step, delat); // 不�?�超过目标�?
+     }
+ }
 
 //串口�?�?
 void USART1_IRQHandlerCallBack(void)
@@ -138,6 +139,7 @@ void USART1_IRQHandlerCallBack(void)
             if(this_time_rx_len == RC_FRAME_LENGTH)
             {
                 sbus_to_remote_control(sbus_rx_buffer[0], &sbus_ctrl);
+				remote_control_watchdog_feed();
             }
         }
         else
@@ -167,6 +169,7 @@ void USART1_IRQHandlerCallBack(void)
             {
                 //处理遥控器数�?
                 sbus_to_remote_control(sbus_rx_buffer[1], &sbus_ctrl);
+				remote_control_watchdog_feed();
             }
         }
     }
@@ -383,25 +386,48 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         virtual_key_update(sbus_ctrl);
 
         // //归一化数�?
-        car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-        car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-        car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+//        car_x=normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+//        car_y=-normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       // car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
         
         // //应用死区
         // car_x=apply_deadzone(car_x, DEADZONE);
         // car_y=apply_deadzone(car_y, DEADZONE);
         // car_w=apply_deadzone(car_w, DEADZONE);
 
-         //MecanumWheel_Move(car_x,car_y,car_w);
+        if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
+        car_tarx = 0;
+        }
+        else {
+            car_tarx=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+            //car_x=low_pass(car_tarx, car_x, 0.25);
+
+        }
+        if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
+            car_tary = 0;
+        }
+        else {
+            car_tary=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+            //car_y=low_pass(car_tary, car_y, 0.32);
+        }
+		if (sbus_ctrl->ch[3] < 100 && sbus_ctrl->ch[3] > -100) {
+        }
+		else {
+			heading_hold.target_yaw_deg -= normalize_to_range(sbus_ctrl->ch[3], -800.0f, 800.0f, -1, 1)*0.1;
+		}
+		
+//         MecanumWheel_Move(car_tarx,car_tary,car_tarw);
 
         //模式切换
          if(KEY_SWB_UP & sbus_ctrl -> key_flag)
         {
-            serve_mode = SERVE_MODE_ANGLE;
+            //serve_mode = SERVE_MODE_ANGLE;
+            hit_set_preset(0);
         }
         else 
         {
-            serve_mode = SERVE_MODE_SPEED;
+            //serve_mode = SERVE_MODE_SPEED;
+            hit_set_preset(1);
         }
         
          // 离开下档后重新�?�填一次发球触发资�?
@@ -444,15 +470,13 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         // SA 三档选择击球角度预设
        if (KEY_SWA_UP & sbus_ctrl->key_flag)
        {
-           //hit_set_preset(0);
 		  // Pump_Off();
 		   count_flag = 0;
 		   serve_arm();
        }
        else if (KEY_SWA_DOWN & sbus_ctrl->key_flag)
        {
-           //hit_set_preset(1);
-		  //8 Pump_On();
+		  // Pump_On();
 		   if(!count_flag)
 		   {
 			   count++;

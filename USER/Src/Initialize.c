@@ -3,6 +3,9 @@
 #include "motor_can.h"
 #include "pid.h"
 #include <stdint.h>
+#include "imu.h"
+#include "heading_hold.h"
+
 extern motor_info_t damiao[MotorCount];
 void All_Init(){
 
@@ -12,19 +15,43 @@ void All_Init(){
 //    JY901P_Unlock();
 //    JY901P_Calibrate_Full();
 
+
        Set_dm_enable(&hcan1,0);
        Set_dm_enable(&hcan1,1);
        Set_dm_enable(&hcan1,2);
+	
 
-    for(int i=0;i<MotorCount;i++){
-			
-        PID_Struct_Init(&C620[i].Speed_pid, 
+	 PID_Struct_Init(&C620[0].Speed_pid, //右后
             2.0f, 
             0.3f,
             0.0f, 
             10000, 
             16000,
             INIT);
+	 PID_Struct_Init(&C620[1].Speed_pid, //右前
+            2.0f, 
+            0.3f,
+            0.0f, 
+            10000, 
+            16000,
+            INIT);
+	PID_Struct_Init(&C620[2].Speed_pid, //左前
+            2.0f, 
+            0.3f,
+            0.0f, 
+            10000, 
+            16000,
+            INIT);
+	 PID_Struct_Init(&C620[3].Speed_pid, //左后
+            2.0f, 
+            0.3f,
+            0.0f, 
+            10000, 
+            16000,
+            INIT);
+    for(int i=0;i<MotorCount;i++){
+			
+       
         PID_Struct_Init(&C620[i].Angle_pid,
             10.0f,
             0.0f,
@@ -52,13 +79,13 @@ void All_Init(){
     
 
    
-    PID_Struct_Init(&car_pid,
-                    10.0f,0.0f, 0.0f,
-                    1000, 1000, INIT);
-    PID_Struct_Init(&C620_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);
-		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
-		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
-    int16_t Z_zeropoint=gyro_data.Angle_Z;    
+	PID_Struct_Init(&C620_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);
+	PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
+	PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
+		IMU_UART_Init(&huart7);
+		HAL_Delay(1000);
+		HeadingHold_Init();
+	
 }
 
 void All_Clear(){

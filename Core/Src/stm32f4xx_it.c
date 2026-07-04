@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "includes.h"
+#include "imu.h"
 #include <stdio.h>
 #include "usart.h"
 /* USER CODE END Includes */
@@ -49,123 +50,13 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-void HardFault_Handler_C(uint32_t *stacked_regs, uint32_t exc_return);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void HardFault_USART6_WriteChar(char ch)
-{
-    uint32_t timeout = 1000000U;
 
-    while (((USART6->SR & USART_SR_TXE) == 0U) && (timeout > 0U))
-    {
-        timeout--;
-    }
-    if (timeout == 0U)
-    {
-        return;
-    }
 
-    USART6->DR = (uint8_t)ch;
-}
-
-static void HardFault_USART6_WriteString(const char *text)
-{
-    while (*text != '\0')
-    {
-        HardFault_USART6_WriteChar(*text++);
-    }
-}
-
-static void HardFault_USART6_WriteHex(uint32_t value)
-{
-    static const char hex[] = "0123456789ABCDEF";
-
-    HardFault_USART6_WriteString("0x");
-    for (int8_t shift = 28; shift >= 0; shift -= 4)
-    {
-        HardFault_USART6_WriteChar(hex[(value >> shift) & 0x0FU]);
-    }
-}
-
-static void HardFault_USART6_WriteReg(const char *name, uint32_t value)
-{
-    HardFault_USART6_WriteString(name);
-    HardFault_USART6_WriteString(" = ");
-    HardFault_USART6_WriteHex(value);
-    HardFault_USART6_WriteString("\r\n");
-}
-
-#ifdef __CC_ARM
-__asm void HardFault_Handler(void)
-{
-    IMPORT  HardFault_Handler_C
-    TST     lr, #4
-    ITE     EQ
-    MRSEQ   r0, MSP
-    MRSNE   r0, PSP
-    MOV     r1, lr
-    B       HardFault_Handler_C
-}
-#elif defined(__GNUC__)
-void __attribute__((naked)) HardFault_Handler(void)
-{
-    __asm__ volatile (
-          ".extern HardFault_Handler_C\n"
-        "TST lr, #4\n"
-        "ITE EQ\n"
-        "MRSEQ r0, MSP\n"
-        "MRSNE r0, PSP\n"
-        "MOV r1, lr\n"
-        "B HardFault_Handler_C\n"
-    );
-}
-#endif
-
-//¹ÊÕÏ½âÎöº¯Êý
-void HardFault_Handler_C(uint32_t *stacked_regs, uint32_t exc_return)
-{
-    __disable_irq();
-    USART6->CR3 &= ~USART_CR3_DMAT;
-
-    HardFault_USART6_WriteString("\r\nHardFault!\r\n");
-    HardFault_USART6_WriteString("Stack = ");
-    HardFault_USART6_WriteString((exc_return & 0x04U) ? "PSP" : "MSP");
-    HardFault_USART6_WriteString("\r\n");
-    HardFault_USART6_WriteReg("SP", (uint32_t)stacked_regs);
-    HardFault_USART6_WriteReg("EXC_RETURN", exc_return);
-    HardFault_USART6_WriteReg("R0", stacked_regs[0]);
-    HardFault_USART6_WriteReg("R1", stacked_regs[1]);
-    HardFault_USART6_WriteReg("R2", stacked_regs[2]);
-    HardFault_USART6_WriteReg("R3", stacked_regs[3]);
-    HardFault_USART6_WriteReg("R12", stacked_regs[4]);
-    HardFault_USART6_WriteReg("LR", stacked_regs[5]);
-    HardFault_USART6_WriteReg("PC", stacked_regs[6]);
-    HardFault_USART6_WriteReg("xPSR", stacked_regs[7]);
-    HardFault_USART6_WriteReg("CFSR", SCB->CFSR);
-    HardFault_USART6_WriteReg("HFSR", SCB->HFSR);
-    HardFault_USART6_WriteReg("DFSR", SCB->DFSR);
-    HardFault_USART6_WriteReg("AFSR", SCB->AFSR);
-    HardFault_USART6_WriteReg("MMFAR", SCB->MMFAR);
-    HardFault_USART6_WriteReg("BFAR", SCB->BFAR);
-    HardFault_USART6_WriteReg("SHCSR", SCB->SHCSR);
-
-    if ((SCB->CFSR & SCB_CFSR_PRECISERR_Msk) != 0U)
-    {
-        HardFault_USART6_WriteString("BusFault: precise data bus error\r\n");
-    }
-    if ((SCB->CFSR & SCB_CFSR_IMPRECISERR_Msk) != 0U)
-    {
-        HardFault_USART6_WriteString("BusFault: imprecise data bus error\r\n");
-    }
-    if ((SCB->CFSR & SCB_CFSR_DIVBYZERO_Msk) != 0U)
-    {
-        HardFault_USART6_WriteString("UsageFault: divide by zero\r\n");
-    }
-
-    while(1);
-}
+//ï¿½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -176,6 +67,7 @@ extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim14;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart6_tx;
+extern UART_HandleTypeDef huart7;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart6;
 /* USER CODE BEGIN EV */
@@ -203,18 +95,6 @@ void NMI_Handler(void)
 /**
   * @brief This function handles Hard fault interrupt.
   */
-//void HardFault_Handler(void)
-//{
-//  /* USER CODE BEGIN HardFault_IRQn 0 */
-
-//  /* USER CODE END HardFault_IRQn 0 */
-//  while (1)
-//  {
-//    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-//    /* USER CODE END W1_HardFault_IRQn 0 */
-//  }
-//}
-
 /**
   * @brief This function handles Memory management fault.
   */
@@ -459,6 +339,22 @@ void USART6_IRQHandler(void)
   /* USER CODE BEGIN USART6_IRQn 1 */
 
   /* USER CODE END USART6_IRQn 1 */
+}
+
+/**
+  * @brief This function handles UART7 global interrupt.
+  */
+void UART7_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART7_IRQn 0 */
+
+  /* USER CODE END UART7_IRQn 0 */
+  HAL_UART_IRQHandler(&huart7);
+  /* USER CODE BEGIN UART7_IRQn 1 */
+	
+	IMU_UART_RxCpltCallback(&huart7);
+
+  /* USER CODE END UART7_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
