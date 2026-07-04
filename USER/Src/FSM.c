@@ -158,7 +158,8 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_LIFT_RETURN:
-        if (++serve_tick >= SERVE_RETURN_TICKS)
+        Pump_On();
+		if (++serve_tick >= SERVE_RETURN_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT;
             serve_tick = 0;
@@ -167,7 +168,6 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_HIT:
         C620_up_angle.target_angle = (set_angle + 360 * count) * 19;
-		Pump_On();
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;

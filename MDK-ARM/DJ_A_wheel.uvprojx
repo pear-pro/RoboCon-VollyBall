@@ -10,21 +10,21 @@
       <TargetName>DJ_A_wheel</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>6240000::V6.24::ARMCLANG</pArmCC>
-      <pCCUsed>6240000::V6.24::ARMCLANG</pCCUsed>
+      <pArmCC>6070000::V6.7::.\ARMCLANG</pArmCC>
+      <pCCUsed>6070000::V6.7::.\ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32F427IIHx</Device>
+          <Device>STM32F427II</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.3.1.1</PackID>
-          <PackURL>https://www.keil.com/pack/</PackURL>
+          <PackID>Keil.STM32F4xx_DFP.1.0.8</PackID>
+          <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IRAM(0x20000000,0x30000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x200000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048 -FS08000000 -FL0200000 -FP0($$Device:STM32F427IIHx$CMSIS\Flash\STM32F4xx_2048.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_2048 -FS08000000 -FL0200000 -FP0($$Device:STM32F427II$Flash\STM32F4xx_2048.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32F427IIHx$Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h</RegisterFile>
+          <RegisterFile>$$Device:STM32F427II$Device\Include\stm32f4xx.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -34,7 +34,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:STM32F427IIHx$CMSIS\SVD\STM32F427x.svd</SFDFile>
+          <SFDFile>$$Device:STM32F427II$SVD\STM32F427x.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -111,11 +111,11 @@
         </CommonProperty>
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
-          <SimDllArguments>-REMAP -MPU</SimDllArguments>
+          <SimDllArguments> -REMAP -MPU</SimDllArguments>
           <SimDlgDll>DCM.DLL</SimDlgDll>
           <SimDlgDllArguments>-pCM4</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
-          <TargetDllArguments>-MPU</TargetDllArguments>
+          <TargetDllArguments> -MPU</TargetDllArguments>
           <TargetDlgDll>TCM.DLL</TargetDlgDll>
           <TargetDlgDllArguments>-pCM4</TargetDlgDllArguments>
         </DllOption>
@@ -185,9 +185,6 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
-            <RvdsMve>0</RvdsMve>
-            <RvdsCdeCp>0</RvdsCdeCp>
-            <nBranchProt>0</nBranchProt>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -213,7 +210,7 @@
             <Ra2Chk>0</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
             <Im1Chk>1</Im1Chk>
-            <Im2Chk>0</Im2Chk>
+            <Im2Chk>1</Im2Chk>
             <OnChipMemories>
               <Ocm1>
                 <Type>0</Type>
@@ -315,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>7</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -328,7 +325,6 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>3</v6Lang>
             <v6LangP>3</v6LangP>
@@ -354,7 +350,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <ClangAsOpt>4</ClangAsOpt>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -642,7 +638,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -668,7 +663,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
-                <ClangAsOpt>0</ClangAsOpt>
+                <uClangAs>2</uClangAs>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -716,7 +711,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -772,7 +766,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -828,7 +821,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -884,7 +876,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -940,7 +931,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -996,7 +986,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1052,7 +1041,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1108,7 +1096,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1164,7 +1151,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1220,7 +1206,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -1246,7 +1231,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
-                <ClangAsOpt>0</ClangAsOpt>
+                <uClangAs>2</uClangAs>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -1294,7 +1279,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1350,7 +1334,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1406,7 +1389,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1462,7 +1444,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1518,7 +1499,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1574,7 +1554,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1630,7 +1609,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1686,7 +1664,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1742,7 +1719,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1798,7 +1774,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1854,7 +1829,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1910,7 +1884,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1966,7 +1939,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -2022,7 +1994,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -2078,7 +2049,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -2134,7 +2104,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -2190,7 +2159,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -2246,7 +2214,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -2302,7 +2269,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -2358,7 +2324,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -2384,7 +2349,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
-                <ClangAsOpt>0</ClangAsOpt>
+                <uClangAs>2</uClangAs>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -2432,7 +2397,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
