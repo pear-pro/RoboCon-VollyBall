@@ -9,40 +9,20 @@ void All_Init(){
     can1_filter_init();
     can2_fliter_init();
     sbus_remote_control_init();
-	   
+//    JY901P_Unlock();
+//    JY901P_Calibrate_Full();
+	   »Œ
        Set_dm_enable(&hcan1,0);
 
-	        PID_Struct_Init(&C620[0].Speed_pid,   
-            3.0f, 
-            0.3f,
-            0.75f, 
-            10000, 
-            16000,
-            INIT);
-            PID_Struct_Init(&C620[1].Speed_pid,   
-            2.0f, 
-            0.3f,
-            0.75f, 
-            10000, 
-            16000,
-            INIT);
-			PID_Struct_Init(&C620[2].Speed_pid,   
-            3.0f, 
-            0.3f,
-            0.75f, 
-            10000, 
-            16000,
-            INIT);
-			PID_Struct_Init(&C620[3].Speed_pid,   
-            2.0f, 
-            0.3f,
-            0.75f, 
-            10000, 
-            16000,
-            INIT);
     for(int i=0;i<MotorCount;i++){
 			
-
+        PID_Struct_Init(&C620[i].Speed_pid, 
+            2.0f, 
+            0.3f,
+            0.0f, 
+            10000, 
+            16000,
+            INIT);
         PID_Struct_Init(&C620[i].Angle_pid,
             10.0f,
             0.0f,
@@ -51,12 +31,12 @@ void All_Init(){
             300,
             INIT);
 
-        //ÔøΩÔøΩÔøΩÔøΩ3508
-        PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
+            //∑¢«Ú3508
+              PID_Struct_Init(&C620_hit_angle[i].Speed_pid, 
             10.5f, 
             0.0f,
             0.15f, 
-            20000, 
+            25000, 
             16000,
             INIT);
         PID_Struct_Init(&C620_hit_angle[i].Angle_pid,
@@ -69,9 +49,10 @@ void All_Init(){
           //  
 
     }
-		C620_hit_angle[0].target_angle = -10.0f * SCALE;
-		C620_hit_angle[1].target_angle = -10.0f * SCALE;
-		C620_hit_angle[2].target_angle = 10.0f * SCALE;
+        C620_hit_angle[0].target_angle = -5.0f * SCALE;
+		C620_hit_angle[1].target_angle = -5.0f * SCALE;
+		C620_hit_angle[2].target_angle = 5.0f * SCALE;
+
 	damiao[0].KP = 150.0f;//150.0f;
 	damiao[0].KD = 0.2f;
 	damiao[0].tor = -0.25f;//-1.65
@@ -89,17 +70,10 @@ void All_Init(){
     
 
    
-        PID_Struct_Init(&C620_angle.Speed_pid, 10.0f, 0.3f, 0.0f, 
-            10000, 16000, INIT);
-		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.02f, 
-            20000, 16000, INIT);
-		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 
-            20000, 16000, INIT);
-    IMU_UART_Init(&huart7);
-		
-		HAL_Delay(500);
-    HeadingHold_Init();
-    UART8_Init();
+        PID_Struct_Init(&C620_angle.Speed_pid, 10.0f, 0.3f, 0.0f, 10000, 16000, INIT);
+		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.02f, 20000, 16000, INIT);
+		PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
+    int16_t Z_zeropoint=gyro_data.Angle_Z;    
 }
 
 void All_Clear(){

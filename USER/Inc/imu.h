@@ -6,7 +6,7 @@
 #include <string.h>
 
 /************************************************************
- * 宏定�?
+ * ???????1?
 ************************************************************/
 
 #define IMU_FRAME_HEAD              0x55
@@ -32,7 +32,7 @@
 #define IMU_FLAG_QUAT               (1U << 4)
 
 /************************************************************
- * 数据结构
+ * ??????????????
 ************************************************************/
 
 typedef struct
@@ -73,21 +73,21 @@ typedef struct
     IMU_Raw3Axis_t mag_raw;
     int16_t quat_raw[4];
 
-    IMU_Float3Axis_t acc_g;        /* 加速度，单�?g */
-    IMU_Float3Axis_t gyro_dps;     /* 角速度，单�?°/s */
+    IMU_Float3Axis_t acc_g;        /* ????????o|?????????g */
+    IMU_Float3Axis_t gyro_dps;     /* ?????????o|????????????/s */
     IMU_Float3Axis_t gyro_dps_fused;
     IMU_Float3Axis_t gyro_bias_dps;
-    IMU_Angle_t angle_deg;         /* 欧拉角，单位 ° */
+    IMU_Angle_t angle_deg;         /* ??????????????????? ??? */
     IMU_Angle_t angle_fused_deg;
-    IMU_Float3Axis_t mag;          /* 磁场，原始�?*/
-    IMU_Quat_t quat;               /* 四元�?*/
+    IMU_Float3Axis_t mag;          /* ??????o?????????????*/
+    IMU_Quat_t quat;               /* ??????????*/
 
     uint32_t frame_count;
     uint32_t crc_error_count;
 } IMU_Data_t;
 
 /************************************************************
- * 函数声明
+ * ??????????????
 ************************************************************/
 
 void IMU_UART_Init(UART_HandleTypeDef *huart);

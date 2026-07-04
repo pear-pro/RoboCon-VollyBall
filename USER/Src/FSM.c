@@ -226,5 +226,7 @@ void hit_angle_control(int16_t voltage[])    //??PID???????? remote_control_hit_
                                             C620_hit_angle[i].Angle_pid.get,
                                             C620_hit_angle[i].Speed_pid.get);
         voltage[i] = limit(output, HIT_OUTPUT_LIMIT);
+			
     }
+//		    Set_voltage_hit(&hcan1, voltage);
 }

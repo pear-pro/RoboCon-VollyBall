@@ -1,168 +1,212 @@
 #include "jumper_t15_rc.h"
+#include "FSM.h"
 #include "includes.h"
 #include "main.h"
-#include "FSM.h"
 #include "watch_dog.h"
-
+#include "heading_hold.h"
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
-uint8_t   sbus_buffer[SBUS_BUFLEN];//SBUS½ÓÊÕ»º³åÇø
+uint8_t   sbus_buffer[SBUS_BUFLEN];//SBUSï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½??
 
 static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctrl_t *sbus_ctrl);
-
-static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMAË«»º³å
+static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMAË«ï¿½ï¿½??
 
 SBUS_ctrl_t sbus_ctrl;
 
+uint8_t count_flag=0;
+static volatile uint8_t count=0;
 
-
-void sbus_remote_control_init(void)//SBUSÒ£¿ØÆ÷³õÊ¼»¯
+void sbus_remote_control_init(void)//SBUSÒ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
 {
-   RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
+    RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
 
-   
-   sbus_ctrl.last_swa_state = POS_MID;  // SWA³õÊ¼»¯×´Ì¬MID
-   sbus_ctrl.last_swb_state = POS_MID;        // SWB³õÊ¼»¯×´Ì¬MID
-   sbus_ctrl.last_swc_state = POS_MID;        // SWC³õÊ¼»¯×´Ì¬MID
-   sbus_ctrl.last_swd_state = POS_MID;  // SWD³õÊ¼»¯×´Ì¬MID
-   sbus_ctrl.last_se_state = POS_UP;  // SE³õÊ¼»¯×´Ì¬UP
-   sbus_ctrl.last_sf_state = POS_UP;  // SF³õÊ¼»¯×´Ì¬UP
-   sbus_ctrl.key_flag = KEY_NONE;       // ³õÊ¼»¯±êÖ¾Î»NONE
+    
+    sbus_ctrl.last_swa_state = POS_UP;  // SWAï¿½ï¿½???ï¿½ï¿½×´Ì¬UP
+    sbus_ctrl.last_swb_state = POS_UP;        // SWBï¿½ï¿½???ï¿½ï¿½×´Ì¬UP
+    sbus_ctrl.last_swc_state = POS_MID;        // SWCï¿½ï¿½???ï¿½ï¿½×´Ì¬MID
+    sbus_ctrl.last_swd_state = POS_MID;  // SWDï¿½ï¿½???ï¿½ï¿½×´Ì¬MID
+    sbus_ctrl.last_se_state = POS_UP;  // SEï¿½ï¿½???ï¿½ï¿½×´Ì¬UP
+    sbus_ctrl.last_sf_state = POS_UP;  // SFï¿½ï¿½???ï¿½ï¿½×´Ì¬UP
+    sbus_ctrl.key_flag = KEY_NONE;       // ï¿½ï¿½???ï¿½ï¿½ï¿½ï¿½Ö¾Î»NONE
+
 }
 
-const SBUS_ctrl_t *get_sbus_remote_control_point(void)//»ñÈ¡SBUSÒ£¿ØÆ÷Ö¸Õë
+const SBUS_ctrl_t *get_sbus_remote_control_point(void)//ï¿½ï¿½È¡SBUSÒ£ï¿½ï¿½ï¿½ï¿½Ö¸??
 {
-   return &sbus_ctrl;
+    return &sbus_ctrl;
 }
 
-float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
-{
-   float delat = target - input;
-   if (fabsf(delat) < 20.0f) {
-       return target; // ÒÑ¾­·Ç³£½Ó½üÄ¿±êÖµ£¬Ö±½Ó·µ»ØÄ¿±êÖµ
-   }
-   if (delat > 0) {
-       // ĞèÒª¼ÓËÙ
-       float step = max_speed / up_ticks; // Ã¿¸öÖÜÆÚµÄ¼ÓËÙ²½³¤
-       return input + fminf(step, delat); // ²»Òª³¬¹ıÄ¿±êÖµ
-   } else {
-       // ĞèÒª¼õËÙ
-       float step = max_speed / down_ticks; // Ã¿¸öÖÜÆÚµÄ¼õËÙ²½³¤
-       return input + fmaxf(-step, delat); // ²»Òª³¬¹ıÄ¿±êÖµ
-   }
-}
+//void remote_control_watchdog_update(void)
+//{
+//    // ï¿½ï¿½ï¿½Å¹ï¿½???ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ÎªÒ£ï¿½ï¿½ï¿½ï¿½Ê§??
+//    if (rc_watchdog_tick < RC_WATCHDOG_TIMEOUT_TICKS)
+//    {
+//        rc_watchdog_tick++;
+//    }
 
+//    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½×´??
+//    if (rc_watchdog_tick >= RC_WATCHDOG_TIMEOUT_TICKS)
+//    {
+//        rc_watchdog_timeout = 1;
+//    }
+//}
 
+//uint8_t remote_control_is_timeout(void)
+//{
+//    return rc_watchdog_timeout;
+//}   
 
+//void remote_control_enter_safe_state(void)
+//{
+//    // ï¿½ï¿½ï¿½ï¿½Í£???
+//    car_x = 0.0f;
+//    car_y = 0.0f;
+//    car_w = 0.0f;
+//    C620_angle.Speed_pid.set = 0.0f;
 
-//´®¿ÚÖĞ¶Ï
+//    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//    serve_active = 0;
+//    serve_armed = 1;
+//    serve_tick = 0;
+//    serve_stage = SERVE_STAGE_IDLE;
+
+//    // ï¿½ï¿½???ï¿½ï¿½ï¿½ï¿½ï¿½??
+//    //damiao[0].angle = 0.0f;
+//    //damiao[1].angle = -0.5f;
+
+//    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø²ï¿½ï¿½ï¿½ï¿½ï¿½Î»
+//    count = 0;
+//    returning = 0;
+//    return_tick = 0;
+//    return_start_angle = 0.0f;
+//    damiao0_tarangle = 0.0f;
+//}
+
+ float remote_control_meanum_update(float input,float target,float up_ticks,float down_ticks,float max_speed)
+ {
+     float delat = target - input;
+     if (fabsf(delat) < 20.0f) {
+         return target; // ï¿½Ñ¾ï¿½ï¿½Ç³ï¿½ï¿½Ó½ï¿½??ï¿½ï¿½Öµï¿½ï¿½Ö±ï¿½Ó·ï¿½ï¿½ï¿½??ï¿½ï¿½??
+     }
+     if (delat > 0) {
+         // ï¿½ï¿½Òªï¿½ï¿½??
+         float step = max_speed / up_ticks; // Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ÚµÄ¼ï¿½ï¿½ï¿½???ï¿½ï¿½
+         return input + fminf(step, delat); // ï¿½ï¿½???ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½??
+     } else {
+         // ï¿½ï¿½Òªï¿½ï¿½??
+         float step = max_speed / down_ticks; // Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ÚµÄ¼ï¿½ï¿½ï¿½???ï¿½ï¿½
+         return input + fmaxf(-step, delat); // ï¿½ï¿½???ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½??
+     }
+ }
+
+//ï¿½ï¿½ï¿½ï¿½????
 void USART1_IRQHandlerCallBack(void)
 {
-   if(huart1.Instance->SR & UART_FLAG_RXNE)//½ÓÊÕµ½Êı¾İ
-   {
-       __HAL_UART_CLEAR_PEFLAG(&huart1);
-   }
-   else if(USART1->SR & UART_FLAG_IDLE)//¿ÕÏĞÖĞ¶Ï
-   {
-       static uint16_t this_time_rx_len = 0;
+    if(huart1.Instance->SR & UART_FLAG_RXNE)//ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½??
+    {
+        __HAL_UART_CLEAR_PEFLAG(&huart1);
+    }
+    else if(USART1->SR & UART_FLAG_IDLE)//ï¿½ï¿½ï¿½ï¿½????
+    {
+        static uint16_t this_time_rx_len = 0;
 
-       __HAL_UART_CLEAR_PEFLAG(&huart1);
+        __HAL_UART_CLEAR_PEFLAG(&huart1);
 
-       if ((hdma_usart1_rx.Instance->CR & DMA_SxCR_CT) == RESET)
-       {
-           /* Current memory buffer used is Memory 0 */
-   
-           //disable DMA
-           //Ê§Ğ§DMA
-           __HAL_DMA_DISABLE(&hdma_usart1_rx);
+        if ((hdma_usart1_rx.Instance->CR & DMA_SxCR_CT) == RESET)
+        {
+            /* Current memory buffer used is Memory 0 */
+    
+            //disable DMA
+            //Ê§Ğ§DMA
+            __HAL_DMA_DISABLE(&hdma_usart1_rx);
 
-           //get receive data length, length = set_data_length - remain_length
-           //»ñÈ¡½ÓÊÕÊı¾İ³¤¶È,³¤¶È = Éè¶¨³¤¶È - Ê£Óà³¤¶È
-           this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart1_rx.Instance->NDTR;
+            //get receive data length, length = set_data_length - remain_length
+            //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ = ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ - Ê£ï¿½à³¤ï¿½ï¿½
+            this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart1_rx.Instance->NDTR;
 
-           //reset set_data_lenght
-           //ÖØĞÂÉè¶¨Êı¾İ³¤¶È
-           hdma_usart1_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
+            //reset set_data_lenght
+            //ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½
+            hdma_usart1_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
 
-           //set memory buffer 1
-           //Éè¶¨»º³åÇø1
-           hdma_usart1_rx.Instance->CR |= DMA_SxCR_CT;
-           
-           //enable DMA
-           //Ê¹ÄÜDMA
-           __HAL_DMA_ENABLE(&hdma_usart1_rx);
+            //set memory buffer 1
+            //ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½??1
+            hdma_usart1_rx.Instance->CR |= DMA_SxCR_CT;
+            
+            //enable DMA
+            //Ê¹ï¿½ï¿½DMA
+            __HAL_DMA_ENABLE(&hdma_usart1_rx);
 
-           if(this_time_rx_len == RC_FRAME_LENGTH)
-           {
-               sbus_to_remote_control(sbus_rx_buffer[0], &sbus_ctrl);
-               remote_control_watchdog_feed();
-           }
-       }
-       else
-       {
-           /* Current memory buffer used is Memory 1 */
-           //disable DMA
-           //Ê§Ğ§DMA
-           __HAL_DMA_DISABLE(&hdma_usart1_rx);
+            if(this_time_rx_len == RC_FRAME_LENGTH)
+            {
+                sbus_to_remote_control(sbus_rx_buffer[0], &sbus_ctrl);
+				remote_control_watchdog_feed();
+            }
+        }
+        else
+        {
+            /* Current memory buffer used is Memory 1 */
+            //disable DMA
+            //Ê§Ğ§DMA
+            __HAL_DMA_DISABLE(&hdma_usart1_rx);
 
-           //get receive data length, length = set_data_length - remain_length
-           //»ñÈ¡½ÓÊÕÊı¾İ³¤¶È,³¤¶È = Éè¶¨³¤¶È - Ê£Óà³¤¶È
-           this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart1_rx.Instance->NDTR;
+            //get receive data length, length = set_data_length - remain_length
+            //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ = ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ - Ê£ï¿½à³¤ï¿½ï¿½
+            this_time_rx_len = SBUS_RX_BUF_NUM - hdma_usart1_rx.Instance->NDTR;
 
-           //reset set_data_lenght
-           //ÖØĞÂÉè¶¨Êı¾İ³¤¶È
-           hdma_usart1_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
+            //reset set_data_lenght
+            //ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½
+            hdma_usart1_rx.Instance->NDTR = SBUS_RX_BUF_NUM;
 
-           //set memory buffer 0
-           //Éè¶¨»º³åÇø0
-           DMA1_Stream1->CR &= ~(DMA_SxCR_CT);
-           
-           //enable DMA
-           //Ê¹ÄÜDMA
-           __HAL_DMA_ENABLE(&hdma_usart1_rx);
+            //set memory buffer 0
+            //ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½??0
+            DMA1_Stream1->CR &= ~(DMA_SxCR_CT);
+            
+            //enable DMA
+            //Ê¹ï¿½ï¿½DMA
+            __HAL_DMA_ENABLE(&hdma_usart1_rx);
 
-           if(this_time_rx_len == RC_FRAME_LENGTH)
-           {
-               //´¦ÀíÒ£¿ØÆ÷Êı¾İ
-               sbus_to_remote_control(sbus_rx_buffer[1], &sbus_ctrl);
-               remote_control_watchdog_feed();
-           }
-       }
-   }
+            if(this_time_rx_len == RC_FRAME_LENGTH)
+            {
+                //ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½??
+                sbus_to_remote_control(sbus_rx_buffer[1], &sbus_ctrl);
+				remote_control_watchdog_feed();
+            }
+        }
+    }
 }
 
 static uint8_t detect_switch_position(int16_t value)
 {
-   if (value <= SWITCH_SBUS_CH_VALUE_MIN + DEADZONE)
-   {
-       return POS_UP;  // ÉÏ
-   } 
-   else if (value >= SWITCH_SBUS_CH_VALUE_MAX - DEADZONE) 
-   {
-       return POS_DOWN;  // ÏÂ
-   } 
-   else 
-   {
-       return POS_MID;  // ÖĞ
-   }
+    if (value <= SWITCH_SBUS_CH_VALUE_MIN + DEADZONE)
+    {
+        return POS_UP;  // ??
+    } 
+    else if (value >= SWITCH_SBUS_CH_VALUE_MAX - DEADZONE) 
+    {
+        return POS_DOWN;  // ??
+    } 
+    else 
+    {
+        return POS_MID;  // ??
+    }
 }
 
 static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
 {
-   // ¸üĞÂ¿ª¹Ø×´Ì¬
-   uint8_t SWA_pos = detect_switch_position(sbus_ctrl -> ch[4]);
-   uint8_t SWB_pos = detect_switch_position(sbus_ctrl -> ch[5]);
-   uint8_t SWC_pos = detect_switch_position(sbus_ctrl -> ch[6]);
-   uint8_t SWD_pos = detect_switch_position(sbus_ctrl -> ch[7]);
-   uint8_t SE_pos = detect_switch_position(sbus_ctrl -> ch[8]);
-   uint8_t SF_pos = detect_switch_position(sbus_ctrl -> ch[9]);
+    // ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½×´??
+    uint8_t SWA_pos = detect_switch_position(sbus_ctrl -> ch[4]);
+    uint8_t SWB_pos = detect_switch_position(sbus_ctrl -> ch[5]);
+    uint8_t SWC_pos = detect_switch_position(sbus_ctrl -> ch[6]);
+    uint8_t SWD_pos = detect_switch_position(sbus_ctrl -> ch[7]);
+    uint8_t SE_pos = detect_switch_position(sbus_ctrl -> ch[8]);
+    uint8_t SF_pos = detect_switch_position(sbus_ctrl -> ch[9]);
 
-   //³õÊ¼»¯ĞéÄâ¼üÎ»×´Ì¬
-   sbus_ctrl->key_flag = KEY_NONE;
+    //ï¿½ï¿½???ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½??Î»×´??
+    sbus_ctrl->key_flag = KEY_NONE;
 
-   //SWA´¦Àí
-   if(sbus_ctrl -> last_swa_state != SWA_pos)
+    //SWAï¿½ï¿½ï¿½ï¿½
+if(sbus_ctrl -> last_swa_state != SWA_pos)
    {
        if(SWA_pos == POS_UP)
        {
@@ -209,175 +253,157 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
    else
    {
    // ×´Ì¬²»±äÊ±ÉèÖÃ¶ÔÓ¦Î»ÖÃµÄ±êÖ¾
-       if(SWB_pos == POS_UP)
-       {
-           sbus_ctrl->key_flag |= KEY_SWB_UP;
-       }
-       else if(SWB_pos == POS_MID)
-       {
-           sbus_ctrl->key_flag |= KEY_SWB_MID;
-       }
-       else if(SWB_pos == POS_DOWN)
-       {
-           sbus_ctrl->key_flag |= KEY_SWB_DOWN;
-       }
-   }
+        if(SWC_pos == POS_UP)
+        {
+            sbus_ctrl->key_flag |= KEY_SWC_UP;
+        }
+        else if(SWC_pos == POS_MID)
+        {
+            sbus_ctrl->key_flag |= KEY_SWC_MID;
+        }
+        else if(SWC_pos == POS_DOWN)
+        {
+            sbus_ctrl->key_flag |= KEY_SWC_DOWN;
+        }
+    }
 
-   //SWC´¦Àí
-   if(sbus_ctrl -> last_swc_state != SWC_pos)
-   {
-       if(SWC_pos == POS_UP)
-       {
-           sbus_ctrl -> key_flag |= KEY_SWC_UP;
-       }
-       else if(SWC_pos == POS_DOWN)
-       {
-           sbus_ctrl -> key_flag |= KEY_SWC_DOWN;
-       }
-   }
-   else
-   {
-   // ×´Ì¬²»±äÊ±ÉèÖÃ¶ÔÓ¦Î»ÖÃµÄ±êÖ¾
-       if(SWC_pos == POS_UP)
-       {
-           sbus_ctrl->key_flag |= KEY_SWC_UP;
-       }
-       else if(SWC_pos == POS_MID)
-       {
-           sbus_ctrl->key_flag |= KEY_SWC_MID;
-       }
-       else if(SWC_pos == POS_DOWN)
-       {
-           sbus_ctrl->key_flag |= KEY_SWC_DOWN;
-       }
-   }
+    //SWDï¿½ï¿½ï¿½ï¿½
+    if(sbus_ctrl -> last_swd_state != SWD_pos)
+    {
+        if(SWD_pos == POS_UP)
+        {
+            sbus_ctrl -> key_flag |= KEY_SWD_UP;
+        }
+        else if(SWD_pos == POS_DOWN)
+        {
+            sbus_ctrl -> key_flag |= KEY_SWD_DOWN;
+        }
+    }
+    else
+    {
+    // ×´Ì¬ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ã¶ï¿½Ó¦Î»ï¿½ÃµÄ±ï¿½??
+        if(SWD_pos == POS_UP)
+        {
+            sbus_ctrl->key_flag |= KEY_SWD_UP;
+        }
+        else if(SWD_pos == POS_MID)
+        {
+            sbus_ctrl->key_flag |= KEY_SWD_MID;
+        }
+        else if(SWD_pos == POS_DOWN)
+        {
+            sbus_ctrl->key_flag |= KEY_SWD_DOWN;
+        }
+    }
 
-   //SWD´¦Àí
-   if(sbus_ctrl -> last_swd_state != SWD_pos)
-   {
-       if(SWD_pos == POS_UP)
-       {
-           sbus_ctrl -> key_flag |= KEY_SWD_UP;
-       }
-       else if(SWD_pos == POS_DOWN)
-       {
-           sbus_ctrl -> key_flag |= KEY_SWD_DOWN;
-       }
-   }
-   else
-   {
-   // ×´Ì¬²»±äÊ±ÉèÖÃ¶ÔÓ¦Î»ÖÃµÄ±êÖ¾
-       if(SWD_pos == POS_UP)
-       {
-           sbus_ctrl->key_flag |= KEY_SWD_UP;
-       }
-       else if(SWD_pos == POS_MID)
-       {
-           sbus_ctrl->key_flag |= KEY_SWD_MID;
-       }
-       else if(SWD_pos == POS_DOWN)
-       {
-           sbus_ctrl->key_flag |= KEY_SWD_DOWN;
-       }
-   }
+    //SEï¿½ï¿½ï¿½ï¿½
+    if(sbus_ctrl -> last_se_state == POS_UP && SE_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SE_DOWN;
+    }
+    else if(sbus_ctrl -> last_se_state == POS_DOWN && SE_pos == POS_UP)
+    {
+        sbus_ctrl->key_flag |= KEY_SE_UP;
+    }
+    else
+    {
+        // ï¿½ï¿½ï¿½ï¿½×´Ì¬Ê±Ò²???ï¿½Ã¶ï¿½Ó¦×´??
+        if(SE_pos == POS_UP)
+        {
+            sbus_ctrl->key_flag |= KEY_SE_UP;
+        }
+        else if(SE_pos == POS_DOWN)
+        {
+            sbus_ctrl->key_flag |= KEY_SE_DOWN;
+        }
+    }
 
-   //SE´¦Àí
-   if(sbus_ctrl -> last_se_state == POS_UP && SE_pos == POS_DOWN)
-   {
-       sbus_ctrl->key_flag |= KEY_SE_DOWN;
-   }
-   else if(sbus_ctrl -> last_se_state == POS_DOWN && SE_pos == POS_UP)
-   {
-       sbus_ctrl->key_flag |= KEY_SE_UP;
-   }
-   else
-   {
-       // ±£³Ö×´Ì¬Ê±Ò²ÉèÖÃ¶ÔÓ¦×´Ì¬
-       if(SE_pos == POS_UP)
-       {
-           sbus_ctrl->key_flag |= KEY_SE_UP;
-       }
-       else if(SE_pos == POS_DOWN)
-       {
-           sbus_ctrl->key_flag |= KEY_SE_DOWN;
-       }
-   }
+    //SFï¿½ï¿½ï¿½ï¿½
+    if(sbus_ctrl -> last_sf_state == POS_UP && SF_pos == POS_DOWN)
+    {
+        sbus_ctrl->key_flag |= KEY_SF_PRESSED;
+    }
 
-   //SF´¦Àí
-   if(sbus_ctrl -> last_sf_state == POS_UP && SF_pos == POS_DOWN)
-   {
-       sbus_ctrl->key_flag |= KEY_SF_PRESSED;
-   }
-
-   //¸üĞÂ×´Ì¬
-   sbus_ctrl->last_swa_state = SWA_pos;
-   sbus_ctrl->last_swb_state = SWB_pos;
-   sbus_ctrl->last_swc_state = SWC_pos;
-   sbus_ctrl->last_swd_state = SWD_pos;
-   sbus_ctrl->last_se_state = SE_pos;
-   sbus_ctrl->last_sf_state = SF_pos;
+    //ï¿½ï¿½ï¿½ï¿½×´??
+    sbus_ctrl->last_swa_state = SWA_pos;
+    sbus_ctrl->last_swb_state = SWB_pos;
+    sbus_ctrl->last_swc_state = SWC_pos;
+    sbus_ctrl->last_swd_state = SWD_pos;
+    sbus_ctrl->last_se_state = SE_pos;
+    sbus_ctrl->last_sf_state = SF_pos;
 
 }
+
+//void Pump_On(void)
+//{
+//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,GPIO_PIN_SET);//PE5ï¿½ï¿½ï¿½ï¿½ ï¿½Íµï¿½Æ½ï¿½ï¿½ï¿½ï¿½
+//}
+
+//void Pump_Off(void)
+//{
+//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,GPIO_PIN_RESET);
+//}
 
 
 static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctrl_t *sbus_ctrl)
 {
-   if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//ÅĞ¶ÏÍ·Ö¡ºÍÎ²Ö¡
-   {
-       sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//ÓÒ×óÓÒ
-       sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//ÓÒÉÏÏÂ
-       sbus_ctrl -> ch[2] = ((sbus_buffer[3] >> 6 )| (sbus_buffer[4] << 2 ) | (sbus_buffer[5] << 10)) & 0x07ff;//×óÉÏÏÂ
-       sbus_ctrl -> ch[3] = ((sbus_buffer[5] >> 1 )| (sbus_buffer[6] << 7 )) & 0x07ff;//×ó×óÓÒ
-       sbus_ctrl -> ch[4] = ((sbus_buffer[6] >> 4 )| (sbus_buffer[7] << 4 )) & 0x07ff;//SWA
-       sbus_ctrl -> ch[5] = ((sbus_buffer[7] >> 7 )| (sbus_buffer[8] << 1 )| (sbus_buffer[9] << 9 )) & 0x07ff;//SWB
-       sbus_ctrl -> ch[6] = ((sbus_buffer[9] >> 2 )| (sbus_buffer[10] << 6 )) & 0x07ff;//SWC
-       sbus_ctrl-> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
-       sbus_ctrl ->ch[8] = ((sbus_buffer[12])| (sbus_buffer[13] << 8 )) & 0x07ff;//SE
-       sbus_ctrl ->ch[9] = ((sbus_buffer[13] >> 3 )| (sbus_buffer[14] << 5 )) & 0x07ff;//SF
+    if((sbus_buffer [0] == 0x0f) && (sbus_buffer[24] == 0x00))//ï¿½Ğ¶ï¿½Í·Ö¡ï¿½ï¿½Î²??
+    {
+        sbus_ctrl -> ch[0] = ((sbus_buffer[1] )| (sbus_buffer[2] << 8 )) & 0x07ff;//ï¿½ï¿½ï¿½ï¿½??
+        sbus_ctrl -> ch[1] = ((sbus_buffer[2] >> 3 )| (sbus_buffer[3] << 5 )) & 0x07ff;//ï¿½ï¿½ï¿½ï¿½??
+        sbus_ctrl -> ch[2] = ((sbus_buffer[3] >> 6 )| (sbus_buffer[4] << 2 ) | (sbus_buffer[5] << 10)) & 0x07ff;//ï¿½ï¿½ï¿½ï¿½??
+        sbus_ctrl -> ch[3] = ((sbus_buffer[5] >> 1 )| (sbus_buffer[6] << 7 )) & 0x07ff;//ï¿½ï¿½ï¿½ï¿½??
+        sbus_ctrl -> ch[4] = ((sbus_buffer[6] >> 4 )| (sbus_buffer[7] << 4 )) & 0x07ff;//SWA
+        sbus_ctrl -> ch[5] = ((sbus_buffer[7] >> 7 )| (sbus_buffer[8] << 1 )| (sbus_buffer[9] << 9 )) & 0x07ff;//SWB
+        sbus_ctrl -> ch[6] = ((sbus_buffer[9] >> 2 )| (sbus_buffer[10] << 6 )) & 0x07ff;//SWC
+        sbus_ctrl-> ch[7] = ((sbus_buffer[10] >> 5 )| (sbus_buffer[11] << 3 )) & 0x07ff;//SWD
+        sbus_ctrl ->ch[8] = ((sbus_buffer[12])| (sbus_buffer[13] << 8 )) & 0x07ff;//SE
+        sbus_ctrl ->ch[9] = ((sbus_buffer[13] >> 3 )| (sbus_buffer[14] << 5 )) & 0x07ff;//SF
 
-      //Êı¾İÆ«ÒÆ
-       for(int i = 0;i<10;i++)
-       {
-           sbus_ctrl->ch[i] = (int16_t)(sbus_ctrl->ch[i] - SBUS_CH_VALUE_OFFSET);
-       }
-      
-       remote_control_watchdog_feed();
-
-       // ¸üĞÂĞéÄâ¼üÎ»×´Ì¬
-       virtual_key_update(sbus_ctrl);
-
-       // //¹éÒ»»¯Êı¾İ
-       // car_x=normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-       // car_y=-normalize_to_range((float)sbus_ctrl -> ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-       // car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       //ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
+        for(int i = 0;i<10;i++)
+        {
+            sbus_ctrl->ch[i] = (int16_t)(sbus_ctrl->ch[i] - SBUS_CH_VALUE_OFFSET);
+        }
        
-       // //Ó¦ÓÃËÀÇø
-       // car_x=apply_deadzone(car_x, DEADZONE);
-       // car_y=apply_deadzone(car_y, DEADZONE);
-       // car_w=apply_deadzone(car_w, DEADZONE);
-         // MecanumWheel_Move(car_x,car_y,car_w);
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½??Î»×´??
+        virtual_key_update(sbus_ctrl);
 
-/*-------------------Ò£¿ØÂß¼­µÄ´¦Àí-----------------------*/
-       if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
-       car_tarx = 0;
-       }
-       else {
-           car_tarx=normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
-           //car_x=low_pass(car_tarx, car_x, 0.25);
+        // //ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½??
+//        car_x=normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+//        car_y=-normalize_to_range((float)sbus_ctrl -> ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+       // car_w=-normalize_to_range((float)sbus_ctrl -> ch[3], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        
+        // //Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        // car_x=apply_deadzone(car_x, DEADZONE);
+        // car_y=apply_deadzone(car_y, DEADZONE);
+        // car_w=apply_deadzone(car_w, DEADZONE);
 
-       }
-       if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
-           car_tary = 0;
-       }
-       else {
-           car_tary=-normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
-           //car_y=low_pass(car_tary, car_y, 0.32);
-       }
-       car_tarw=-normalize_to_range(sbus_ctrl->ch[2], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+        if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
+        car_tarx = 0;
+        }
+        else {
+            car_tarx=normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+            //car_x=low_pass(car_tarx, car_x, 0.25);
 
-       // MecanumWheel_Move(car_x,car_y,car_w);
+        }
+        if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
+            car_tary = 0;
+        }
+        else {
+            car_tary=-normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+            //car_y=low_pass(car_tary, car_y, 0.32);
+        }
+		if (sbus_ctrl->ch[2] < 100 && sbus_ctrl->ch[2] > -100) {
+        }
+		else {
+			heading_hold.target_yaw_deg -= normalize_to_range(sbus_ctrl->ch[2], -800.0f, 800.0f, -1, 1)*0.1;
+		}
+		
+//         MecanumWheel_Move(car_tarx,car_tary,car_tarw);
 
-       // SWC ÈıµµÑ¡ÔñÈı×é»÷Çò½Ç¶ÈÔ¤Éè
+        //Ä£Ê½ï¿½Ğ»ï¿½
+// SWC ä¸‰æ¡£é€‰æ‹©ä¸‰ç»„å‡»çƒè§’åº¦é¢„è®¾
        if (KEY_SWC_UP & sbus_ctrl->key_flag)
        {
            hit_set_preset(0);
@@ -390,8 +416,45 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        {
            hit_set_preset(2);
        }
+         // ï¿½ë¿ªï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½???ï¿½ï¿½Ò»ï¿½Î·ï¿½ï¿½ò´¥·ï¿½ï¿½ï¿½??
+//        if (!(KEY_SWD_DOWN & sbus_ctrl->key_flag))
+//		{
+//			serve_arm();
+//		}
 
-       // SF °´ÏÂ»÷Çò£¬ËÉÊÖ»ØÁã
+//        if (KEY_SWD_UP & sbus_ctrl -> key_flag)
+//        {
+//            // ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­??ï¿½Ç¶Èµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//            C620_up_angle.Speed_pid.set = 25000 * (sbus_ctrl->ch[3] / 800.0f);
+//        }
+//        else if (KEY_SWD_MID & sbus_ctrl -> key_flag)
+//        {  
+//           //
+//        }
+//        else
+//        {
+//           if(serve_mode == SERVE_MODE_ANGLE)
+//            {
+//                serve_request_start();
+//            }
+//            
+//  
+//        }
+        
+//        if(serve_mode == SERVE_MODE_SPEED)
+//        {
+//            if(KEY_SE_DOWN & sbus_ctrl -> key_flag)
+//            {
+//                C620_up_angle.target_speed = 6000.0f;
+//            }
+//            else if(KEY_SE_UP & sbus_ctrl -> key_flag)
+//            {
+//                C620_up_angle.target_speed = 0;
+//            }
+//        }
+
+        // SA ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½Ô¤ï¿½ï¿½
+// SF æŒ‰ä¸‹å‡»çƒï¼Œæ¾æ‰‹å›é›¶
        if (detect_switch_position(sbus_ctrl->ch[9]) == POS_DOWN)
        {
            hit_request_press();
@@ -401,7 +464,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
            hit_request_release();
        }
 
-       // Àë¿ªÏÂµµºóÖØĞÂ×°ÌîÒ»´Î·¢Çò´¥·¢×Ê¸ñ
+       // ç¦»å¼€ä¸‹æ¡£åé‡æ–°è£…å¡«ä¸€æ¬¡å‘çƒè§¦å‘èµ„æ ¼
        if (!(KEY_SWB_UP & sbus_ctrl->key_flag))
        {
            serve_arm();
@@ -409,16 +472,16 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 
        if (KEY_SWD_DOWN & sbus_ctrl->key_flag)
        {
-           // ÉÏµµ£º±£ÁôÔ­ÓĞ C620 ½Ç¶Èµç»ú¿ØÖÆ
+           // ä¸Šæ¡£ï¼šä¿ç•™åŸæœ‰ C620 è§’åº¦ç”µæœºæ§åˆ¶
            C620_angle.Speed_pid.set = 25000.0f;
        }
        else if (KEY_SWB_MID & sbus_ctrl->key_flag)
        {
-           // ÖĞµµ£º»÷Çò»ú¹¹ÓÉ SF µ¥¶À¿ØÖÆ
+           // ä¸­æ¡£ï¼šå‡»çƒæœºæ„ç”± SF å•ç‹¬æ§åˆ¶
        }
        else
        {
-           // ÏÂµµ£º´¥·¢Ò»´Î×Ô¶¯·¢ÇòÁ÷³Ì
+           // ä¸‹æ¡£ï¼šè§¦å‘ä¸€æ¬¡è‡ªåŠ¨å‘çƒæµç¨‹
            serve_request_start();
 
            if (!serve_is_active())
@@ -427,9 +490,6 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
                damiao[1].angle = 0.0f;
            }
        }
-   }
+       }
 }
-
-
-
 

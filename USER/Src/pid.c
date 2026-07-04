@@ -9,7 +9,7 @@
  *
  * @param x 指向要限制的浮点数的指针
  * @param limit 限制的绝对值边界
- *
+ * 
  * @note 此函数会修改*x的值，使其保持在[-limit, limit]范围内
  */
 static void abs_limit(float *x, int32_t limit)
