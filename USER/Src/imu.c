@@ -1,8 +1,9 @@
 #include "imu.h"
 #include "main.h"
+#include "pg_led.h"
 
 /************************************************************
- * 静态变�?
+ * 静态变�?
 ************************************************************/
 
 static UART_HandleTypeDef *s_imu_uart = NULL;
@@ -13,7 +14,7 @@ static uint8_t s_rx_index = 0;
 
 static IMU_Data_t s_imu_data;
 static volatile uint32_t s_update_flag = 0;
-IMU_Data_t imu;
+ IMU_Data_t imu;
 
 /************************************************************
  * 内部函数声明
@@ -27,8 +28,8 @@ static int16_t IMU_GetInt16(uint8_t low, uint8_t high);
 /************************************************************
  * 函数名：IMU_UART_Init
  * 功能  ：初始化陀螺仪串口接收
- * 形参  ：huart - 串口句柄，例�?&huart1
- * 返回值：�?
+ * 形参  ：huart - 串口句柄，例�?&huart1
+ * 返回值：�?
 ************************************************************/
 void IMU_UART_Init(UART_HandleTypeDef *huart)
 {
@@ -42,11 +43,62 @@ void IMU_UART_Init(UART_HandleTypeDef *huart)
     HAL_UART_Receive_IT(s_imu_uart, &s_rx_byte, 1);
 }
 
+static void IMU_SendCmd(const uint8_t *cmd, uint8_t len)
+{
+    if (s_imu_uart == NULL)
+    {
+        return;
+    }
+
+    (void)HAL_UART_Transmit(s_imu_uart, (uint8_t *)cmd, len, 1000U);
+}
+
+/************************************************************
+ * 函数名：IMU_MagCalibration
+ * 功能  ：发送 IMU 磁场校准流程命令
+ * 形参  ：rotate_ms - 旋转校准等待时间，单位 ms
+ * 返回值：无
+************************************************************/
+void IMU_MagCalibration(uint32_t rotate_ms)
+{
+    static const uint8_t unlock_cmd[] = {0xFF, 0xAA, 0x69, 0x88, 0xB5};
+    static const uint8_t enter_cal_cmd[] = {0xFF, 0xAA, 0x01, 0x07, 0x00};
+    static const uint8_t exit_cal_cmd[] = {0xFF, 0xAA, 0x01, 0x00, 0x00};
+    static const uint8_t save_cmd[] = {0xFF, 0xAA, 0x00, 0x00, 0x00};
+
+    if (s_imu_uart == NULL)
+    {
+        return;
+    }
+
+    Led_Set('A');
+
+    IMU_SendCmd(unlock_cmd, sizeof(unlock_cmd));
+    HAL_Delay(200U);
+
+    IMU_SendCmd(enter_cal_cmd, sizeof(enter_cal_cmd));
+
+    /* 这里让用户在校准期间绕三个轴分别旋转 1~2 圈 */
+    if (rotate_ms > 0U)
+    {
+        HAL_Delay(rotate_ms);
+    }
+
+    IMU_SendCmd(unlock_cmd, sizeof(unlock_cmd));
+    HAL_Delay(200U);
+
+    IMU_SendCmd(exit_cal_cmd, sizeof(exit_cal_cmd));
+    HAL_Delay(200U);
+
+    IMU_SendCmd(save_cmd, sizeof(save_cmd));
+    Led_Set('a');
+}
+
 /************************************************************
  * 函数名：IMU_UART_RxCpltCallback
- * 功能  ：串口接收完成回调，放到 HAL_UART_RxCpltCallback 里调�?
- * 形参  ：huart - HAL回调传入的串口句�?
- * 返回值：�?
+ * 功能  ：串口接收完成回调，放到 HAL_UART_RxCpltCallback 里调�?
+ * 形参  ：huart - HAL回调传入的串口句�?
+ * 返回值：�?
 ************************************************************/
 void IMU_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -60,9 +112,9 @@ void IMU_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 /************************************************************
  * 函数名：IMU_ParseByte
- * 功能  ：逐字节状态机接收一帧数�?
+ * 功能  ：逐字节状态机接收一帧数�?
  * 形参  ：byte - 当前接收到的字节
- * 返回值：�?
+ * 返回值：�?
 ************************************************************/
 static void IMU_ParseByte(uint8_t byte)
 {
@@ -97,9 +149,9 @@ static void IMU_ParseByte(uint8_t byte)
 
 /************************************************************
  * 函数名：IMU_CheckSum
- * 功能  ：计�?SUMCRC
- * 形参  ：frame - 11字节数据�?
- * 返回值：校验和低8�?
+ * 功能  ：计�?SUMCRC
+ * 形参  ：frame - 11字节数据�?
+ * 返回值：校验和低8�?
 ************************************************************/
 static uint8_t IMU_CheckSum(uint8_t *frame)
 {
@@ -115,10 +167,10 @@ static uint8_t IMU_CheckSum(uint8_t *frame)
 
 /************************************************************
  * 函数名：IMU_GetInt16
- * 功能  ：低字节在前，高字节在后，合�?int16_t
- * 形参  ：low  - �?�?
- *        high - �?�?
- * 返回值：合成后的有符�?6位数�?
+ * 功能  ：低字节在前，高字节在后，合�?int16_t
+ * 形参  ：low  - �?�?
+ *        high - �?�?
+ * 返回值：合成后的有符�?6位数�?
 ************************************************************/
 static int16_t IMU_GetInt16(uint8_t low, uint8_t high)
 {
@@ -127,9 +179,9 @@ static int16_t IMU_GetInt16(uint8_t low, uint8_t high)
 
 /************************************************************
  * 函数名：IMU_ParseFrame
- * 功能  ：解析完整一帧数�?
- * 形参  ：frame - 11字节数据�?
- * 返回值：�?
+ * 功能  ：解析完整一帧数�?
+ * 形参  ：frame - 11字节数据�?
+ * 返回值：�?
 ************************************************************/
 static void IMU_ParseFrame(uint8_t *frame)
 {
@@ -150,8 +202,8 @@ static void IMU_ParseFrame(uint8_t *frame)
             s_imu_data.acc_raw.raw_t = data4;
 
             /*
-             * 常见维特/JY901协议�?
-             * 加速度量程 ±16g，对�?int16_t 满量�?±32768
+             * 常见维特/JY901协议�?
+             * 加速度量程 ±16g，对�?int16_t 满量�?±32768
              */
             s_imu_data.acc_g.x = (float)data1 / 32768.0f * 16.0f;
             s_imu_data.acc_g.y = (float)data2 / 32768.0f * 16.0f;
@@ -169,8 +221,8 @@ static void IMU_ParseFrame(uint8_t *frame)
             s_imu_data.gyro_raw.raw_t = data4;
 
             /*
-             * 常见维特/JY901协议�?
-             * 角速度量程 ±2000°/s，对�?int16_t 满量�?±32768
+             * 常见维特/JY901协议�?
+             * 角速度量程 ±2000°/s，对�?int16_t 满量�?±32768
              */
             s_imu_data.gyro_dps.x = (float)data1 / 32768.0f * 2000.0f;
             s_imu_data.gyro_dps.y = (float)data2 / 32768.0f * 2000.0f;
@@ -188,8 +240,8 @@ static void IMU_ParseFrame(uint8_t *frame)
             s_imu_data.angle_raw.raw_t = data4;
 
             /*
-             * 常见维特/JY901协议�?
-             * 角度量程 ±180°，对�?int16_t 满量�?±32768
+             * 常见维特/JY901协议�?
+             * 角度量程 ±180°，对�?int16_t 满量�?±32768
              */
             s_imu_data.angle_deg.roll  = (float)data1 / 32768.0f * 180.0f;
             s_imu_data.angle_deg.pitch = (float)data2 / 32768.0f * 180.0f;
@@ -237,9 +289,9 @@ static void IMU_ParseFrame(uint8_t *frame)
         default:
         {
             /*
-             * 0x50 时间�?x55 端口状态�?x56 气压高度�?
-             * 0x57 经纬度�?x58 地速�?x5A GPS精度等，
-             * 这里先不做具体换算，只完成接收校验�?
+             * 0x50 时间�?x55 端口状态�?x56 气压高度�?
+             * 0x57 经纬度�?x58 地速�?x5A GPS精度等，
+             * 这里先不做具体换算，只完成接收校验�?
              */
             break;
         }
@@ -248,9 +300,9 @@ static void IMU_ParseFrame(uint8_t *frame)
 
 /************************************************************
  * 函数名：IMU_GetData
- * 功能  ：获取当前解析后的数�?
+ * 功能  ：获取当前解析后的数�?
  * 形参  ：data - 数据输出指针
- * 返回值：�?
+ * 返回值：�?
 ************************************************************/
 void IMU_GetData(IMU_Data_t *data)
 {
@@ -266,7 +318,7 @@ void IMU_GetData(IMU_Data_t *data)
 
 /************************************************************
  * 函数名：IMU_GetUpdateFlag
- * 功能  ：读取数据更新标�?
+ * 功能  ：读取数据更新标�?
  * 形参  ：无
  * 返回值：更新标志
 ************************************************************/

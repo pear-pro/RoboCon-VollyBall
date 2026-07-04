@@ -89,6 +89,7 @@ typedef struct
 
 void IMU_UART_Init(UART_HandleTypeDef *huart);
 void IMU_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+void IMU_MagCalibration(uint32_t rotate_ms);
 
 void IMU_GetData(IMU_Data_t *data);
 uint32_t IMU_GetUpdateFlag(void);

@@ -1,7 +1,7 @@
 #include "heading_hold.h"
 #include "includes.h"
 
-#define HEADING_HOLD_KP                 1.0f
+#define HEADING_HOLD_KP                 3.0f
 #define HEADING_HOLD_KI                 0.0f
 #define HEADING_HOLD_KD                 2.0f
 #define HEADING_HOLD_MAX_WZ             600.0f

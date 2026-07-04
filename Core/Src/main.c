@@ -96,10 +96,18 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   MX_CAN2_Init();
+  
+  MX_USART1_UART_Init();   // 遥控
+  MX_USART6_UART_Init();   // debug
+  MX_UART7_Init();         // IMU
+//  MX_UART8_Init();         // 上位机
+  All_Init();              // CAN filter, PID, RC DMA 等
+  IMU_UART_Init(&huart7);
+  HAL_Delay(5000);      // 等 IMU 有有效帧
+  HeadingHold_Init();
+  DebugTune_Init();
+  MX_TIM3_Init();
   MX_TIM14_Init();
-  MX_USART6_UART_Init();
-//  MX_I2C2_Init();
-  MX_UART7_Init();
   /* USER CODE BEGIN 2 */
   
 
@@ -111,7 +119,8 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_Delay(2000);
-
+	IMU_MagCalibration(20000);
+	
   while (1)
   {
 
@@ -119,7 +128,10 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     HeadingHold_Task();
-    DebugTune_Task();
+//    DebugTune_Task();
+//    HAL_Delay(10);
+//    float num[3] = {imu.angle_deg.yaw, imu.angle_deg.pitch, imu.angle_deg.roll};
+//    Vofa_JustFloat(num, 3);
   }
   /* USER CODE END 3 */
 }
