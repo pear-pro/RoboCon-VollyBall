@@ -10,7 +10,7 @@
 #define HIT_RETURN_STEP 0.1f
 
 #define SERVE_LIFT_TICKS        (15U)
-#define SERVE_RETURN_TICKS      (36U)
+#define SERVE_RETURN_TICKS      (8U)
 #define SERVE_HIT_TICKS         (100U)
 #define SERVE_HIT_RETURN_TICKS  (20U)
 
