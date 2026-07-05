@@ -273,22 +273,25 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl)
         {
             sbus_ctrl -> key_flag |= KEY_SWC_DOWN;
         }
+        else if (SWC_pos == POS_MID ) {
+            sbus_ctrl -> key_flag |= KEY_SWC_MID;
+        }
     }
     else
     {
  // SWC 三档选择三组击球角度预设
-       if (KEY_SWC_UP & sbus_ctrl->key_flag)
-       {
-           hit_set_preset(0);
-       }
-       else if (KEY_SWC_MID & sbus_ctrl->key_flag)
-       {
-           hit_set_preset(1);
-       }
-       else if (KEY_SWC_DOWN & sbus_ctrl->key_flag)
-       {
-           hit_set_preset(2);
-       }
+    //    if (KEY_SWC_UP & sbus_ctrl->key_flag)
+    //    {
+    //        hit_set_preset(0);
+    //    }
+    //    else if (KEY_SWC_MID & sbus_ctrl->key_flag)
+    //    {
+    //        hit_set_preset(1);
+    //    }
+    //    else if (KEY_SWC_DOWN & sbus_ctrl->key_flag)
+    //    {
+    //        hit_set_preset(2);
+    //    }
     }
 
     //SWD处理
@@ -418,15 +421,19 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 //         MecanumWheel_Move(car_tarx,car_tary,car_tarw);
 
         //模式切换
-         if(KEY_SWB_UP & sbus_ctrl -> key_flag)
+         if(KEY_SWC_UP & sbus_ctrl -> key_flag)
         {
             //serve_mode = SERVE_MODE_ANGLE;
             hit_set_preset(0);
         }
-        else 
+        else if(KEY_SWC_DOWN & sbus_ctrl -> key_flag) 
         {
             //serve_mode = SERVE_MODE_SPEED;
-            hit_set_preset(1);
+            hit_set_preset(2);
+        }
+        else if(KEY_SWC_MID & sbus_ctrl -> key_flag)
+        {
+            hit_set_preset(1);  
         }
         
          // 离开下档后重新???填一次发球触发资??
