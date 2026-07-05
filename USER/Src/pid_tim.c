@@ -55,7 +55,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
          }
          //俯仰角3508的速度环控制，位置环控制在 remote_control_hit_update 中被击球状态机调用
 		  pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
-          can1_pitch_output=(int16_t)C620_angle.Speed_pid.out;
    
         Set_voltage(&hcan2,voltages);
     }

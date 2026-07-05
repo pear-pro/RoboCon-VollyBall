@@ -398,7 +398,7 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         car_tarx = 0;
         }
         else {
-            car_tarx=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+            car_tarx=normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
             //car_x=low_pass(car_tarx, car_x, 0.25);
 
         }
@@ -406,13 +406,13 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
             car_tary = 0;
         }
         else {
-            car_tary=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+            car_tary=-normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
             //car_y=low_pass(car_tary, car_y, 0.32);
         }
 		if (sbus_ctrl->ch[2] < 100 && sbus_ctrl->ch[3] > -100) {
         }
 		else {
-			heading_hold.target_yaw_deg -= -normalize_to_range(sbus_ctrl->ch[3], -800.0f, 800.0f, -1, 1)*0.1;
+			heading_hold.target_yaw_deg -= normalize_to_range(sbus_ctrl->ch[3], -800.0f, 800.0f, -1, 1)*0.1;
 		}
 		
 //         MecanumWheel_Move(car_tarx,car_tary,car_tarw);
@@ -476,32 +476,6 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
            hit_request_release();
        }
 
-       // 离开下档后重新装填一次发球触发资格
-       if (!(KEY_SWB_UP & sbus_ctrl->key_flag))
-       {
-           serve_arm();
-       }
-
-       if (KEY_SWD_DOWN & sbus_ctrl->key_flag)
-       {
-           // 上档：保留原有 C620 角度电机控制
-           C620_angle.Speed_pid.set = 25000.0f;
-       }
-       else if (KEY_SWB_MID & sbus_ctrl->key_flag)
-       {
-           // 中档：击球机构由 SF 单独控制
-       }
-       else
-       {
-           // 下档：触发一次自动发球流程
-           serve_request_start();
-
-           if (!serve_is_active())
-           {
-               damiao[0].angle = 0.0f;
-               damiao[1].angle = 0.0f;
-           }
-       }
      }
 }
 

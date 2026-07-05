@@ -100,7 +100,7 @@ int main(void)
   MX_USART6_UART_Init();
   MX_I2C2_Init();
   MX_UART7_Init();
-  MX_UART8_Init();
+ // MX_UART8_Init();
   /* USER CODE BEGIN 2 */
   
 
@@ -120,8 +120,8 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     HeadingHold_Task();
-    DebugTune_Task();
-    UART8_Process();
+    //DebugTune_Task();
+    // UART8_Process();
   }
   /* USER CODE END 3 */
 }
