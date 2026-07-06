@@ -10,9 +10,10 @@
 #define HIT_RETURN_STEP 0.1f
 
 #define SERVE_LIFT_TICKS        (15U)
-#define SERVE_RETURN_TICKS      (8U)
+#define SERVE_RETURN_TICKS      (3U)
 #define SERVE_HIT_TICKS         (100U)
 #define SERVE_HIT_RETURN_TICKS  (20U)
+#define SERVE_STAGE_CLEAR_TICKS (500U)
 
 typedef enum
 {
@@ -28,6 +29,7 @@ typedef enum
     SERVE_STAGE_LIFT_RETURN,
     SERVE_STAGE_HIT,
     SERVE_STAGE_HIT_RETURN,
+	SERVE_STAGE_CLEAR,
 } serve_stage_t;
 
 typedef enum

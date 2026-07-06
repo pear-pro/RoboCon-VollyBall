@@ -150,15 +150,17 @@ void remote_control_serve_update(void)
     switch (serve_stage)
     {
     case SERVE_STAGE_LIFT:
+		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
         if (++serve_tick >= SERVE_LIFT_TICKS)
         {
             serve_stage = SERVE_STAGE_LIFT_RETURN;
             serve_tick = 0;
-        }
+        }		
+
         break;
 
     case SERVE_STAGE_LIFT_RETURN:
-        Pump_On();
+		Pump_On();
 		if (++serve_tick >= SERVE_RETURN_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT;
@@ -176,16 +178,23 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_HIT_RETURN:
-    default:
-        //C620_up_angle.target_angle = ;
 	    Pump_Off();
         if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
+        {
+            serve_stage = SERVE_STAGE_CLEAR;
+        }
+        break;
+	case SERVE_STAGE_CLEAR:
+	default:
+		pid_reset(&C620_up_angle.Angle_pid,0,0,0);
+        if (++serve_tick >= SERVE_STAGE_CLEAR_TICKS)
         {
             serve_stage = SERVE_STAGE_IDLE;
             serve_tick = 0;
             serve_active = 0;
+			C620_up_angle.FirstEntre = 0;
         }
-        break;
+		break;
     }
 }
 
@@ -226,19 +235,6 @@ void remote_control_hit_update(void)
 
 void hit_angle_control(void)
 {
-    // int16_t voltage[HIT_MOTOR_COUNT] = {0};
-
-    // for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
-    // {
-    //     int32_t output = PID_PROCESS_Double(&C620_hit_angle[i].Angle_pid,
-    //                                         &C620_hit_angle[i].Speed_pid,
-    //                                         C620_hit_angle[i].target_angle,
-    //                                         C620_hit_angle[i].Angle_pid.get,
-    //                                         C620_hit_angle[i].Speed_pid.get);
-    //     voltage[i] = limit(output, HIT_OUTPUT_LIMIT);
-    // }
-
-    // Set_voltage_hit(&hcan2, voltage);
     Set_dm_mit(&hcan1, 0);
     Set_dm_mit(&hcan1, 1);
     Set_dm_mit(&hcan1, 2);
@@ -269,5 +265,9 @@ void up_angle_control(void)
 
     voltage[0] = limit(output, HIT_OUTPUT_LIMIT);
 
-    Set_voltage_up_angle(&hcan2, voltage);
+//    if(count_flag) Set_voltage_up_angle(&hcan2, voltage);
+//else Set_voltage_up_angle(&hcan2, 0);
+	
+	Set_voltage_up_angle(&hcan2, voltage);
+	
 }

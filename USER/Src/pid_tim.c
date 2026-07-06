@@ -58,8 +58,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
              remote_control_serve_update();
          }
         remote_control_hit_update();
-		car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
-        car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
+		//car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
+        //car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
 
         /*
          * W axis control logic:
@@ -109,9 +109,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                    voltages[i]=(int16_t)C620[i].Speed_pid.out;
 			
          }
-//					pid_calc(&C620_angle.Speed_pid,C620_angle.Speed_pid.get,C620_angle.Speed_pid.set);
-//          voltage_angle[0]=(int16_t)C620_angle.Speed_pid.out;
-//          Set_voltage_angle(&hcan2,voltage_angle);
+
 //        float num[]={//gyro_data.Gyro_X,
 //            gyro_data.Gyro_Y,
 //            gyro_data.Gyro_Z,
@@ -125,20 +123,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 ////        Vofa_JustFloat(num, 3);
        Set_voltage(&hcan2,voltages);
     }
-//	if(hcan1.ErrorCode!=0)//����can���ߴ���������
-//	{
-//		HAL_CAN_DeInit(&hcan1);
-//		HAL_CAN_Init(&hcan1);
-//		HAL_CAN_Start(&hcan1);
-//	}
-//    if(hcan2.ErrorCode!=0)//����can���ߴ���������
-//	{
-//		HAL_CAN_DeInit(&hcan2);
-//		HAL_CAN_Init(&hcan2);
-//		HAL_CAN_Start(&hcan2);
-//	
-//	
-//	}	
+    
+	if(hcan1.ErrorCode!=0)//����can���ߴ���������
+	{
+		HAL_CAN_DeInit(&hcan1);
+		HAL_CAN_Init(&hcan1);
+		HAL_CAN_Start(&hcan1);
+	}
+   if(hcan2.ErrorCode!=0)//����can���ߴ���������
+	{
+		HAL_CAN_DeInit(&hcan2);
+		HAL_CAN_Init(&hcan2);
+		HAL_CAN_Start(&hcan2);
+	
+	
+	}	
     //������������ӽǶȻ����жϴ����߼�?
     if(htim == &htim14)  // ȷ����PID��ʱ���ĸ����ж�
     {
@@ -147,10 +146,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	   ops_control();
     }else 
     {
-        Set_dm_mit(&hcan1,0);
-        Set_dm_mit(&hcan1,1);
-        Set_dm_mit(&hcan1,2);
-		
+       hit_angle_control();
+       up_angle_control();
     }	
 	
     }

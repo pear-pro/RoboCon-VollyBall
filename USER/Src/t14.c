@@ -404,18 +404,18 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         // car_w=apply_deadzone(car_w, DEADZONE);
 
         if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
-        car_tarx = 0;
+        car_x = 0;
         }
         else {
-            car_tarx=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+            car_x=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
             //car_x=low_pass(car_tarx, car_x, 0.25);
 
         }
         if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
-            car_tary = 0;
+            car_y = 0;
         }
         else {
-            car_tary=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+            car_y=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
             //car_y=low_pass(car_tary, car_y, 0.32);
         }
 		if (sbus_ctrl->ch[3] < 100 && sbus_ctrl->ch[3] > -100) {
