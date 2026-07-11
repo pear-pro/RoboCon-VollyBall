@@ -14,8 +14,6 @@ static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMA双缓�?
 
 SBUS_ctrl_t sbus_ctrl;
 
-uint8_t count_flag=0;
-
 void sbus_remote_control_init(void)//SBUS遥控器初始化
 {
     RC_init(sbus_rx_buffer[0], sbus_rx_buffer[1], SBUS_RX_BUF_NUM);
@@ -479,17 +477,11 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        if (KEY_SWA_UP & sbus_ctrl->key_flag)
        {
 		  // Pump_Off();
-		   count_flag = 0;
 		   serve_arm();
        }
        else if (KEY_SWA_DOWN & sbus_ctrl->key_flag)
        {
 		  // Pump_On();
-		   if(!count_flag)
-		   {
-			   count++;
-			   count_flag = 1;
-		   }
 		   serve_request_start();
        }
 

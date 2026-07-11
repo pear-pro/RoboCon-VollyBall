@@ -72,6 +72,4 @@ static void virtual_key_update(SBUS_ctrl_t *sbus_ctrl);
 void Pump_On(void);
 void Pump_Off(void);
 
-extern uint8_t count_flag;
-
 #endif

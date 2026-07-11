@@ -101,8 +101,7 @@
 	float HeadingHold_Update(float manual_wz)
 	{
 		(void)manual_wz;
-
-		if (!heading_hold.initialized) {
+			if (!heading_hold.initialized) {
 			return 0.0f;
 		}
 

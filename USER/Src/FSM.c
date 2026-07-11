@@ -8,21 +8,29 @@
 #include "t14.h"
 #include "jumper_t15_rc.h"
 
-//�����ṹ�����
+//�����ṹ�����?
 extern motor_info_t damiao[HIT_MOTOR_COUNT];
 extern motor_info_t C620_up_angle;
 extern motor_info_t C620_hit_angle[HIT_MOTOR_COUNT];
-//����״̬����ر���
+//����״̬����ر���?
 static volatile uint8_t serve_active = 0;
 static volatile uint8_t serve_armed = 1;
 static volatile uint16_t serve_tick = 0;
 static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
-//����״̬����ر���
+//����״̬����ر���?
 static volatile hit_state_t hit_stage = HIT_IDLE;
 static uint8_t hit_preset_index = 0;
 double set_angle = -170.0f;
 volatile uint16_t count = 0;
+volatile uint16_t count_up = 0;
+static volatile float serve_lift_target_angle = 0.0f;
+static volatile float serve_hit_target_angle = 0.0f;
+
 serve_mode_t serve_mode = SERVE_MODE_ANGLE;
+
+#define SERVE_BASE_ANGLE        (-3230.0f)
+#define SERVE_ANGLE_STEP        (10.0f * SCALE)
+#define SERVE_HIT_ANGLE_DELTA   (360.0f * SCALE)
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
@@ -33,6 +41,12 @@ static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 static const float hit_angle_reset[HIT_MOTOR_COUNT] =
 {
     0,0,0
+};
+
+static const float up_per_angle[8]=
+{
+	-220*SCALE,-220*SCALE,-220*SCALE,-220*SCALE,
+	-220*SCALE,-220*SCALE,-220*SCALE,-220*SCALE
 };
 
 //�޷����������������[-limit, limit]��Χ��
@@ -70,7 +84,7 @@ static uint8_t move_to_angle_smooth(motor_info_t *motor, float target, float ste
     }
 }
 
-//�ж����л������Ƿ���Ŀ��Ƕȸ���
+//�ж����л������Ƿ���Ŀ��Ƕȸ���?
 /*ֻҪ��һ����û�ص���ֵ��Χ�ڣ��ͷ��� 0���������ӽ� 0���ŷ��� 1��Ȼ��״̬������ HIT_IDLE */
 static uint8_t hit_all_near(float target, float threshold)
 {
@@ -99,6 +113,10 @@ void serve_request_start(void)
 {
     if (serve_armed && !serve_active)
     {
+        serve_lift_target_angle = up_per_angle[count_up%8];//SERVE_BASE_ANGLE; //- (float)count * SERVE_ANGLE_STEP;
+        serve_hit_target_angle = serve_lift_target_angle + SERVE_HIT_ANGLE_DELTA;
+        count++;
+			  count_up++;
         serve_active = 1;
         serve_armed = 0;
         serve_tick = 0;
@@ -111,7 +129,7 @@ uint8_t serve_is_active(void)
     return serve_active;
 }
 
-//����Ԥ���������ö�Ӧ��Ŀ��Ƕ�
+//����Ԥ���������ö�Ӧ��Ŀ��Ƕ�?
 void hit_set_preset(uint8_t preset)
 {
     if (preset >= HIT_MOTOR_COUNT)
@@ -127,7 +145,7 @@ void hit_request_press(void)
     hit_stage = HIT_PUT_ANGLE;
 }
 
-//�ⲿ���ã������������
+//�ⲿ���ã������������?
 void hit_request_release(void)
 {
     hit_stage = HIT_RETURN;
@@ -151,6 +169,7 @@ void remote_control_serve_update(void)
     {
     case SERVE_STAGE_LIFT:
 		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
+        C620_up_angle.target_angle = serve_lift_target_angle;
         if (++serve_tick >= SERVE_LIFT_TICKS)
         {
             serve_stage = SERVE_STAGE_LIFT_RETURN;
@@ -169,7 +188,7 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_HIT:
-        C620_up_angle.target_angle = (set_angle + 360 * count) * 19;
+        C620_up_angle.target_angle = serve_hit_target_angle;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -212,18 +231,18 @@ void remote_control_hit_update(void)
 
     case HIT_RETURN:
     {
-        uint8_t all_done = 1;
+			uint8_t all_done=1;
         for (uint8_t i = 0; i < HIT_MOTOR_COUNT; i++)
         {
-            if (!move_to_angle_smooth(&damiao[i], hit_angle_reset[i], HIT_RETURN_STEP))
+            if (!(move_to_angle_smooth(&damiao[i], hit_angle_reset[i], HIT_RETURN_STEP)))
             {
-                all_done = 0;
+                all_done=0;
             }
         }
-        if (all_done)
-        {
-            hit_stage = HIT_IDLE;
-        }
+				if(all_done)
+				{
+					hit_stage=HIT_IDLE;
+				}
         break;
     }
 

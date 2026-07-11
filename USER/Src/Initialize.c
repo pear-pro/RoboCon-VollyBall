@@ -73,7 +73,7 @@ void All_Init(){
 	damiao[2].KD = 0.2f;
 	damiao[2].tor = -1.65f;//-1.65
 	damiao[2].angle=0.0f;
-  C620_up_angle.target_angle = -3420.0f;
+ // C620_up_angle.target_angle = -3420.0f;
 	Pump_Off();
         PID_Struct_Init(&damiao[0].Angle_pid,
             15.0f,
@@ -88,8 +88,8 @@ void All_Init(){
 
    
 	PID_Struct_Init(&C620_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);
-	PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
-	PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);
+	PID_Struct_Init(&C620_up_angle.Angle_pid, 8.5f, 0.0f, 0.15f, 20000, 16000, INIT); //7 0 0  //8.15 0 0.15
+	PID_Struct_Init(&C620_up_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);//10.5 0 0.3
 	
 }
 
