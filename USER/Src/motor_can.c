@@ -31,7 +31,9 @@ CAN_RxHeaderTypeDef can1RxMsg,can2RxMsg; //������Ϣ�ṹ��
 uint8_t can1RxData[8],can2RxData[8];     //�������ݻ���
 uint8_t isRcan1Started=0,isRcan2Started=0; //��־λ����ʾ CAN1 �� CAN2 �Ƿ�����������
 uint8_t can1_update = 1;
-uint8_t can2_update = 1; //��־λ����ʾ CAN1 �� CAN2 �Ƿ����µ�������Ҫ����
+uint8_t can2_update = 1;
+//反馈超时保护
+volatile uint16_t C620_up_angle_feedback_tick[2] = {0xffff, 0xffff}; //��־λ����ʾ CAN1 �� CAN2 �Ƿ����µ�������Ҫ����
 
 static int16_t dji_motor_decode_int16(uint8_t high, uint8_t low)
 {
@@ -41,6 +43,7 @@ static int16_t dji_motor_decode_int16(uint8_t high, uint8_t low)
 static void c620_up_angle_feedback_update(uint8_t index, uint8_t *rx_data)
 {
 	motor_info_t *motor = &C620_up_angle[index];
+	C620_up_angle_feedback_tick[index] = 0;
 	motor->Rxmsg.Angle = ((rx_data[0] << 8) | rx_data[1]) * 360 / 8192.0f;
 	motor->Rxmsg.Speed = dji_motor_decode_int16(rx_data[2], rx_data[3]);
 	motor->Rxmsg.Torque = dji_motor_decode_int16(rx_data[4], rx_data[5]);
@@ -479,7 +482,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     {
         uint8_t message_count = 0;
 
-        while (message_count < 5)
+        while (message_count < 3)
         {
             uint32_t fifo_fill = HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0);
             if (fifo_fill == 0)

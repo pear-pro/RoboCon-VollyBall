@@ -55,6 +55,8 @@ python scripts/tune_c620_up_angle.py COM3 --select pitch_speed --mode speed --ta
 --target：position 下是输出轴角度，speed 下是 rpm
 --ratio：位置模式评分和 VOFA 显示用的减速比，默认 19
 
+双3508调参
+python scripts/tune_c620_up_angle.py COM8 --select up --mode position --angle 10 --rounds 1 --max-trials 10 --duration 1.0 --verbose
 
 2026.7.5
 发球机整机问题解决

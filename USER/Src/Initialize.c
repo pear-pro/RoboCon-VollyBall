@@ -69,15 +69,15 @@ void All_Init(){
             INIT);
 
     }
-	damiao[0].KP = 150.0f;//150.0f;
+	damiao[0].KP = 200.0f;//150.0f;
 	damiao[0].KD = 0.2f;
 	damiao[0].tor = -1.65f;//-1.65
 	damiao[0].angle=0.0f;
-			damiao[1].KP = 150.0f;//150.0f;
+			damiao[1].KP = 200.0f;//150.0f;
 	damiao[1].KD = 0.2f;
 	damiao[1].tor = -1.65f;//-1.65
 	damiao[1].angle=0.0f;
-			damiao[2].KP = 150.0f;//150.0f;
+			damiao[2].KP = 200.0f;//150.0f;
 	damiao[2].KD = 0.2f;
 	damiao[2].tor = -1.65f;//-1.65
 	damiao[2].angle=0.0f;
@@ -95,8 +95,10 @@ void All_Init(){
 
    
 	PID_Struct_Init(&C620_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);
-	PID_Struct_Init(&C620_up_angle[1].Angle_pid, 9.0f, 0.0f, 0.3f, 20000, 16000, INIT); //7 0 0  //8.15 0 0.15
-	PID_Struct_Init(&C620_up_angle[1].Speed_pid, 10.5f, 0.0f, 0.3f, 20000, 16000, INIT);//10.5 0 0.3
+	PID_Struct_Init(&C620_up_angle[1].Angle_pid, 9.0f, 0.0f, 0.3f, 10000, 16000, INIT); //7 0 0  //8.15 0 0.15
+	PID_Struct_Init(&C620_up_angle[1].Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);//10.5 0 0.3
+	C620_up_angle[1].target_angle=20*19.0f;
+	
 	
 }
 

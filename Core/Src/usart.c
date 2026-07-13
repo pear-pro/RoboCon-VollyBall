@@ -431,16 +431,16 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 //};
 
 //FILE __stdout;
-void _sys_exit(int x)
-{
-    (void)x;
-}
-//�ض���fputc����
-int fputc(int ch, FILE *f)
-{
-    (void)f;
-    HAL_UART_Transmit(&huart6, (uint8_t *)&ch, 1, 10);
-    return ch;
-}
+//void _sys_exit(int x)
+//{
+//    (void)x;
+//}
+////�ض���fputc����
+//int fputc(int ch, FILE *f)
+//{
+//    (void)f;
+//    HAL_UART_Transmit(&huart6, (uint8_t *)&ch, 1, 10);
+//    return ch;
+//}
 /* USER CODE END 1 */
 

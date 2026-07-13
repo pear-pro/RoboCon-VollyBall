@@ -9,7 +9,7 @@
 #define HIT_RETURN_DONE_DEG 20.0f //20/19 ????1.05??????????
 #define HIT_RETURN_STEP 0.01f
 
-#define SERVE_LIFT_TICKS        (50U)  //100U //15
+#define SERVE_LIFT_TICKS        (85U)  //100U //15
 #define SERVE_RETURN_TICKS      (9U)
 #define SERVE_HIT_TICKS         (100U)
 #define SERVE_HIT_RETURN_TICKS  (20U)

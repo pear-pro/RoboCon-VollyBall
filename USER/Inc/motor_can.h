@@ -60,6 +60,7 @@ typedef struct{
 void can_filter_init(void);
 void can1_filter_init(void);
 void can2_fliter_init(void);
+extern volatile uint16_t C620_up_angle_feedback_tick[2];
 
 
 void Set_voltage(CAN_HandleTypeDef* hcan,int16_t vlotage[]);

@@ -188,11 +188,27 @@ void ops_set_speed(float rpm)
 
 void ops_zero(void)
 {
-    motor_info_t *motor = ops_get_current()->motor;
-    motor->Zero = motor->currentRead;
-    motor->lastRead = motor->currentRead;
-    motor->totalAngle = 0.0f;
-    motor->Angle_pid.get = 0.0f;
+    ops_control_t *target = ops_get_current();
+    motor_info_t *motor = target->motor;
+
+    if (strcmp(target->name, "up") == 0)
+    {
+        for (uint8_t i = 0U; i < 2U; i++)
+        {
+            C620_up_angle[i].Zero = C620_up_angle[i].currentRead;
+            C620_up_angle[i].lastRead = C620_up_angle[i].currentRead;
+            C620_up_angle[i].totalAngle = 0.0f;
+            C620_up_angle[i].Angle_pid.get = 0.0f;
+        }
+    }
+    else
+    {
+        motor->Zero = motor->currentRead;
+        motor->lastRead = motor->currentRead;
+        motor->totalAngle = 0.0f;
+        motor->Angle_pid.get = 0.0f;
+    }
+
     motor->target_angle = 0.0f;
     motor->Speed_pid.set = 0.0f;
     ops_reset_pid_state();

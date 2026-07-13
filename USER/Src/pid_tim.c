@@ -7,12 +7,14 @@
 #include "motor_can.h"
 #include <math.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "debug_uart.h"
 #include "pid.h"
 #include "ops.h"
 #include "FSM.h"
 #include "imu.h"
 #include "heading_hold.h"
+#include "stm32f4xx_hal_pwr_ex.h"
 
 
 // ����״̬����ң����ģ�����ƽ������ﰴ�̶����ڵ���
@@ -26,11 +28,16 @@ uint16_t PID_Calc_Flag = 0;
 /* Manual W axis takeover threshold. car_tarw is already set to 0 in remote deadzone. */
 #define CAR_W_MANUAL_DEADBAND 1.0f
 
-//发球3508最大允许电流
-#define UP_PROTECT_MAX 13000.0f
+//发球3508最大允许电�?
+#define UP_OVER_CURRENT 13000.0f
+#define UP_OVER_TEMP 110.0f
+#define UP_FEEDBACK_TIMEOUT_TICKS 20U
+#define UP_ANGLE_DIFF_LIMIT 150.0f
 
 //过流标志位，0表示没保护，1表示过流保护
 static volatile uint8_t up_overcurrent_fault = 0;
+static volatile uint8_t up_feedback_lost_fault = 0;
+static volatile uint8_t up_angle_diff_fault = 0;
 
 static void pid_clear_output(pid_t *pid)
 {
@@ -44,16 +51,53 @@ static void pid_clear_output(pid_t *pid)
     pid->out = 0.0f;
 }
 
-// 过流检测函数，返回1表示过流，0表示正常
-static uint8_t up_overcurrent_detected(float threshold)
+// 过流检测函数，返回1表示过流�?表示正常
+static uint8_t up_overcurrent_detected(float overcurrent,float overtemp)
 {
-    if (fabsf(C620_up_angle[0].Rxmsg.Torque) >= threshold || fabsf(C620_up_angle[1].Rxmsg.Torque) >= threshold)
+    if (abs(C620_up_angle[0].Rxmsg.Torque) >= overcurrent || abs(C620_up_angle[1].Rxmsg.Torque) >= overcurrent
+       ||C620_up_angle[0].Rxmsg.Temp>= overtemp ||C620_up_angle[1].Rxmsg.Temp>= overtemp)
     {
         return 1;
     }
     return 0;
 }
 
+
+static void up_feedback_tick_update(void)
+{
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        if (C620_up_angle_feedback_tick[i] < 0xffff)
+        {
+            C620_up_angle_feedback_tick[i]++;
+        }
+    }
+}
+
+static uint8_t up_feedback_lost_detected(void)
+{
+    if (C620_up_angle_feedback_tick[0] > UP_FEEDBACK_TIMEOUT_TICKS ||
+        C620_up_angle_feedback_tick[1] > UP_FEEDBACK_TIMEOUT_TICKS)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+static uint8_t up_angle_diff_detected(float max_diff)
+{
+    float diff = C620_up_angle[0].Angle_pid.get - C620_up_angle[1].Angle_pid.get;
+    if (diff < 0.0f)
+    {
+        diff = -diff;
+    }
+
+    if (diff >= max_diff)
+    {
+        return 1;
+    }
+    return 0;
+}
 static void up_overcurrent_stop_output(void)
 {
     int16_t up_voltage[2] = {0, 0};
@@ -140,7 +184,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //������������ӽǶȻ����жϴ����߼�?
     if(htim == &htim14)  // ȷ����PID��ʱ���ĸ����ж�
     {
-        if (up_overcurrent_detected(UP_PROTECT_MAX))
+        up_feedback_tick_update();
+
+        if (up_overcurrent_detected(UP_OVER_CURRENT,UP_OVER_TEMP))
         {
             up_overcurrent_fault = 1;
         }
@@ -149,7 +195,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             up_overcurrent_fault = 0;
         }
 
-        if(up_overcurrent_fault)
+        if (up_feedback_lost_detected())
+        {
+            up_feedback_lost_fault = 1;
+        }
+        else
+        {
+            up_feedback_lost_fault = 0;
+        }
+
+        if (up_angle_diff_detected(UP_ANGLE_DIFF_LIMIT))
+        {
+            up_angle_diff_fault = 1;
+        }
+        else
+        {
+            up_angle_diff_fault = 0;
+        }
+
+        if(up_overcurrent_fault || up_feedback_lost_fault || up_angle_diff_fault)
         {
             up_overcurrent_stop_output();
         }

@@ -27,7 +27,7 @@ volatile uint16_t count = 0;
 volatile uint16_t count_up = 0;
 static volatile float serve_lift_target_angle = 0.0f;
 static volatile float serve_hit_target_angle = 0.0f;
-static volatile uint8_t serve_up_output_enabled = 1U;
+static volatile uint8_t serve_up_output_enabled = 1;
 
 serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 
@@ -241,13 +241,14 @@ void remote_control_serve_update(void)
         break;
 	case SERVE_STAGE_CLEAR:
 	default:
-    HeadingHold_AddTargetDeg(180.0f/(float)SERVE_STAGE_CLEAR_TICKS);
+   // HeadingHold_AddTargetDeg(180.0f/(float)SERVE_STAGE_CLEAR_TICKS);
         if (++serve_tick >= SERVE_STAGE_CLEAR_TICKS)
         {
             serve_stage = SERVE_STAGE_IDLE;
             serve_tick = 0;
             serve_active = 0;
-			C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].FirstEntre = 0;
+			C620_up_angle[0].FirstEntre = 0;
+            C620_up_angle[1].FirstEntre = 0;
         }
 		break;
     }
@@ -323,6 +324,6 @@ void up_angle_control(void)
     }
 
     voltage[0] = limit(output, HIT_OUTPUT_LIMIT);
-    voltage[1] = voltage[0];
+    voltage[1] =- voltage[0];
     Set_voltage_up_angle(&hcan2, voltage);
 }
