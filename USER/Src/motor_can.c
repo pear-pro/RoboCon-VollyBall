@@ -33,7 +33,7 @@ uint8_t isRcan1Started=0,isRcan2Started=0; //��־λ����ʾ CAN1 ��
 uint8_t can1_update = 1;
 uint8_t can2_update = 1;
 //反馈超时保护
-volatile uint16_t C620_up_angle_feedback_tick[2] = {0xffff, 0xffff}; //��־λ����ʾ CAN1 �� CAN2 �Ƿ����µ�������Ҫ����
+volatile uint16_t C620_up_angle_feedback_tick[2] = {0,0}; //��־λ����ʾ CAN1 �� CAN2 �Ƿ����µ�������Ҫ����
 
 static int16_t dji_motor_decode_int16(uint8_t high, uint8_t low)
 {
@@ -480,20 +480,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 	}
     if(hcan==&hcan2) //���̼ӽǶ�3508
     {
-        uint8_t message_count = 0;
 
-        while (message_count < 3)
-        {
-            uint32_t fifo_fill = HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0);
-            if (fifo_fill == 0)
-            {
-                break;
-            }
-
-            if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData) != HAL_OK)
-            {
-                break;
-            }
+            HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
+			 	C620_up_angle_feedback_tick[0] = 0;
+			  C620_up_angle_feedback_tick[1] = 0;
 
             for(int i=0;i<MotorCount;i++)
             {
@@ -505,14 +495,71 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
                     C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
                 }
             }
-            if(can2RxMsg.StdId==0x205){
-                c620_up_angle_feedback_update(0, can2RxData);
-            }
-            else if(can2RxMsg.StdId==0x206){
-                c620_up_angle_feedback_update(1, can2RxData);
+              if(can2RxMsg.StdId==0x205){
+               
+               C620_up_angle[0].Rxmsg.Angle = ((can2RxData[0] << 8) | can2RxData[1]) * 360 / 8192.0f;
+	             C620_up_angle[0].Rxmsg.Speed = dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
+	             C620_up_angle[0].Rxmsg.Torque = dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
+	             C620_up_angle[0].Rxmsg.Temp = can2RxData[6];
+								C620_up_angle[0].currentRead = C620_up_angle[0].Rxmsg.Angle;
+								C620_up_angle[0].Speed_pid.get = C620_up_angle[0].Rxmsg.Speed;
+
+	if (C620_up_angle[0].FirstEntre == 0)
+	{
+		C620_up_angle[0].Zero = C620_up_angle[0].currentRead;
+		C620_up_angle[0].FirstEntre = 1;
+	C620_up_angle[0].lastRead = C620_up_angle[0].currentRead;
+		C620_up_angle[0].totalAngle = 0;
+	}
+
+	float delta = C620_up_angle[0].currentRead -C620_up_angle[0].lastRead;
+	if (delta > 180)
+	{
+		delta = delta - 360;
+	}
+	else if (delta < -180)
+	{
+		delta = delta + 360;
+	}
+
+	C620_up_angle[0].totalAngle += delta;
+	C620_up_angle[0].Angle_pid.get = C620_up_angle[0].totalAngle;
+	C620_up_angle[0].lastRead = C620_up_angle[0].currentRead;
             }
 
-            message_count++;
-        }
-    }
-}
+	
+   if(can2RxMsg.StdId==0x206){
+  
+               C620_up_angle[1].Rxmsg.Angle = ((can2RxData[0] << 8) | can2RxData[1]) * 360 / 8192.0f;
+	             C620_up_angle[1].Rxmsg.Speed = dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
+	             C620_up_angle[1].Rxmsg.Torque = dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
+	             C620_up_angle[1].Rxmsg.Temp = can2RxData[6];
+								C620_up_angle[1].currentRead = C620_up_angle[1].Rxmsg.Angle;
+								C620_up_angle[1].Speed_pid.get = C620_up_angle[1].Rxmsg.Speed;
+
+	if (C620_up_angle[1].FirstEntre == 0)
+	{
+		C620_up_angle[1].Zero = C620_up_angle[1].currentRead;
+		C620_up_angle[1].FirstEntre = 1;
+	C620_up_angle[1].lastRead = C620_up_angle[1].currentRead;
+		C620_up_angle[1].totalAngle = 0;
+	}
+
+	float delta = C620_up_angle[1].currentRead -C620_up_angle[1].lastRead;
+	if (delta > 180)
+	{
+		delta = delta - 360;
+	}
+	else if (delta < -180)
+	{
+		delta = delta + 360;
+	}
+
+	C620_up_angle[1].totalAngle += delta;
+	C620_up_angle[1].Angle_pid.get = C620_up_angle[1].totalAngle;
+	C620_up_angle[1].lastRead = C620_up_angle[1].currentRead;
+            }
+					}
+
+        
+				}    

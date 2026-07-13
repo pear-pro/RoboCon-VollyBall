@@ -31,7 +31,7 @@ static volatile uint8_t serve_up_output_enabled = 1;
 
 serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 
-#define UP_ANGLE_FEEDBACK_INDEX 1
+#define UP_ANGLE_FEEDBACK_INDEX 0
 
 #define SERVE_BASE_ANGLE        (-3230.0f)
 #define SERVE_ANGLE_STEP        (10.0f * SCALE)
@@ -59,7 +59,6 @@ static void serve_up_stop_force(void)
     motor->target_angle = motor->Angle_pid.get;
     pid_clear_output(&motor->Angle_pid);
     pid_clear_output(&motor->Speed_pid);
-    Set_voltage_up_angle(&hcan2, voltage);
 }
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
@@ -324,6 +323,6 @@ void up_angle_control(void)
     }
 
     voltage[0] = limit(output, HIT_OUTPUT_LIMIT);
-    voltage[1] =- voltage[0];
+    voltage[1] = - voltage[0];
     Set_voltage_up_angle(&hcan2, voltage);
 }

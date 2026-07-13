@@ -95,10 +95,12 @@ void All_Init(){
 
    
 	PID_Struct_Init(&C620_angle.Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);
-	PID_Struct_Init(&C620_up_angle[1].Angle_pid, 9.0f, 0.0f, 0.3f, 10000, 16000, INIT); //7 0 0  //8.15 0 0.15
+	PID_Struct_Init(&C620_up_angle[1].Angle_pid, 7.0f, 0.0f, 0.15f, 10000, 16000, INIT); //7 0 0  //8.15 0 0.15
 	PID_Struct_Init(&C620_up_angle[1].Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);//10.5 0 0.3
+	PID_Struct_Init(&C620_up_angle[0].Angle_pid, 7.0f, 0.0f, 0.15f, 10000, 16000, INIT); //7 0 0  //8.15 0 0.15
+	PID_Struct_Init(&C620_up_angle[0].Speed_pid, 10.5f, 0.0f, 0.3f, 10000, 16000, INIT);//10.5 0 0.3
 	C620_up_angle[1].target_angle=20*19.0f;
-	
+		C620_up_angle[0].target_angle=180*19.0f;
 	
 }
 

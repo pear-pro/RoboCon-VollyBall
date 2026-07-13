@@ -30,26 +30,14 @@ uint16_t PID_Calc_Flag = 0;
 
 //发球3508最大允许电�?
 #define UP_OVER_CURRENT 13000.0f
-#define UP_OVER_TEMP 110.0f
-#define UP_FEEDBACK_TIMEOUT_TICKS 20U
-#define UP_ANGLE_DIFF_LIMIT 150.0f
+#define UP_OVER_TEMP 11000.0f
+#define UP_FEEDBACK_TIMEOUT_TICKS 3
+
 
 //过流标志位，0表示没保护，1表示过流保护
 static volatile uint8_t up_overcurrent_fault = 0;
 static volatile uint8_t up_feedback_lost_fault = 0;
-static volatile uint8_t up_angle_diff_fault = 0;
 
-static void pid_clear_output(pid_t *pid)
-{
-    pid->set = 0.0f;
-    pid->error[NOW_ERR] = 0.0f;
-    pid->error[LAST_ERR] = 0.0f;
-    pid->error[LLAST_ERR] = 0.0f;
-    pid->pout = 0.0f;
-    pid->iout = 0.0f;
-    pid->dout = 0.0f;
-    pid->out = 0.0f;
-}
 
 // 过流检测函数，返回1表示过流�?表示正常
 static uint8_t up_overcurrent_detected(float overcurrent,float overtemp)
@@ -62,12 +50,12 @@ static uint8_t up_overcurrent_detected(float overcurrent,float overtemp)
     return 0;
 }
 
-
+//做保留，目前A板先上电会冲突
 static void up_feedback_tick_update(void)
 {
     for (uint8_t i = 0; i < 2; i++)
     {
-        if (C620_up_angle_feedback_tick[i] < 0xffff)
+        if (C620_up_angle_feedback_tick[i] < 1000)
         {
             C620_up_angle_feedback_tick[i]++;
         }
@@ -84,35 +72,6 @@ static uint8_t up_feedback_lost_detected(void)
     return 0;
 }
 
-static uint8_t up_angle_diff_detected(float max_diff)
-{
-    float diff = C620_up_angle[0].Angle_pid.get - C620_up_angle[1].Angle_pid.get;
-    if (diff < 0.0f)
-    {
-        diff = -diff;
-    }
-
-    if (diff >= max_diff)
-    {
-        return 1;
-    }
-    return 0;
-}
-static void up_overcurrent_stop_output(void)
-{
-    int16_t up_voltage[2] = {0, 0};
-
-    C620_up_angle[0].target_speed = 0.0f;
-    C620_up_angle[1].target_speed = 0.0f;
-    C620_up_angle[0].target_angle = C620_up_angle[0].Angle_pid.get;
-    C620_up_angle[1].target_angle = C620_up_angle[1].Angle_pid.get;
-
-    pid_clear_output(&C620_up_angle[0].Angle_pid);
-    pid_clear_output(&C620_up_angle[1].Angle_pid);
-    pid_clear_output(&C620_up_angle[0].Speed_pid);
-    pid_clear_output(&C620_up_angle[1].Speed_pid);
-    Set_voltage_up_angle(&hcan2, up_voltage);
-}
 
 /************************ ��ʱ�������жϻص����� ************************/
 /**
@@ -128,16 +87,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
 
 		// ң�س��� 150ms δ����ʱ����������뷢�������ȫ̬
-		 remote_control_watchdog_update();
-		 if (remote_control_is_timeout())
-		 {
-		     remote_control_enter_safe_state();
-		 }
+//		 remote_control_watchdog_update();
+//		 if (remote_control_is_timeout())
+//		 {
+//		     remote_control_enter_safe_state();
+//		 }
 		 // ÿ 10ms ����һ�η������׶Σ����ڵ��νӹ�ʱ���ƽ�ң�ط���״̬��
-		 if (!DebugTune_IsActive())
-         {
-             remote_control_serve_update();
-         }
+//		 if (!DebugTune_IsActive())
+//         {
+//             remote_control_serve_update();
+//         }
         remote_control_hit_update();
 
 		car_w = HeadingHold_Update(0.0f);
@@ -204,20 +163,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             up_feedback_lost_fault = 0;
         }
 
-        if (up_angle_diff_detected(UP_ANGLE_DIFF_LIMIT))
+        if(up_overcurrent_fault)
         {
-            up_angle_diff_fault = 1;
+           pid_reset(&C620_up_angle[0].Angle_pid,0,0,0);
+					pid_reset(&C620_up_angle[1].Angle_pid,0,0,0);
         }
-        else
-        {
-            up_angle_diff_fault = 0;
-        }
-
-        if(up_overcurrent_fault || up_feedback_lost_fault || up_angle_diff_fault)
-        {
-            up_overcurrent_stop_output();
-        }
-        else if(DebugTune_IsActive())
+        if(DebugTune_IsActive())
         {
             ops_control();
         }
@@ -227,7 +178,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             up_angle_control();
         }
     }
-	}
+	
 
 /************************ ��������������ѡ�� ************************/
 #ifdef USE_FULL_ASSERT
@@ -241,4 +192,4 @@ void Error_Handler(void)
 #endif
 
 
-
+	}

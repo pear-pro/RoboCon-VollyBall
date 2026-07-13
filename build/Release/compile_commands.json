@@ -19,6 +19,12 @@
 },
 {
   "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
+  "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\Core\\Src\\dma.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\Core\\Src\\dma.c",
+  "file": "E:\\co_robocon\\RoboCon-VollyBall\\Core\\Src\\dma.c",
+  "output": "CMakeFiles\\DJ_A_wheel.dir\\Core\\Src\\dma.c.obj"
+},
+{
+  "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
   "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\Core\\Src\\i2c.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\Core\\Src\\i2c.c",
   "file": "E:\\co_robocon\\RoboCon-VollyBall\\Core\\Src\\i2c.c",
   "output": "CMakeFiles\\DJ_A_wheel.dir\\Core\\Src\\i2c.c.obj"
@@ -64,12 +70,6 @@
   "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -x assembler-with-cpp -MMD -MP -O3 -DNDEBUG -o CMakeFiles\\DJ_A_wheel.dir\\startup_stm32f427xx.s.obj -c E:\\co_robocon\\RoboCon-VollyBall\\startup_stm32f427xx.s",
   "file": "E:\\co_robocon\\RoboCon-VollyBall\\startup_stm32f427xx.s",
   "output": "CMakeFiles\\DJ_A_wheel.dir\\startup_stm32f427xx.s.obj"
-},
-{
-  "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
-  "command": "C:\\Users\\shyboy\\AppData\\Local\\stm32cube\\bundles\\gnu-tools-for-stm32\\13.3.1+st.9\\bin\\arm-none-eabi-gcc.exe -DSTM32F427xx -DUSE_HAL_DRIVER -IE:/co_robocon/RoboCon-VollyBall/USER/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Core/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Device/ST/STM32F4xx/Include -IE:/co_robocon/RoboCon-VollyBall/cmake/stm32cubemx/../../Drivers/CMSIS/Include  -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard  -Wall -fdata-sections -ffunction-sections -Os -g0 -std=gnu11 -o CMakeFiles\\DJ_A_wheel.dir\\Core\\Src\\dma.c.obj -c E:\\co_robocon\\RoboCon-VollyBall\\Core\\Src\\dma.c",
-  "file": "E:\\co_robocon\\RoboCon-VollyBall\\Core\\Src\\dma.c",
-  "output": "CMakeFiles\\DJ_A_wheel.dir\\Core\\Src\\dma.c.obj"
 },
 {
   "directory": "E:/co_robocon/RoboCon-VollyBall/build/Release",
