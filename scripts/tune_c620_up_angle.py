@@ -2,7 +2,7 @@
 """
 Serial auto-tuner for firmware debug PID targets.
 
-Firmware protocol on USART6, 115200:
+Firmware protocol on UART8, 115200:
   LIST
   SELECT name|idx
   MODE SPEED|POSITION
@@ -16,8 +16,10 @@ Firmware protocol on USART6, 115200:
   STATUS
 
 Telemetry line:
-  UPI,ms,target_cdeg,angle_cdeg,error_cdeg,rpm,torque,out,
-      akp_milli,aki_milli,akd_milli,skp_milli,ski_milli,skd_milli,amax,smax
+  UPI,ms,target_cdeg,angle_cdeg,error_cdeg,rpm,torque,out,amax,smax
+
+The parser still accepts the older 16-field extended UPI format, but current
+firmware sends the 10-field line above.
 """
 
 from __future__ import annotations
@@ -76,10 +78,33 @@ class Sample:
 
 def parse_upi(line: str) -> Sample | None:
     parts = line.strip().split(",")
-    if parts[0] != "UPI":
+    if not parts or parts[0] != "UPI":
         return None
-    if len(parts) == 10:
-        sample = Sample(
+    try:
+        if len(parts) == 10:
+            sample = Sample(
+                ms=int(parts[1]),
+                target=int(parts[2]) / 100.0,
+                angle=int(parts[3]) / 100.0,
+                error=int(parts[4]) / 100.0,
+                rpm=float(int(parts[5])),
+                torque=int(parts[6]),
+                out=int(parts[7]),
+                akp=0.0,
+                aki=0.0,
+                akd=0.0,
+                skp=0.0,
+                ski=0.0,
+                skd=0.0,
+                amax=int(parts[8]),
+                smax=int(parts[9]),
+            )
+            if abs(sample.target) > 20000.0 or abs(sample.angle) > 20000.0 or abs(sample.error) > 20000.0:
+                return None
+            return sample
+        if len(parts) != 16:
+            return None
+        return Sample(
             ms=int(parts[1]),
             target=int(parts[2]) / 100.0,
             angle=int(parts[3]) / 100.0,
@@ -87,37 +112,17 @@ def parse_upi(line: str) -> Sample | None:
             rpm=float(int(parts[5])),
             torque=int(parts[6]),
             out=int(parts[7]),
-            akp=0.0,
-            aki=0.0,
-            akd=0.0,
-            skp=0.0,
-            ski=0.0,
-            skd=0.0,
-            amax=int(parts[8]),
-            smax=int(parts[9]),
+            akp=int(parts[8]) / 1000.0,
+            aki=int(parts[9]) / 1000.0,
+            akd=int(parts[10]) / 1000.0,
+            skp=int(parts[11]) / 1000.0,
+            ski=int(parts[12]) / 1000.0,
+            skd=int(parts[13]) / 1000.0,
+            amax=int(parts[14]),
+            smax=int(parts[15]),
         )
-        if abs(sample.target) > 20000.0 or abs(sample.angle) > 20000.0 or abs(sample.error) > 20000.0:
-            return None
-        return sample
-    if len(parts) != 16:
+    except ValueError:
         return None
-    return Sample(
-        ms=int(parts[1]),
-        target=int(parts[2]) / 100.0,
-        angle=int(parts[3]) / 100.0,
-        error=int(parts[4]) / 100.0,
-        rpm=float(int(parts[5])),
-        torque=int(parts[6]),
-        out=int(parts[7]),
-        akp=int(parts[8]) / 1000.0,
-        aki=int(parts[9]) / 1000.0,
-        akd=int(parts[10]) / 1000.0,
-        skp=int(parts[11]) / 1000.0,
-        ski=int(parts[12]) / 1000.0,
-        skd=int(parts[13]) / 1000.0,
-        amax=int(parts[14]),
-        smax=int(parts[15]),
-    )
 
 
 class Link:
@@ -224,10 +229,12 @@ class VofaForwarder:
 
 
 def apply_pid(link: Link, pid: Pid) -> None:
-    link.command(
+    link.command_expect(
         f"PID {pid.akp:.5g} {pid.aki:.5g} {pid.akd:.5g} "
         f"{pid.skp:.5g} {pid.ski:.5g} {pid.skd:.5g} {pid.amax} {pid.smax}",
+        "OKP",
         wait=0.3,
+        required=True,
     )
 
 
@@ -375,7 +382,21 @@ def run_trial(
     return metric
 
 
-def candidate_grid(base: Pid, rounds: int) -> Iterable[Pid]:
+def candidate_grid(base: Pid, fine: bool = False) -> Iterable[Pid]:
+    if fine:
+        for ak, sk, sd in itertools.product([0.85, 1.0, 1.15], repeat=3):
+            yield Pid(
+                akp=max(0.0, base.akp * ak),
+                aki=base.aki,
+                akd=base.akd,
+                skp=max(0.0, base.skp * sk),
+                ski=base.ski,
+                skd=max(0.0, base.skd * sd),
+                amax=base.amax,
+                smax=base.smax,
+            )
+        return
+
     akp_scale = [0.7, 1.0, 1.3]
     skp_scale = [0.7, 1.0, 1.3]
     skd_scale = [0.5, 1.0, 1.6]
@@ -393,14 +414,9 @@ def candidate_grid(base: Pid, rounds: int) -> Iterable[Pid]:
             smax=base.smax,
         )
 
-    best = base
-    for _ in range(max(0, rounds - 1)):
-        for ak, sk, sd in itertools.product([0.85, 1.0, 1.15], repeat=3):
-            yield Pid(best.akp * ak, best.aki, best.akd, best.skp * sk, best.ski, best.skd * sd, best.amax, best.smax)
-
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Tune selected firmware PID target over USART6.")
+    parser = argparse.ArgumentParser(description="Tune selected firmware PID target over UART8.")
     parser.add_argument("port", help="Serial port, for example COM8 or /dev/ttyUSB0")
     parser.add_argument("--baud", type=int, default=115200)
     parser.add_argument("--char-delay", type=float, default=0.001, help="Delay between command bytes for polling UART firmware")
@@ -425,10 +441,6 @@ def main() -> int:
     target_value = args.target if args.target is not None else args.angle
 
     base = Pid(args.base[0], args.base[1], args.base[2], args.base[3], args.base[4], args.base[5], int(args.base[6]), int(args.base[7]))
-    candidates = list(candidate_grid(base, args.rounds))
-    if args.max_trials > 0:
-        candidates = candidates[: args.max_trials]
-
     link = Link(args.port, args.baud, char_delay=args.char_delay, boot_delay=args.boot_delay, verbose=args.verbose)
     vofa = VofaForwarder(args.vofa_port, args.vofa_baud, args.mode, args.ratio)
     best_pid = base
@@ -447,13 +459,23 @@ def main() -> int:
         with args.csv.open("w", newline="", encoding="utf-8") as fp:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)
             writer.writeheader()
-            for idx, pid in enumerate(candidates, start=1):
-                metric = run_trial(link, vofa, pid, args.mode, target_value, args.ratio, args.duration, args.settle_deg, writer, idx)
-                print(f"{idx:03d} score={metric['score']:.3f} settle={metric['settle_ms']:.0f}ms "
-                      f"overshoot={metric['overshoot']:.2f} steady={metric['steady']:.2f} pid={pid}")
-                if metric["score"] < best_metric["score"]:
-                    best_metric = metric
-                    best_pid = pid
+            trial_count = 0
+            trial_limit = args.max_trials if args.max_trials > 0 else None
+            for round_index in range(max(1, args.rounds)):
+                round_base = best_pid
+                candidates = candidate_grid(round_base, fine=(round_index > 0))
+                for pid in candidates:
+                    if trial_limit is not None and trial_count >= trial_limit:
+                        break
+                    trial_count += 1
+                    metric = run_trial(link, vofa, pid, args.mode, target_value, args.ratio, args.duration, args.settle_deg, writer, trial_count)
+                    print(f"{trial_count:03d} r{round_index + 1} score={metric['score']:.3f} settle={metric['settle_ms']:.0f}ms "
+                          f"overshoot={metric['overshoot']:.2f} steady={metric['steady']:.2f} pid={pid}")
+                    if metric["score"] < best_metric["score"]:
+                        best_metric = metric
+                        best_pid = pid
+                if trial_limit is not None and trial_count >= trial_limit:
+                    break
 
         apply_pid(link, best_pid)
         link.command_expect("LOG 0", "OK LOG", wait=0.5)
@@ -476,3 +498,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

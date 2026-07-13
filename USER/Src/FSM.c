@@ -1,7 +1,9 @@
 #include "FSM.h"
 #include "can.h"
 #include "debug_uart.h"
+#include <math.h>
 #include <stm32f4xx.h>
+#include "heading_hold.h"
 #include "motor_can.h"
 #include "pid.h"
 #include <stdint.h>
@@ -10,7 +12,7 @@
 
 //ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿?
 extern motor_info_t damiao[HIT_MOTOR_COUNT];
-extern motor_info_t C620_up_angle;
+extern motor_info_t C620_up_angle[2];
 extern motor_info_t C620_hit_angle[HIT_MOTOR_COUNT];
 //ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ï¿½ï¿?
 static volatile uint8_t serve_active = 0;
@@ -25,12 +27,40 @@ volatile uint16_t count = 0;
 volatile uint16_t count_up = 0;
 static volatile float serve_lift_target_angle = 0.0f;
 static volatile float serve_hit_target_angle = 0.0f;
+static volatile uint8_t serve_up_output_enabled = 1U;
 
 serve_mode_t serve_mode = SERVE_MODE_ANGLE;
+
+#define UP_ANGLE_FEEDBACK_INDEX 1
 
 #define SERVE_BASE_ANGLE        (-3230.0f)
 #define SERVE_ANGLE_STEP        (10.0f * SCALE)
 #define SERVE_HIT_ANGLE_DELTA   (360.0f * SCALE)
+
+static void pid_clear_output(pid_t *pid)
+{
+    pid->set = 0.0f;
+    pid->error[NOW_ERR] = 0.0f;
+    pid->error[LAST_ERR] = 0.0f;
+    pid->error[LLAST_ERR] = 0.0f;
+    pid->pout = 0.0f;
+    pid->iout = 0.0f;
+    pid->dout = 0.0f;
+    pid->out = 0.0f;
+}
+
+static void serve_up_stop_force(void)
+{
+    int16_t voltage[2] = {0, 0};
+    motor_info_t *motor = &C620_up_angle[UP_ANGLE_FEEDBACK_INDEX];
+
+    serve_up_output_enabled = 0;
+    motor->target_speed = 0.0f;
+    motor->target_angle = motor->Angle_pid.get;
+    pid_clear_output(&motor->Angle_pid);
+    pid_clear_output(&motor->Speed_pid);
+    Set_voltage_up_angle(&hcan2, voltage);
+}
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
@@ -116,10 +146,13 @@ void serve_request_start(void)
         serve_lift_target_angle = up_per_angle[count_up%8];//SERVE_BASE_ANGLE; //- (float)count * SERVE_ANGLE_STEP;
         serve_hit_target_angle = serve_lift_target_angle + SERVE_HIT_ANGLE_DELTA;
         count++;
-			  count_up++;
+		count_up++;
         serve_active = 1;
         serve_armed = 0;
         serve_tick = 0;
+        serve_up_output_enabled = 1;
+        pid_clear_output(&C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].Angle_pid);
+        pid_clear_output(&C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].Speed_pid);
         serve_stage = SERVE_STAGE_LIFT;
     }
 }
@@ -168,15 +201,17 @@ void remote_control_serve_update(void)
     switch (serve_stage)
     {
     case SERVE_STAGE_LIFT:
-		PID_Struct_Init(&C620_up_angle.Angle_pid, 7.0f, 0.0f, 0.0f, 20000, 16000, INIT);
-        C620_up_angle.target_angle = serve_lift_target_angle;
+    {
+        float t = (float)serve_tick / (float)SERVE_LIFT_TICKS;
+        float s = 0.5f - 0.5f * cosf(t * 3.14f);
+        C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].target_angle = serve_lift_target_angle * s;
         if (++serve_tick >= SERVE_LIFT_TICKS)
         {
             serve_stage = SERVE_STAGE_LIFT_RETURN;
             serve_tick = 0;
-        }		
-
+        }
         break;
+    }
 
     case SERVE_STAGE_LIFT_RETURN:
 		Pump_On();
@@ -188,7 +223,7 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_HIT:
-        C620_up_angle.target_angle = serve_hit_target_angle;
+        C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].target_angle = serve_hit_target_angle;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -200,18 +235,19 @@ void remote_control_serve_update(void)
 	    Pump_Off();
         if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
         {
+            serve_up_stop_force();
             serve_stage = SERVE_STAGE_CLEAR;
         }
         break;
 	case SERVE_STAGE_CLEAR:
 	default:
-		pid_reset(&C620_up_angle.Angle_pid,0,0,0);
+    HeadingHold_AddTargetDeg(180.0f/(float)SERVE_STAGE_CLEAR_TICKS);
         if (++serve_tick >= SERVE_STAGE_CLEAR_TICKS)
         {
             serve_stage = SERVE_STAGE_IDLE;
             serve_tick = 0;
             serve_active = 0;
-			C620_up_angle.FirstEntre = 0;
+			C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].FirstEntre = 0;
         }
 		break;
     }
@@ -261,32 +297,32 @@ void hit_angle_control(void)
 
 void up_angle_control(void)
 {
-    int16_t voltage[1] = {0};
+    int16_t voltage[2] = {0}; //Ò»´Î·¢Á½¸öµÄ¿ØÖÆ£¬µ¥Ö»ÄÃÒ»¸ö·´À¡
+    int32_t output = 0;
+    motor_info_t *motor = &C620_up_angle[UP_ANGLE_FEEDBACK_INDEX];
 
-    int32_t output;
+    if(serve_up_output_enabled == 0)
+    {
+        Set_voltage_up_angle(&hcan2, voltage);
+        return;
+    }
+
     if(serve_mode == SERVE_MODE_ANGLE)
     {
-        output = PID_PROCESS_Double(&C620_up_angle.Angle_pid,
-                                        &C620_up_angle.Speed_pid,
-                                        C620_up_angle.target_angle,
-                                        C620_up_angle.Angle_pid.get,
-                                        C620_up_angle.Speed_pid.get);
+        output = PID_PROCESS_Double(&motor->Angle_pid,
+                                    &motor->Speed_pid,
+                                    motor->target_angle,
+                                    motor->Angle_pid.get,
+                                    motor->Speed_pid.get);
     }
     else
     {
-        output =
-            PID_PROCESS_Speed(
-                &C620_up_angle.Speed_pid,
-                C620_up_angle.target_speed,
-                C620_up_angle.Speed_pid.get
-            );
+        output = PID_PROCESS_Speed(&motor->Speed_pid,
+                                   motor->target_speed,
+                                   motor->Speed_pid.get);
     }
 
     voltage[0] = limit(output, HIT_OUTPUT_LIMIT);
-
-//    if(count_flag) Set_voltage_up_angle(&hcan2, voltage);
-//else Set_voltage_up_angle(&hcan2, 0);
-	
-	Set_voltage_up_angle(&hcan2, voltage);
-	
+    voltage[1] = voltage[0];
+    Set_voltage_up_angle(&hcan2, voltage);
 }

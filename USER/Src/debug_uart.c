@@ -40,7 +40,7 @@ void Vofa_JustFloat(float *_data, uint8_t _num)
     memcpy(&temp_copy, _data, sizeof(float) * _num);
     memcpy(tempData, (uint8_t *)&temp_copy, sizeof(temp_copy));
     memcpy(&tempData[_num * 4], &temp_end[0], 4);
-    HAL_UART_Transmit_DMA(&huart6, tempData, (_num + 1U) * 4U);
+    HAL_UART_Transmit_DMA(&huart8, tempData, (_num + 1U) * 4U);
 }
 
 static int32_t tune_scale_float(float value, float scale)
@@ -51,7 +51,7 @@ static int32_t tune_scale_float(float value, float scale)
 
 static void tune_send_text(const char *text)
 {
-    HAL_UART_Transmit(&huart6, (uint8_t *)text, (uint16_t)strlen(text), 50U);
+    HAL_UART_Transmit(&huart8, (uint8_t *)text, (uint16_t)strlen(text), 50U);
 }
 
 static void tune_rx_feed_byte(uint8_t ch)
@@ -78,9 +78,9 @@ static void tune_rx_feed_byte(uint8_t ch)
 
 static void tune_poll_uart_rx(void)
 {
-    while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_RXNE) != RESET)
+    while (__HAL_UART_GET_FLAG(&huart8, UART_FLAG_RXNE) != RESET)
     {
-        tune_rx_feed_byte((uint8_t)(huart6.Instance->DR & 0xFFU));
+        tune_rx_feed_byte((uint8_t)(huart8.Instance->DR & 0xFFU));
     }
 }
 
@@ -282,8 +282,8 @@ static void tune_process_command(char *line)
     }
     else if (strcmp(cmd, "STOP") == 0)
     {
-        tune_control_active = 1U;
         ops_stop();
+        tune_control_active = 0U;
         tune_send_text("OKS\r\n");
     }
     else if (strcmp(cmd, "LOG") == 0)
@@ -366,8 +366,9 @@ void DebugTune_Init(void)
     tune_report_divider = 5U;
     tune_report_tick = 0U;
     tune_snapshot_pending = 0U;
+    tune_control_active = 0U;
     tune_ms = 0U;
-    tune_send_text("OK DEBUG_TUNE USART6 115200\r\n");
+    tune_send_text("OK DEBUG_TUNE UART8 115200\r\n");
 }
 
 void DebugTune_Task(void)
@@ -459,3 +460,5 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     (void)huart;
 }
+
+

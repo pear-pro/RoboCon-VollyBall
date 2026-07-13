@@ -4,7 +4,7 @@
 
 	extern IMU_Data_t imu;
 
-	#define HEADING_HOLD_KP                 6.0f
+	#define HEADING_HOLD_KP                 4.0f
 	#define HEADING_HOLD_KI                 0.0f
 	#define HEADING_HOLD_KD                 2.5f
 	#define HEADING_HOLD_MAX_WZ             600.0f
@@ -84,6 +84,16 @@
 				  HEADING_HOLD_KD);
 	}
 
+	void HeadingHold_AddTargetDeg(float delta_deg)
+	{
+		if (!heading_hold.initialized) {
+			HeadingHold_Init();
+		}
+
+		heading_hold.target_yaw_deg =
+			heading_hold_normalize_deg(heading_hold.target_yaw_deg + delta_deg);
+	}
+
 	void HeadingHold_Task(void)
 	{
 		uint32_t now = HAL_GetTick();
@@ -101,7 +111,7 @@
 	float HeadingHold_Update(float manual_wz)
 	{
 		(void)manual_wz;
-			if (!heading_hold.initialized) {
+		if (!heading_hold.initialized) {
 			return 0.0f;
 		}
 

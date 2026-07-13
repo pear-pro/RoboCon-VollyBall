@@ -6,13 +6,13 @@
 #include <stdint.h>
 #include <string.h>
 
-extern motor_info_t C620_up_angle;
+extern motor_info_t C620_up_angle[2];
 extern motor_info_t C620_angle;
 extern motor_info_t C620_hit_angle[3];
 extern motor_info_t C620[MotorCount];
 static void ops_set_up_output(int16_t output)
 {
-    int16_t cmd[1] = {output};
+    int16_t cmd[2] = {output, output};
     Set_voltage_up_angle(&hcan2, cmd);
 }
 
@@ -36,11 +36,11 @@ static ops_control_t ops_targets[OPS_TARGET_MAX] =
 {
     {
         .name = "up",
-        .motor = &C620_up_angle,
+        .motor = &C620_up_angle[1],
         .mode = ops_mode_position,
         .ratio = 19.0f,
         .set_output = ops_set_up_output,
-        .max_output = 20000,
+        .max_output = 5000,
     },
     {
         .name = "pitch_speed",
@@ -52,7 +52,7 @@ static ops_control_t ops_targets[OPS_TARGET_MAX] =
     },
     {
         .name = "hit",
-        .motor = C620,
+        .motor = &C620_hit_angle[0],
         .mode = ops_mode_position,
         .ratio = 19.0f,
         .set_output = ops_set_hit_output,
@@ -238,3 +238,6 @@ void ops_control(void)
     target->set_output(output);
     DebugTune_OnControlTick(output);
 }
+
+
+

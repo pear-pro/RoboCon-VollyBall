@@ -92,7 +92,6 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-
   /* USER CODE BEGIN 2 */
   MX_GPIO_Init();
   MX_DMA_Init();
@@ -101,18 +100,19 @@ int main(void)
 	MX_USART1_UART_Init();   // 遥控
   MX_USART6_UART_Init();   // debug
   MX_UART7_Init();         // IMU
+  MX_UART8_Init();
   MX_I2C2_Init();
 	
-  All_Init();              // CAN filter, PID, RC DMA 等
+  All_Init();              // CAN filter, PID, RC DMA �?
 
   IMU_UART_Init(&huart7);
-  HAL_Delay(2000);      // 等 IMU 有有效帧
+  HAL_Delay(2000);      // �?IMU 有有效帧
   HeadingHold_Init();
 
 
   DebugTune_Init();
   MX_TIM3_Init();
-  MX_TIM14_Init(); // DebugTune_Init();
+  MX_TIM14_Init();
   
   /* USER CODE END 2 */
 
@@ -209,3 +209,5 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+

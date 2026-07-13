@@ -5,6 +5,7 @@
 #include "can.h"
 #include "jy901p.h"
 #include "motor_can.h"
+#include <math.h>
 #include <stdint.h>
 #include "debug_uart.h"
 #include "pid.h"
@@ -25,6 +26,50 @@ uint16_t PID_Calc_Flag = 0;
 /* Manual W axis takeover threshold. car_tarw is already set to 0 in remote deadzone. */
 #define CAR_W_MANUAL_DEADBAND 1.0f
 
+//发球3508最大允许电流
+#define UP_PROTECT_MAX 13000.0f
+
+//过流标志位，0表示没保护，1表示过流保护
+static volatile uint8_t up_overcurrent_fault = 0;
+
+static void pid_clear_output(pid_t *pid)
+{
+    pid->set = 0.0f;
+    pid->error[NOW_ERR] = 0.0f;
+    pid->error[LAST_ERR] = 0.0f;
+    pid->error[LLAST_ERR] = 0.0f;
+    pid->pout = 0.0f;
+    pid->iout = 0.0f;
+    pid->dout = 0.0f;
+    pid->out = 0.0f;
+}
+
+// 过流检测函数，返回1表示过流，0表示正常
+static uint8_t up_overcurrent_detected(float threshold)
+{
+    if (fabsf(C620_up_angle[0].Rxmsg.Torque) >= threshold || fabsf(C620_up_angle[1].Rxmsg.Torque) >= threshold)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+static void up_overcurrent_stop_output(void)
+{
+    int16_t up_voltage[2] = {0, 0};
+
+    C620_up_angle[0].target_speed = 0.0f;
+    C620_up_angle[1].target_speed = 0.0f;
+    C620_up_angle[0].target_angle = C620_up_angle[0].Angle_pid.get;
+    C620_up_angle[1].target_angle = C620_up_angle[1].Angle_pid.get;
+
+    pid_clear_output(&C620_up_angle[0].Angle_pid);
+    pid_clear_output(&C620_up_angle[1].Angle_pid);
+    pid_clear_output(&C620_up_angle[0].Speed_pid);
+    pid_clear_output(&C620_up_angle[1].Speed_pid);
+    Set_voltage_up_angle(&hcan2, up_voltage);
+}
+
 /************************ ��ʱ�������жϻص����� ************************/
 /**
  * @brief  ��ʱ�������жϻص�������HAL����������д��
@@ -44,72 +89,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		 {
 		     remote_control_enter_safe_state();
 		 }
-
-		 // ң�س��� 150ms δ����ʱ����������뷢�������ȫ̬
-//		 remote_control_watchdog_update();
-//		 if (remote_control_is_timeout())
-//		 {
-//		     remote_control_enter_safe_state();
-//		 }
-      
 		 // ÿ 10ms ����һ�η������׶Σ����ڵ��νӹ�ʱ���ƽ�ң�ط���״̬��
 		 if (!DebugTune_IsActive())
          {
              remote_control_serve_update();
          }
         remote_control_hit_update();
-		//car_x=remote_control_meanum_update(car_x,car_tarx, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
-        //car_y=remote_control_meanum_update(car_y,car_tary, SPEED_UP_TICKS, SPEED_DOWN_TICKS, MAX_CAR_SPEED);
 
-        /*
-         * W axis control logic:
-         * 1) When remote has W input, disable gyro heading hold and use remote W directly.
-         * 2) When remote W input ends, reset heading hold target to current yaw.
-         *    This makes the adjusted W angle the new software zero point.
-         * 3) Do not call JY901P_Calibrate_SetRef() here; it blocks about 2s and
-         *    must not run inside this timer interrupt.
-         */
-        static uint8_t car_w_manual_last = 0U;
-        uint8_t car_w_manual_now = ((car_tarw > CAR_W_MANUAL_DEADBAND) ||
-                                    (car_tarw < -CAR_W_MANUAL_DEADBAND)) ? 1U : 0U;
-
-//        if (car_w_manual_now)
-//        {
-//            if (!car_w_manual_last)
-//            {
-//                HeadingHold_Enable(0U);
-//            }
-//            car_w = remote_control_meanum_update(car_w, car_tarw,
-//                                                 SPEED_UP_TICKS, SPEED_DOWN_TICKS,
-//                                                 MAX_CAR_SPEED);
-//        }
-//        else
-//        {
-//            if (car_w_manual_last)
-//            {
-//                car_w = 0.0f;		
-//                HeadingHold_ResetTargetToCurrent();
-//                 HeadingHold_Enable(1U);
-//            }
-//            car_w = HeadingHold_Update(0.0f);
-//        }
-//        car_w_manual_last = car_w_manual_now;
 		car_w = HeadingHold_Update(0.0f);
         MecanumWheel_Move(car_x, car_y, car_w);
 		 IMU_GetData(&imu);
 		 
-		 
-        //  Set_dm_mit(&hcan1,0);
-//        JY901P_ReadAllData(&gyro_data);//��ȡ����������
-//        pid_calc(&car_pid, gyro_data.Gyro_Z-Z_zeropoint, 0); // ������ƽ��ٶ��?
-//        car_w=car_pid.out;
+
          for(int i=0;i<MotorCount;i++)
          {
 		 	      pid_calc(&C620[i].Speed_pid,C620[i].Speed_pid.get,C620[i].Speed_pid.set);
                    voltages[i]=(int16_t)C620[i].Speed_pid.out;
 			
          }
-
+ Set_voltage(&hcan2,voltages);
+         //vofa调试接口
 //        float num[]={//gyro_data.Gyro_X,
 //            gyro_data.Gyro_Y,
 //            gyro_data.Gyro_Z,
@@ -121,7 +120,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //            gyro_data.Angle_Z
 //        };
 ////        Vofa_JustFloat(num, 3);
-       Set_voltage(&hcan2,voltages);
+      
     }
     
 	if(hcan1.ErrorCode!=0)//����can���ߴ���������
@@ -141,15 +140,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //������������ӽǶȻ����жϴ����߼�?
     if(htim == &htim14)  // ȷ����PID��ʱ���ĸ����ж�
     {
-    if(DebugTune_IsActive())
-    {
-	   ops_control();
-    }else 
-    {
-       hit_angle_control();
-       up_angle_control();
-    }	
-	
+        if (up_overcurrent_detected(UP_PROTECT_MAX))
+        {
+            up_overcurrent_fault = 1;
+        }
+        else
+        {
+            up_overcurrent_fault = 0;
+        }
+
+        if(up_overcurrent_fault)
+        {
+            up_overcurrent_stop_output();
+        }
+        else if(DebugTune_IsActive())
+        {
+            ops_control();
+        }
+        else
+        {
+            hit_angle_control();
+            up_angle_control();
+        }
     }
 	}
 
@@ -163,3 +175,6 @@ void Error_Handler(void)
     }
 }
 #endif
+
+
+

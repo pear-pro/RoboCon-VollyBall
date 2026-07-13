@@ -24,7 +24,7 @@ motor_info_t DM4310_angle;
 motor_info_t DM4310_up_angle;
 motor_info_t DM4310_hit_angle[3];
 motor_info_t C620_angle;
-motor_info_t C620_up_angle;
+motor_info_t C620_up_angle[2];
 motor_info_t C620_hit_angle[3];
 motor_info_t damiao[MotorCount];
 CAN_RxHeaderTypeDef can1RxMsg,can2RxMsg; //������Ϣ�ṹ��
@@ -38,8 +38,41 @@ static int16_t dji_motor_decode_int16(uint8_t high, uint8_t low)
 	return (int16_t)((uint16_t)high << 8 | low);
 }
 
+static void c620_up_angle_feedback_update(uint8_t index, uint8_t *rx_data)
+{
+	motor_info_t *motor = &C620_up_angle[index];
+	motor->Rxmsg.Angle = ((rx_data[0] << 8) | rx_data[1]) * 360 / 8192.0f;
+	motor->Rxmsg.Speed = dji_motor_decode_int16(rx_data[2], rx_data[3]);
+	motor->Rxmsg.Torque = dji_motor_decode_int16(rx_data[4], rx_data[5]);
+	motor->Rxmsg.Temp = rx_data[6];
+	motor->currentRead = motor->Rxmsg.Angle;
+	motor->Speed_pid.get = motor->Rxmsg.Speed;
+
+	if (motor->FirstEntre == 0)
+	{
+		motor->Zero = motor->currentRead;
+		motor->FirstEntre = 1;
+		motor->lastRead = motor->currentRead;
+		motor->totalAngle = 0;
+	}
+
+	float delta = motor->currentRead - motor->lastRead;
+	if (delta > 180)
+	{
+		delta = delta - 360;
+	}
+	else if (delta < -180)
+	{
+		delta = delta + 360;
+	}
+
+	motor->totalAngle += delta;
+	motor->Angle_pid.get = motor->totalAngle;
+	motor->lastRead = motor->currentRead;
+}
+
 /********************CAN����*****************************/
-//CAN���ݱ�Ƿ��ͣ���֤������Դ����
+//CAN���ݱ�Ƿ��ͣ���֤������Դ����?
 void HAL_CAN_TxCpltCallback(CAN_HandleTypeDef* hcan){
 	if(hcan == &hcan1){
 		can1_update = 1;
@@ -89,7 +122,7 @@ void can2_fliter_init(void)
 	HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);//ʹ���ж�
     isRcan2Started=1;
 }
-/*���õ����ѹ*/
+/*���õ�����?*/
 void Set_voltage(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
 	uint32_t tx_mailbox;
@@ -104,7 +137,7 @@ void Set_voltage(CAN_HandleTypeDef* hcan,int16_t voltage[])
    canTxData[2*i]=(voltage[i]>>8)&0xff;
    canTxData[2*i+1]=(voltage[i])&0xff;
   }
-	/* �ȼ���Ƿ��пյ� TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
+	/* �ȼ���Ƿ��пյ�?TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//���ͱ���
@@ -122,13 +155,14 @@ void Set_voltage_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
   canTxMsg.DLC   = 8;//���ݳ���
    canTxData[0]=(voltage[0]>>8)&0xff;
    canTxData[1]=(voltage[0])&0xff;
-	/* �ȼ���Ƿ��пյ� TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
+	/* �ȼ���Ƿ��пյ�?TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//���ͱ���
 	}
 }
 
+//�?�?发出�?
 void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
 {
 	uint32_t tx_mailbox;
@@ -138,9 +172,11 @@ void Set_voltage_up_angle(CAN_HandleTypeDef* hcan,int16_t voltage[])
   canTxMsg.IDE   = CAN_ID_STD;//��׼ID
   canTxMsg.RTR   = CAN_RTR_DATA;//����֡
   canTxMsg.DLC   = 8;//���ݳ���
-   canTxData[2]=(voltage[0]>>8)&0xff;
-   canTxData[3]=(voltage[0])&0xff;
-	/* �ȼ���Ƿ��пյ� TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
+  for(uint8_t i=0;i<2;i++)
+  {
+   canTxData[2*i]=(voltage[i]>>8)&0xff;
+   canTxData[2*i+1]=(voltage[i])&0xff;
+  }
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//���ͱ���
@@ -162,7 +198,7 @@ void Set_voltage_hit(CAN_HandleTypeDef* hcan,int16_t voltage[])
    canTxData[2*i]=(voltage[i-1]>>8)&0xff;
    canTxData[2*i+1]=(voltage[i-1])&0xff;
   }
-	/* �ȼ���Ƿ��пյ� TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
+	/* �ȼ���Ƿ��пյ�?TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
 			HAL_CAN_AddTxMessage(hcan, &canTxMsg, canTxData, &tx_mailbox);//���ͱ���
@@ -213,7 +249,7 @@ void Set_dm_mit(CAN_HandleTypeDef* hcan,int16_t ID)
     can1TxData[6] = ((kd_tmp&0xF)<<4)|(tor_tmp>>8);
     can1TxData[7] = tor_tmp;
 
-	/* �ȼ���Ƿ��пյ� TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
+	/* �ȼ���Ƿ��пյ�?TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//���ͱ���
@@ -279,7 +315,7 @@ void Set_dm_enable(CAN_HandleTypeDef* hcan,uint8_t ID)
   CAN_TxHeaderTypeDef can1TxMsg;
   uint8_t             can1TxData[8] = {0};
 
-  can1TxMsg.StdId = 0x00+ID;  //ģʽƫ��ID��MITģʽƫ��0x00��λ���ٶ�ģʽƫ��0x100���ٶ�ģʽƫ��0x200����λ���ģʽƫ��0x300
+  can1TxMsg.StdId = 0x00+ID;  //ģʽƫ��ID��MITģʽƫ��0x00��λ���ٶ�ģʽƫ��0x100���ٶ�ģʽƫ��0x200����λ���ģʽƫ��?x300
   can1TxMsg.IDE   = CAN_ID_STD;//��׼ID
   can1TxMsg.RTR   = CAN_RTR_DATA;//����֡
   can1TxMsg.DLC   = 8;//���ݳ���
@@ -344,14 +380,14 @@ void Set_dm_zeropoint(CAN_HandleTypeDef* hcan,uint16_t CAN_ID)
   can1TxData[6]=0xff;
   can1TxData[7]=0xfe;
 
-	/* �ȼ���Ƿ��пյ� TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
+	/* �ȼ���Ƿ��пյ�?TX mailbox��ֻ���п�λ�ŷ��ͱ��� */
 	if(HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
 	{
 			HAL_CAN_AddTxMessage(hcan, &can1TxMsg, can1TxData, &tx_mailbox);//���ͱ���
 	}
 }
 
-void dm_motor_fbdata(motor_info_t *motor, uint8_t *rx_data) //master_idĬ��Ϊ0(��Ӱ�����)
+void dm_motor_fbdata(motor_info_t *motor, uint8_t *rx_data) //master_idĬ��Ϊ0(��Ӱ�����?
 {
 //    // �������ID��״̬��һ���ò�������Э�����У�
 //    motor->para.id = (rx_data[0]) & 0x0F;
@@ -393,7 +429,7 @@ void dm_circle_test()
 	static float theta=0.0f;
 	static uint32_t k=0;
 	const float omega = 0.002f * pi;
-	// ����˶���Χ
+	// ����˶����?
     const float motor0_min = -1.35f;
     const float motor0_max =  1.35f;
     const float motor1_min = 1.35f;
@@ -416,15 +452,16 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   CAN_RxHeaderTypeDef can2RxMsg;
 	if(hcan==&hcan1)
 	{
-		/* Drain at most the three hardware FIFO slots per IRQ so CAN1
-		 * feedback is consumed without making the ISR unbounded. */
-		for (uint8_t message_count = 0U;
-		     (message_count < 3U) &&
-		     (HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0) > 0U);
-		     message_count++)
+		uint8_t message_count = 0;
+		while (message_count < 3)
 		{
-			if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0,
-			                         &can1RxMsg, can1RxData) != HAL_OK)
+			uint32_t fifo_fill = HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0);
+			if (fifo_fill == 0)
+			{
+				break;
+			}
+
+			if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can1RxMsg, can1RxData) != HAL_OK)
 			{
 				break;
 			}
@@ -434,54 +471,45 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 			{
 				dm_motor_fbdata(&damiao[motor_id], can1RxData);
 			}
+
+			message_count++;
 		}
 	}
     if(hcan==&hcan2) //���̼ӽǶ�3508
-		{
+    {
+        uint8_t message_count = 0;
 
-			HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData);
-			for(int i=0;i<MotorCount;i++)
-			{
-				if(can2RxMsg.StdId==0x201+i){
-					C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-					C620[i].Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
-					C620[i].Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
-					C620[i].Rxmsg.Temp=can2RxData[6];
-					C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
-				}
-			}
-			if(can2RxMsg.StdId==0x206){
-				C620_up_angle.Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
-				C620_up_angle.Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
-				C620_up_angle.Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
-				C620_up_angle.Rxmsg.Temp=can2RxData[6];
-				C620_up_angle.currentRead=C620_up_angle.Rxmsg.Angle;
-				C620_up_angle.Speed_pid.get=C620_up_angle.Rxmsg.Speed;
-				//����������ת�˶��ٶ�
-				if(C620_up_angle.FirstEntre==0)
-				{
-					C620_up_angle.Zero=C620_up_angle.currentRead;
-					C620_up_angle.FirstEntre=1;
-					C620_up_angle.lastRead=C620_up_angle.currentRead;
-					C620_up_angle.totalAngle=0;
-				}
-				float delta=C620_up_angle.currentRead-C620_up_angle.lastRead;
-				if(delta>180)
-				{
-					delta=delta-360;
-				}
-				else if(delta<-180)
-				{
-					delta=delta+360;
-				}
-				else
-				{
-					delta=delta+0;
-				}
-				C620_up_angle.totalAngle+=delta;
-				C620_up_angle.Angle_pid.get=C620_up_angle.totalAngle;
-				C620_up_angle.lastRead=C620_up_angle.currentRead;
-				//Vofa_JustFloat(&C620_up_angle.Angle_pid.set, 1);
-			}
-				}
-			}
+        while (message_count < 5)
+        {
+            uint32_t fifo_fill = HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0);
+            if (fifo_fill == 0)
+            {
+                break;
+            }
+
+            if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can2RxMsg, can2RxData) != HAL_OK)
+            {
+                break;
+            }
+
+            for(int i=0;i<MotorCount;i++)
+            {
+                if(can2RxMsg.StdId==0x201+i){
+                    C620[i].Rxmsg.Angle= ((can2RxData[0] << 8) | can2RxData[1])*360/8192.0f;
+                    C620[i].Rxmsg.Speed= dji_motor_decode_int16(can2RxData[2], can2RxData[3]);
+                    C620[i].Rxmsg.Torque= dji_motor_decode_int16(can2RxData[4], can2RxData[5]);
+                    C620[i].Rxmsg.Temp=can2RxData[6];
+                    C620[i].Speed_pid.get=C620[i].Rxmsg.Speed;
+                }
+            }
+            if(can2RxMsg.StdId==0x205){
+                c620_up_angle_feedback_update(0, can2RxData);
+            }
+            else if(can2RxMsg.StdId==0x206){
+                c620_up_angle_feedback_update(1, can2RxData);
+            }
+
+            message_count++;
+        }
+    }
+}

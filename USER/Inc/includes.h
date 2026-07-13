@@ -32,7 +32,7 @@ extern motor_info_t C6xx[MotorCount];
 extern motor_info_t C620_angle;
 extern motor_info_t C620_hit_angle[3];
 extern motor_info_t damiao[MotorCount];
-extern motor_info_t C620_up_angle;
+extern motor_info_t C620_up_angle[2];
 
 extern motor_info_t DM4310[MotorCount];
 extern motor_info_t DM4310_angle;
