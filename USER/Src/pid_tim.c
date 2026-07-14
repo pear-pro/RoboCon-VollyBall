@@ -29,9 +29,9 @@ uint16_t PID_Calc_Flag = 0;
 /* Manual W axis takeover threshold. car_tarw is already set to 0 in remote deadzone. */
 #define CAR_W_MANUAL_DEADBAND 1.0f
 
-//发球3508最大允许电�?
+//发球3508最大允许电�??
 #define UP_OVER_CURRENT 13000.0f
-#define UP_OVER_TEMP 11000.0f
+#define UP_OVER_TEMP 110.0f
 #define UP_FEEDBACK_TIMEOUT_TICKS 5
 
 
@@ -40,7 +40,7 @@ static volatile uint8_t up_overcurrent_fault = 0;
 static volatile uint8_t up_feedback_lost_fault = 0;
 
 
-// 过流检测函数，返回1表示过流�?表示正常
+// 过流检测函数，返回1表示过流�??表示正常
 static uint8_t up_overcurrent_detected(float overcurrent,float overtemp)
 {
     if (abs(C620_up_angle[0].Rxmsg.Torque) >= overcurrent || abs(C620_up_angle[1].Rxmsg.Torque) >= overcurrent
@@ -51,7 +51,7 @@ static uint8_t up_overcurrent_detected(float overcurrent,float overtemp)
     return 0;
 }
 
-//做保留，目前A板先上电会冲突
+//做保留，�?前A板先上电会冲�?
 static void up_feedback_tick_update(void)
 {
     for (uint8_t i = 0; i < 2; i++)
@@ -77,8 +77,8 @@ static uint8_t up_feedback_lost_detected(void)
 /************************ ��ʱ�������жϻص����� ************************/
 /**
  * @brief  ��ʱ�������жϻص�������HAL����������д��
- * @note   PID�����߼�д�ڴ˴���ԭ�жϷ�������ҵ�����?
- * @param  htim: ��ʱ�����?
+ * @note   PID�����߼�д�ڴ˴���ԭ�жϷ�������ҵ�����??
+ * @param  htim: ��ʱ�����??
  * @retval ��
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -87,7 +87,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	    if(htim == &htim3)  // ȷ����PID��ʱ���ĸ����ж�
     {
 
-		// ң�س��� 150ms δ����ʱ����������뷢�������ȫ̬
+		// ң�س��� 150ms δ����ʱ�����������?��������?̬
 		 remote_control_watchdog_update();
 		 if (remote_control_is_timeout())
 		 {
@@ -139,11 +139,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             HAL_CAN_Init(&hcan2);
             can2_fliter_init();
         }
-    //������������ӽǶȻ����жϴ����߼�?
+    //������������ӽǶȻ����жϴ����߼�??
     if(htim == &htim14)  // ȷ����PID��ʱ���ĸ����ж�
     {
         up_feedback_tick_update();
-
+         hit_angle_control();
         if (up_overcurrent_detected(UP_OVER_CURRENT,UP_OVER_TEMP))
         {
             up_overcurrent_fault = 1;
@@ -164,16 +164,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
         if(up_overcurrent_fault ||  up_feedback_lost_fault)
         {
-           pid_reset(&C620_up_angle[0].Angle_pid,0,0,0);
+        pid_reset(&C620_up_angle[0].Angle_pid,0,0,0);
 		pid_reset(&C620_up_angle[1].Angle_pid,0,0,0);
+        pid_reset(&C620_up_angle[0].Speed_pid,0,0,0);
+		pid_reset(&C620_up_angle[1].Speed_pid,0,0,0);
         }
         if(DebugTune_IsActive())
         {
             ops_control();
         }
-        else
+        else if(serve_is_active())
         {
-            hit_angle_control();
+           
             up_angle_control();
         }
     }

@@ -47,6 +47,7 @@ void serve_request_start(void);
 uint8_t serve_is_active(void);
 
 void hit_set_preset(uint8_t preset);
+void up_set_preset(uint8_t preset);
 void hit_request_press(void);
 void hit_request_release(void);
 uint8_t hit_is_active(void);

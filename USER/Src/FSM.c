@@ -22,6 +22,7 @@ static volatile serve_stage_t serve_stage = SERVE_STAGE_IDLE;
 //����״̬����ر���?
 static volatile hit_state_t hit_stage = HIT_IDLE;
 static uint8_t hit_preset_index = 0;
+static uint8_t up_preset_index = 0;
 double set_angle = -170.0f;
 volatile uint16_t count = 0;
 volatile uint16_t count_up = 0;
@@ -47,10 +48,18 @@ static const float hit_angle_reset[HIT_MOTOR_COUNT] =
     0,0,0
 };
 
-static const float up_per_angle[8]=
+static const float up_per_angle[3][8]=
 {
-	-220*SCALE,-220*SCALE,-220*SCALE,-220*SCALE,
-	-220*SCALE,-220*SCALE,-220*SCALE,-220*SCALE
+	{-220*SCALE,-220*SCALE,-220*SCALE,-220*SCALE,
+	-220*SCALE,-220*SCALE,-220*SCALE,-220*SCALE},
+	{
+		-200*SCALE,-200*SCALE,-200*SCALE,-200*SCALE,
+	-200*SCALE,-200*SCALE,-200*SCALE,-200*SCALE
+	},
+	{
+		-180*SCALE,-180*SCALE,-180*SCALE,-180*SCALE,
+	-180*SCALE,-180*SCALE,-180*SCALE,-180*SCALE
+	},
 };
 
 //�޷����������������[-limit, limit]��Χ��
@@ -117,7 +126,7 @@ void serve_request_start(void)
 {
     if (serve_armed && !serve_active)
     {
-        serve_lift_target_angle = up_per_angle[count_up%8];//SERVE_BASE_ANGLE; //- (float)count * SERVE_ANGLE_STEP;
+       serve_lift_target_angle = up_per_angle[up_preset_index][count_up%8];
         serve_hit_target_angle = serve_lift_target_angle + SERVE_HIT_ANGLE_DELTA;
         PID_Struct_Init(&C620_up_angle[1].Angle_pid, 7.0f, 0.0f, 0.0f, 10000, 16000, INIT); //7 0 0  //8.15 0 0.15
 	PID_Struct_Init(&C620_up_angle[1].Speed_pid, 15.0f, 0.0f, 0.3f, 10000, 16000, INIT);//10.5 0 0.3
@@ -145,6 +154,16 @@ void hit_set_preset(uint8_t preset)
         preset = HIT_MOTOR_COUNT - 1U;
     }
     hit_preset_index = preset;
+}
+
+
+void up_set_preset(uint8_t preset)
+{
+    if (preset >= HIT_MOTOR_COUNT)
+    {
+        preset = HIT_MOTOR_COUNT - 1U;
+    }
+    up_preset_index = preset;
 }
 
 //�ⲿ���ã�����������
@@ -219,7 +238,7 @@ void remote_control_serve_update(void)
         break;
 	case SERVE_STAGE_CLEAR:
 	default:
-   // HeadingHold_AddTargetDeg(180.0f/(float)SERVE_STAGE_CLEAR_TICKS);
+    HeadingHold_AddTargetDeg(180.0f/(float)SERVE_STAGE_CLEAR_TICKS);
         if (++serve_tick >= SERVE_STAGE_CLEAR_TICKS)
         {
             serve_stage = SERVE_STAGE_IDLE;

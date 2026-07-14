@@ -350,24 +350,24 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
         virtual_key_update(sbus_ctrl);
 
 
-        if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
+        if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
         car_x = 0;
         }
         else {
-            car_x=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
+            car_x=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);  
 
         }
-        if (sbus_ctrl->ch[1] < 100 && sbus_ctrl->ch[1] > -100) {
+        if (sbus_ctrl->ch[0] < 100 && sbus_ctrl->ch[0] > -100) {
             car_y = 0;
         }
         else {
-            car_y=normalize_to_range(sbus_ctrl->ch[1], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
+            car_y=-normalize_to_range(sbus_ctrl->ch[0], -800.0f, 800.0f, -MAX_CAR_SPEED, MAX_CAR_SPEED);
             
         }
 		if (sbus_ctrl->ch[3] < 100 && sbus_ctrl->ch[3] > -100) {
         }
 		else {
-			HeadingHold_AddTargetDeg(-normalize_to_range(sbus_ctrl->ch[3], -800.0f, 800.0f, -1, 1) * 0.25f);
+			HeadingHold_AddTargetDeg(-normalize_to_range(sbus_ctrl->ch[3], -800.0f, 800.0f, -1, 1) * 0.3f);
 		}
 		
 
@@ -407,6 +407,18 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 		  // Pump_On();
 		   serve_request_start();
        }
+			 if(KEY_SWD_UP & sbus_ctrl->key_flag)
+			 {
+				 up_set_preset(0);
+			 }
+			 else if(KEY_SWD_MID & sbus_ctrl->key_flag)
+			 {
+				 up_set_preset(1);
+			 }
+			 else
+			{
+				 up_set_preset(2);
+			 }
 
        // SF 按下击球，松手回�?
        if (detect_switch_position(sbus_ctrl->ch[9]) == POS_DOWN)
