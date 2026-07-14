@@ -131,7 +131,7 @@ class Link:
         port: str,
         baud: int,
         timeout: float = 0.08,
-        char_delay: float = 0.001,
+        char_delay: float = 0.003,
         boot_delay: float = 2.8,
         verbose: bool = False,
     ):
@@ -165,20 +165,27 @@ class Link:
                 lines.append(raw.decode("ascii", errors="ignore").strip())
         return lines
 
-    def command_expect(self, command: str, prefix: str, wait: float = 0.5, required: bool = False) -> list[str]:
-        lines = self.command(command, wait=wait)
+    def command_expect(self, command: str, prefix: str, wait: float = 0.5, required: bool = False, retries: int = 1) -> list[str]:
+        all_lines: list[str] = []
+        ok = False
+        for _ in range(max(1, retries)):
+            lines = self.command(command, wait=wait)
+            all_lines.extend(lines)
+            if prefix == "OK LOG":
+                ok = any(line == prefix or line.startswith(prefix + " ") for line in lines)
+            else:
+                ok = any(line == prefix for line in lines)
+            if ok:
+                break
+            time.sleep(0.08)
         if self.verbose:
-            print(f"CMD {command!r} -> {lines[:12]}")
-        if prefix == "OK LOG":
-            ok = any(line == prefix or line.startswith(prefix + " ") for line in lines)
-        else:
-            ok = any(line == prefix for line in lines)
+            print(f"CMD {command!r} -> {all_lines[:12]}")
         if not ok:
-            message = f"no {prefix} after {command!r}; got: {lines[:5]}"
+            message = f"no {prefix} after {command!r}; got: {all_lines[:5]}"
             if required:
                 raise RuntimeError(message)
             print(f"WARN {message}", file=sys.stderr)
-        return lines
+        return all_lines
 
     def collect(self, seconds: float, vofa: "VofaForwarder | None" = None) -> list[Sample]:
         end = time.monotonic() + seconds
@@ -343,8 +350,9 @@ def run_trial(
     settle_threshold: float,
     csv_writer: csv.DictWriter | None,
     trial_index: int,
+    log_divider: int,
 ) -> dict[str, float]:
-    link.command_expect("LOG 0", "OK LOG", wait=0.5)
+    link.command_expect("LOG 0", "OK LOG", wait=0.8, retries=3)
     apply_pid(link, pid)
     if mode == "speed":
         link.command_expect("SPEED 0", "OKV", wait=0.5)
@@ -358,7 +366,7 @@ def run_trial(
     else:
         link.command_expect(f"GOTO {target_value:.5g}", "OKG", wait=0.5)
     link.ser.reset_input_buffer()
-    link.command_expect("LOG 1 1", "OK LOG", wait=0.5)
+    link.command_expect(f"LOG 1 {log_divider}", "OK LOG", wait=0.5, required=True, retries=2)
     link.ser.reset_input_buffer()
     samples = link.collect(duration, vofa)
     if mode == "speed":
@@ -373,7 +381,7 @@ def run_trial(
             row["score"] = metric["score"]
             csv_writer.writerow(row)
 
-    link.command_expect("LOG 0", "OK LOG", wait=0.5)
+    link.command_expect("LOG 0", "OK LOG", wait=0.8, required=True, retries=4)
     if mode == "speed":
         link.command_expect("SPEED 0", "OKV", wait=0.5)
     else:
@@ -419,7 +427,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Tune selected firmware PID target over UART8.")
     parser.add_argument("port", help="Serial port, for example COM8 or /dev/ttyUSB0")
     parser.add_argument("--baud", type=int, default=115200)
-    parser.add_argument("--char-delay", type=float, default=0.001, help="Delay between command bytes for polling UART firmware")
+    parser.add_argument("--char-delay", type=float, default=0.003, help="Delay between command bytes for polling UART firmware")
     parser.add_argument("--boot-delay", type=float, default=2.8, help="Delay after opening the port before sending commands")
     parser.add_argument("--verbose", action="store_true", help="Print command acknowledgements")
     parser.add_argument("--select", help="Firmware tune target name or index, for example up or pitch_speed")
@@ -427,6 +435,7 @@ def main() -> int:
     parser.add_argument("--target", type=float, help="Position mode: output shaft degrees. Speed mode: rpm")
     parser.add_argument("--angle", type=float, default=30.0, help="Backward-compatible position target in output shaft degrees")
     parser.add_argument("--duration", type=float, default=1.3, help="Seconds to record each step")
+    parser.add_argument("--log-divider", type=int, default=5, help="Firmware telemetry divider while collecting; 5 means one UPI about every 50 ms")
     parser.add_argument("--settle-deg", type=float, default=1.0, help="Settle threshold: degrees in position mode, rpm in speed mode")
     parser.add_argument("--ratio", type=float, default=GEAR_RATIO, help="Output-to-motor ratio used for position scoring and VOFA display")
     parser.add_argument("--rounds", type=int, default=1)
@@ -440,6 +449,7 @@ def main() -> int:
     args = parser.parse_args()
     target_value = args.target if args.target is not None else args.angle
 
+    args.log_divider = max(1, min(100, args.log_divider))
     base = Pid(args.base[0], args.base[1], args.base[2], args.base[3], args.base[4], args.base[5], int(args.base[6]), int(args.base[7]))
     link = Link(args.port, args.baud, char_delay=args.char_delay, boot_delay=args.boot_delay, verbose=args.verbose)
     vofa = VofaForwarder(args.vofa_port, args.vofa_baud, args.mode, args.ratio)
@@ -468,7 +478,7 @@ def main() -> int:
                     if trial_limit is not None and trial_count >= trial_limit:
                         break
                     trial_count += 1
-                    metric = run_trial(link, vofa, pid, args.mode, target_value, args.ratio, args.duration, args.settle_deg, writer, trial_count)
+                    metric = run_trial(link, vofa, pid, args.mode, target_value, args.ratio, args.duration, args.settle_deg, writer, trial_count, args.log_divider)
                     print(f"{trial_count:03d} r{round_index + 1} score={metric['score']:.3f} settle={metric['settle_ms']:.0f}ms "
                           f"overshoot={metric['overshoot']:.2f} steady={metric['steady']:.2f} pid={pid}")
                     if metric["score"] < best_metric["score"]:

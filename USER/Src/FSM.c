@@ -27,7 +27,6 @@ volatile uint16_t count = 0;
 volatile uint16_t count_up = 0;
 static volatile float serve_lift_target_angle = 0.0f;
 static volatile float serve_hit_target_angle = 0.0f;
-static volatile uint8_t serve_up_output_enabled = 1;
 
 serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 
@@ -36,30 +35,6 @@ serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 #define SERVE_BASE_ANGLE        (-3230.0f)
 #define SERVE_ANGLE_STEP        (10.0f * SCALE)
 #define SERVE_HIT_ANGLE_DELTA   (360.0f * SCALE)
-
-static void pid_clear_output(pid_t *pid)
-{
-    pid->set = 0.0f;
-    pid->error[NOW_ERR] = 0.0f;
-    pid->error[LAST_ERR] = 0.0f;
-    pid->error[LLAST_ERR] = 0.0f;
-    pid->pout = 0.0f;
-    pid->iout = 0.0f;
-    pid->dout = 0.0f;
-    pid->out = 0.0f;
-}
-
-static void serve_up_stop_force(void)
-{
-    int16_t voltage[2] = {0, 0};
-    motor_info_t *motor = &C620_up_angle[UP_ANGLE_FEEDBACK_INDEX];
-
-    serve_up_output_enabled = 0;
-    motor->target_speed = 0.0f;
-    motor->target_angle = motor->Angle_pid.get;
-    pid_clear_output(&motor->Angle_pid);
-    pid_clear_output(&motor->Speed_pid);
-}
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
@@ -144,14 +119,15 @@ void serve_request_start(void)
     {
         serve_lift_target_angle = up_per_angle[count_up%8];//SERVE_BASE_ANGLE; //- (float)count * SERVE_ANGLE_STEP;
         serve_hit_target_angle = serve_lift_target_angle + SERVE_HIT_ANGLE_DELTA;
+        PID_Struct_Init(&C620_up_angle[1].Angle_pid, 7.0f, 0.0f, 0.0f, 10000, 16000, INIT); //7 0 0  //8.15 0 0.15
+	PID_Struct_Init(&C620_up_angle[1].Speed_pid, 15.0f, 0.0f, 0.3f, 10000, 16000, INIT);//10.5 0 0.3
+	PID_Struct_Init(&C620_up_angle[0].Angle_pid, 7.0f, 0.0f, 0.0f, 10000, 16000, INIT); //7 0 0  //8.15 0 0.15
+	PID_Struct_Init(&C620_up_angle[0].Speed_pid, 15.0f, 0.0f, 0.3f, 10000, 16000, INIT);//10.5 0 0.3
         count++;
-		count_up++;
+	    	count_up++;
         serve_active = 1;
         serve_armed = 0;
         serve_tick = 0;
-        serve_up_output_enabled = 1;
-        pid_clear_output(&C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].Angle_pid);
-        pid_clear_output(&C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].Speed_pid);
         serve_stage = SERVE_STAGE_LIFT;
     }
 }
@@ -203,7 +179,7 @@ void remote_control_serve_update(void)
     {
         float t = (float)serve_tick / (float)SERVE_LIFT_TICKS;
         float s = 0.5f - 0.5f * cosf(t * 3.14f);
-        C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].target_angle = serve_lift_target_angle * s;
+        C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].target_angle = -serve_lift_target_angle * s;
         if (++serve_tick >= SERVE_LIFT_TICKS)
         {
             serve_stage = SERVE_STAGE_LIFT_RETURN;
@@ -222,7 +198,7 @@ void remote_control_serve_update(void)
         break;
 
     case SERVE_STAGE_HIT:
-        C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].target_angle = serve_hit_target_angle;
+        C620_up_angle[UP_ANGLE_FEEDBACK_INDEX].target_angle = -serve_hit_target_angle;
         if (++serve_tick >= SERVE_HIT_TICKS)
         {
             serve_stage = SERVE_STAGE_HIT_RETURN;
@@ -234,7 +210,10 @@ void remote_control_serve_update(void)
 	    Pump_Off();
         if (++serve_tick >= SERVE_HIT_RETURN_TICKS)
         {
-            serve_up_stop_force();
+            pid_reset(&C620_up_angle[0].Angle_pid,0,0,0);
+					  pid_reset(&C620_up_angle[1].Angle_pid,0,0,0);
+					 pid_reset(&C620_up_angle[0].Speed_pid,0,0,0);
+					  pid_reset(&C620_up_angle[1].Speed_pid,0,0,0);
             serve_stage = SERVE_STAGE_CLEAR;
         }
         break;
@@ -246,7 +225,7 @@ void remote_control_serve_update(void)
             serve_stage = SERVE_STAGE_IDLE;
             serve_tick = 0;
             serve_active = 0;
-			C620_up_angle[0].FirstEntre = 0;
+		      	C620_up_angle[0].FirstEntre = 0;
             C620_up_angle[1].FirstEntre = 0;
         }
 		break;
@@ -300,12 +279,6 @@ void up_angle_control(void)
     int16_t voltage[2] = {0}; //一次发两个的控制，单只拿一个反馈
     int32_t output = 0;
     motor_info_t *motor = &C620_up_angle[UP_ANGLE_FEEDBACK_INDEX];
-
-    if(serve_up_output_enabled == 0)
-    {
-        Set_voltage_up_angle(&hcan2, voltage);
-        return;
-    }
 
     if(serve_mode == SERVE_MODE_ANGLE)
     {

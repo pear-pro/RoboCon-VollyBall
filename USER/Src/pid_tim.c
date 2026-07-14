@@ -14,6 +14,7 @@
 #include "FSM.h"
 #include "imu.h"
 #include "heading_hold.h"
+#include "stm32f4xx_hal_can.h"
 #include "stm32f4xx_hal_pwr_ex.h"
 
 
@@ -31,7 +32,7 @@ uint16_t PID_Calc_Flag = 0;
 //发球3508最大允许电�?
 #define UP_OVER_CURRENT 13000.0f
 #define UP_OVER_TEMP 11000.0f
-#define UP_FEEDBACK_TIMEOUT_TICKS 3
+#define UP_FEEDBACK_TIMEOUT_TICKS 5
 
 
 //过流标志位，0表示没保护，1表示过流保护
@@ -55,7 +56,7 @@ static void up_feedback_tick_update(void)
 {
     for (uint8_t i = 0; i < 2; i++)
     {
-        if (C620_up_angle_feedback_tick[i] < 1000)
+        if (C620_up_angle_feedback_tick[i] < 6)
         {
             C620_up_angle_feedback_tick[i]++;
         }
@@ -87,16 +88,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
 
 		// ң�س��� 150ms δ����ʱ����������뷢�������ȫ̬
-//		 remote_control_watchdog_update();
-//		 if (remote_control_is_timeout())
-//		 {
-//		     remote_control_enter_safe_state();
-//		 }
+		 remote_control_watchdog_update();
+		 if (remote_control_is_timeout())
+		 {
+		     remote_control_enter_safe_state();
+		 }
 		 // ÿ 10ms ����һ�η������׶Σ����ڵ��νӹ�ʱ���ƽ�ң�ط���״̬��
-//		 if (!DebugTune_IsActive())
-//         {
-//             remote_control_serve_update();
-//         }
+		 if (!DebugTune_IsActive())
+         {
+             remote_control_serve_update();
+         }
         remote_control_hit_update();
 
 		car_w = HeadingHold_Update(0.0f);
@@ -126,20 +127,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       
     }
     
-	if(hcan1.ErrorCode!=0)//����can���ߴ���������
-	{
-		HAL_CAN_DeInit(&hcan1);
-		HAL_CAN_Init(&hcan1);
-		HAL_CAN_Start(&hcan1);
-	}
-   if(hcan2.ErrorCode!=0)//����can���ߴ���������
-	{
-		HAL_CAN_DeInit(&hcan2);
-		HAL_CAN_Init(&hcan2);
-		HAL_CAN_Start(&hcan2);
-	
-	
-	}	
+        if(hcan1.ErrorCode != 0)
+        {
+            HAL_CAN_DeInit(&hcan1);
+            HAL_CAN_Init(&hcan1);
+          
+        }
+        if(hcan2.ErrorCode != 0)
+        {
+            HAL_CAN_DeInit(&hcan2);
+            HAL_CAN_Init(&hcan2);
+            can2_fliter_init();
+        }
     //������������ӽǶȻ����жϴ����߼�?
     if(htim == &htim14)  // ȷ����PID��ʱ���ĸ����ж�
     {
@@ -163,10 +162,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             up_feedback_lost_fault = 0;
         }
 
-        if(up_overcurrent_fault)
+        if(up_overcurrent_fault ||  up_feedback_lost_fault)
         {
            pid_reset(&C620_up_angle[0].Angle_pid,0,0,0);
-					pid_reset(&C620_up_angle[1].Angle_pid,0,0,0);
+		pid_reset(&C620_up_angle[1].Angle_pid,0,0,0);
         }
         if(DebugTune_IsActive())
         {

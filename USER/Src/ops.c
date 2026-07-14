@@ -12,7 +12,7 @@ extern motor_info_t C620_hit_angle[3];
 extern motor_info_t C620[MotorCount];
 static void ops_set_up_output(int16_t output)
 {
-    int16_t cmd[2] = {output, output};
+    int16_t cmd[2] = {output, -output};
     Set_voltage_up_angle(&hcan2, cmd);
 }
 
@@ -36,7 +36,7 @@ static ops_control_t ops_targets[OPS_TARGET_MAX] =
 {
     {
         .name = "up",
-        .motor = &C620_up_angle[1],
+        .motor = &C620_up_angle[0],
         .mode = ops_mode_position,
         .ratio = 19.0f,
         .set_output = ops_set_up_output,
