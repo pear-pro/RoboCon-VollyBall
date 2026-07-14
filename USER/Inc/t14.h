@@ -40,6 +40,8 @@
 #define KEY_SE_UP 0X800//定义虚拟按键SE_UP
 #define KEY_SF_PRESSED 0X1000//定义虚拟按键SF_PRESSED
 
+extern volatile int time;
+
 typedef struct 
 {
     int16_t ch[10];//通道数据

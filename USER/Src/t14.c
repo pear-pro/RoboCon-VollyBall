@@ -11,6 +11,7 @@ uint8_t   sbus_buffer[SBUS_BUFLEN];//SBUS接收缓冲�?
 
 static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctrl_t *sbus_ctrl);
 static uint8_t sbus_rx_buffer[2][SBUS_RX_BUF_NUM];//DMA双缓�?
+volatile int time=0;
 
 SBUS_ctrl_t sbus_ctrl;
 
@@ -409,15 +410,19 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
        }
 			 if(KEY_SWD_UP & sbus_ctrl->key_flag)
 			 {
+				 time= 0;
 				 up_set_preset(0);
+				 
 			 }
 			 else if(KEY_SWD_MID & sbus_ctrl->key_flag)
 			 {
-				 up_set_preset(1);
+				 time= -5U;
+				 up_set_preset(0);
 			 }
 			 else
 			{
-				 up_set_preset(2);
+				time= -7U;
+				 up_set_preset(0);
 			 }
 
        // SF 按下击球，松手回�?

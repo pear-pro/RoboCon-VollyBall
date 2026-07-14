@@ -209,7 +209,7 @@ void remote_control_serve_update(void)
 
     case SERVE_STAGE_LIFT_RETURN:
 		Pump_On();
-		if (++serve_tick >= SERVE_RETURN_TICKS)
+		if (++serve_tick >= SERVE_RETURN_TICKS + time)
         {
             serve_stage = SERVE_STAGE_HIT;
             serve_tick = 0;
