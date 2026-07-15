@@ -39,8 +39,8 @@ serve_mode_t serve_mode = SERVE_MODE_ANGLE;
 
 static const float hit_angle_table[HIT_MOTOR_COUNT][HIT_MOTOR_COUNT] =
 {
-    {-1.25f, 1.25f, 1.25f},
-    {-1.0f, 1.0f, 1.0f},
+    {-1.29f, 1.29f, 1.29f},
+    {-1.18f, 1.18f, 1.18f},
 };
 
 static const float hit_angle_reset[HIT_MOTOR_COUNT] =
@@ -126,7 +126,7 @@ void serve_request_start(void)
 {
     if (serve_armed && !serve_active)
     {
-       serve_lift_target_angle = up_per_angle[up_preset_index][count_up%8];
+       serve_lift_target_angle = up_per_angle[0][count_up%8];
         serve_hit_target_angle = serve_lift_target_angle + SERVE_HIT_ANGLE_DELTA;
         PID_Struct_Init(&C620_up_angle[1].Angle_pid, 7.0f, 0.0f, 0.0f, 10000, 16000, INIT); //7 0 0  //8.15 0 0.15
 	PID_Struct_Init(&C620_up_angle[1].Speed_pid, 15.0f, 0.0f, 0.3f, 10000, 16000, INIT);//10.5 0 0.3

@@ -411,18 +411,18 @@ static void sbus_to_remote_control(volatile const uint8_t *sbus_buffer, SBUS_ctr
 			 if(KEY_SWD_UP & sbus_ctrl->key_flag)
 			 {
 				 time= 0;
-				 up_set_preset(0);
+				// up_set_preset(0);
 				 
 			 }
 			 else if(KEY_SWD_MID & sbus_ctrl->key_flag)
 			 {
 				 time= -5U;
-				 up_set_preset(0);
+			//	 up_set_preset(0);
 			 }
 			 else
 			{
 				time= -7U;
-				 up_set_preset(0);
+			//	 up_set_preset(0);
 			 }
 
        // SF 按下击球，松手回�?

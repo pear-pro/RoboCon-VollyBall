@@ -30,30 +30,30 @@ void All_Init(){
 	
 
 	 PID_Struct_Init(&C620[0].Speed_pid, //右后
-            2.0f, 
+            7.0f, 
             0.3f,
-            0.0f, 
+            0.15f, 
             10000, 
             16000,
             INIT);
 	 PID_Struct_Init(&C620[1].Speed_pid, //右前
-            2.0f, 
+            7.0f, 
             0.3f,
-            0.0f, 
+            0.15f, 
             10000, 
             16000,
             INIT);
 	PID_Struct_Init(&C620[2].Speed_pid, //左前
-            2.0f, 
+            7.0f, 
             0.3f,
-            0.0f, 
+            0.15f, 
             10000, 
             16000,
             INIT);
 	 PID_Struct_Init(&C620[3].Speed_pid, //左后
-            2.0f, 
+            7.0f, 
             0.3f,
-            0.0f, 
+            0.15f, 
             10000, 
             16000,
             INIT);

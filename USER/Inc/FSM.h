@@ -13,7 +13,7 @@
 #define SERVE_RETURN_TICKS      (9U)
 #define SERVE_HIT_TICKS         (100U)
 #define SERVE_HIT_RETURN_TICKS  (20U)
-#define SERVE_STAGE_CLEAR_TICKS (500U)
+#define SERVE_STAGE_CLEAR_TICKS (200U)
 
 typedef enum
 {
